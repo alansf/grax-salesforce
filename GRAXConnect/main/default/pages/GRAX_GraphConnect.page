@@ -1,0 +1,6 @@
+<apex:page controller="GraphConnect">
+<apex:form >
+<apex:commandButton value="Initial Connect" action="{!connect}"/>
+</apex:form>
+<iframe height="600px" id="theIframe" name="theIframe" src="{!PropURLToDisplay}" width="100%"></iframe>
+</apex:page>
