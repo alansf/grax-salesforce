@@ -31,7 +31,9 @@ public static final string APPROVAL_PROMPT='force';
      return p;
      
    }
-   
+   /*
+   Need to look at this -> https://salesforce.stackexchange.com/questions/152682/how-do-i-grab-item-chosen-id-in-popup-window
+   */
     public pagereference showtoken(){
    
    string codeparam=apexpages.currentpage().getparameters().get('code');
