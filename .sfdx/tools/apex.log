@@ -1,5 +1,4 @@
-Jan 18, 2018 2:04:19 PM apex.jorje.parser.impl.BaseApexLexer dedupe
-INFO: Deduped array ApexLexer.DFA22_transition. Found 7730596 14:04:21.805 [ApexIndexer STARTING] INFO  a.jorje.lsp.impl.index.ApexIndexer - Scanning user-defined types.
-14:04:21.805 [Apex Prelude Service STARTING] INFO  a.j.l.i.s.ApexPreludeManagedService - Scanning built-in and system Apex types took 2611 ms.
-14:04:22.015 [ApexIndexer STARTING] INFO  a.jorje.lsp.impl.index.ApexIndexer - Scanning user-defined types took 209 ms.
-14:07:59.604 [Apex Prelude Service STOPPING] INFO  a.j.l.i.s.ApexPreludeManagedService - Prelude Service shutting down.
+Jan 25, 2018 7:45:32 AM apex.jorje.parser.impl.BaseApexLexer dedupe
+INFO: Deduped array ApexLexer.DFA22_transition. Found 7730596 07:45:37.565 [ApexIndexer STARTING] INFO  a.jorje.lsp.impl.index.ApexIndexer - Scanning user-defined types.
+07:45:37.565 [Apex Prelude Service STARTING] INFO  a.j.l.i.s.ApexPreludeManagedService - Scanning built-in and system Apex types took 6332 ms.
+07:45:38.014 [ApexIndexer STARTING] INFO  a.jorje.lsp.impl.index.ApexIndexer - Scanning user-defined types took 448 ms.
