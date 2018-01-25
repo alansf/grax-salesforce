@@ -1,6 +1,37 @@
-<apex:page controller="GRAXConfiguration">
-<!-- Begin Default Content REMOVE THIS -->
-<h1>Congratulations</h1>
-This is your new Page
-<!-- End Default Content REMOVE THIS -->
+<apex:page controller="GRAXConfiguration" showChat="false" showHeader="false"> 
+    <apex:pageMessages /><br />
+    <apex:form id="form">
+        <apex:pageBlock >
+            <apex:pageMessages />
+            <apex:pageBlockSection columns="3" >
+                <apex:selectList value="{!objToQuery}" multiselect="false" size="1">
+                    <apex:selectOptions value="{!items}"/>
+                    <apex:actionSupport reRender="form" event="QueryObject" />
+                </apex:selectList>
+                 <apex:commandButton value="Show Fields" action="{!QueryObject}"/>
+                 <apex:commandButton value="Save Fields" action="{!SaveSelection}"/>
+            </apex:pageBlockSection>
+             <apex:pageBlockSection title="Selected fields for GRAX" columns="2">
+	             <apex:pageBlockSectionItem>
+	             	<apex:pageBlockTable value="{!fieldProperties}" var="f">
+	              	  <apex:column >
+					  	<apex:facet name="header"> 
+						</apex:facet>
+						<apex:inputCheckbox value="{!f.fieldselected}" id="checkedone">
+					  </apex:inputCheckbox>
+					  </apex:column>
+	                  <apex:column value="{!f.fieldname}" headerValue="Field Name"/>
+	                  <apex:column value="{!f.fieldtype}" headerValue="Field Type"/>
+	              </apex:pageBlockTable>
+	             </apex:pageBlockSectionItem>
+             	 <apex:pageBlockSectionItem>
+             	 	  <apex:pageBlockSection title="GRAX Query Data" columns="1">
+	             	 	  <apex:inputTextarea id="defaultFields" value="{!defaultfields}"/>
+				          <apex:inputTextarea id="defaultFilter" value="{!defaultfilter}"/>
+				          <apex:inputTextarea id="defaultProcessingOrder" value="{!defaultprocessordering}"/>
+			          </apex:pageBlockSection>
+             	 </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+   </apex:form>
 </apex:page>

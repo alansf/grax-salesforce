@@ -6,10 +6,11 @@ global class GRAXBatch implements
     global String Query = '';
     global String CurrentObjectName = '';
 
-    string BuildQuery(string ObjectName){
+    string BuildQuery(string ObjectName){     
+        string BuildQuery = '';
+        
         SObjectType t = Schema.getGlobalDescribe().get(ObjectName);
         SObject o = t.newSobject();
-        string BuildQuery = '';
         Map<String, Schema.SObjectField> m = t.getDescribe().fields.getMap();
         for (String fieldName : m.keySet()) {
             if (BuildQuery!=''){
@@ -17,6 +18,7 @@ global class GRAXBatch implements
             }
           BuildQuery += fieldName;
         }
+
         if (BuildQuery!=''){
             // Query = 'Select ' + BuildQuery + ' From ' + ObjectName + ' LIMIT ' + recordLimit;
             Query = 'Select ' + BuildQuery + ' From ' + ObjectName;

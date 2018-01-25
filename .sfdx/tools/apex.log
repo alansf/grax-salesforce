@@ -1,15 +1,41 @@
-Jan 25, 2018 8:34:28 AM org.eclipse.lsp4j.jsonrpc.json.ConcurrentMessageProcessor run
-SEVERE: null
-java.lang.NullPointerException
-08:34:31.115 [ApexIndexer STARTING] INFO  a.jorje.lsp.impl.index.ApexIndexer - Scanning user-defined types.
-08:34:31.114 [Apex Prelude Service STARTING] INFO  a.j.l.i.s.ApexPreludeManagedService - Scanning built-in and system Apex types took 2683 ms.
-08:34:31.261 [ApexIndexer STARTING] INFO  a.jorje.lsp.impl.index.ApexIndexer - Scanning user-defined types took 146 ms.
-ipse.lsp4j.jsonrpc.json.ConcurrentMessageProcessor.run(ConcurrentMessageProcessor.java:68)
-	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
-	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+Jan 25, 2018 11:49:30 AM apex.jorje.parser.impl.BaseApexLexer dedupe
+INFO: Deduped array ApexLexer.DFA22_transition. Found 7730596 shorts which is 14MB not including array overhead. Removed 7073965 shorts which is 13MB not counting array overhead.Took 48ms.
+Jan 25, 2018 11:49:34 AM com.google.common.util.concurrent.ServiceManager$ServiceListener failed
+SEVERE: Service Apex Prelude Service [FAILED] has failed in the STARTING state.
+org.eclipse.jdt.internal.core.nd.db.IndexException: Corrupted database: apex.db
+	at org.eclipse.jdt.internal.core.nd.db.Database.databaseCorruptionDetected(Database.java:427)
+	at org.eclipse.jdt.internal.core.nd.db.Database.getChunk(Database.java:402)
+	at org.eclipse.jdt.internal.core.nd.db.Database.getInt(Database.java:1100)
+	at org.eclipse.jdt.internal.core.nd.db.Database.getString(Database.java:1218)
+	at org.eclipse.jdt.internal.core.nd.field.FieldSearchKey.get(FieldSearchKey.java:76)
+	at org.eclipse.jdt.internal.core.nd.field.FieldSearchIndex$SearchCriteriaToBtreeVisitorAdapter.compare(FieldSearchIndex.java:127)
+	at org.eclipse.jdt.internal.core.nd.db.BTree.accept(BTree.java:628)
+	at org.eclipse.jdt.internal.core.nd.db.BTree.accept(BTree.java:649)
+	at org.eclipse.jdt.internal.core.nd.db.BTree.accept(BTree.java:647)
+	at org.eclipse.jdt.internal.core.nd.db.BTree.accept(BTree.java:598)
+	at org.eclipse.jdt.internal.core.nd.field.FieldSearchIndex.findBest(FieldSearchIndex.java:232)
+	at apex.jorje.lsp.impl.index.ApexIndex.getResourceFile(ApexIndex.java:129)
+	at apex.jorje.lsp.impl.services.ApexPreludeManagedService.scanApexStandardLibraryIfNecessary(ApexPreludeManagedService.java:165)
+	at apex.jorje.lsp.impl.services.ApexPreludeManagedService.startUp(ApexPreludeManagedService.java:93)
+	at com.google.common.util.concurrent.AbstractIdleService$2$1.run(AbstractIdleService.java:54)
+	at com.google.common.util.concurrent.Callables$3.run(Callables.java:95)
 	at java.lang.Thread.run(Thread.java:748)
 
-Jan 25, 2018 8:34:28 AM apex.jorje.parser.impl.BaseApexLexer dedupe
-INFO: Deduped array ApexLexer.DFA22_transition. Found 7730596 shorts which is 14MB not including array overhead. Removed 7073965 shorts which is 13MB not counting array overhead.Took 50ms.
+Exception in thread "Apex Prelude Service STARTING" org.eclipse.jdt.internal.core.nd.db.IndexException: Corrupted database: apex.db
+	at org.eclipse.jdt.internal.core.nd.db.Database.databaseCorruptionDetected(Database.java:427)
+	at org.eclipse.jdt.internal.core.nd.db.Database.getChunk(Database.java:402)
+	at org.eclipse.jdt.internal.core.nd.db.Database.getInt(Database.java:1100)
+	at org.eclipse.jdt.internal.core.nd.db.Database.getString(Database.java:1218)
+	at org.eclipse.jdt.internal.core.nd.field.FieldSearchKey.get(FieldSearchKey.java:76)
+	at org.eclipse.jdt.internal.core.nd.field.FieldSearchIndex$SearchCriteriaToBtreeVisitorAdapter.compare(FieldSearchIndex.java:127)
+	at org.eclipse.jdt.internal.core.nd.db.BTree.accept(BTree.java:628)
+	at org.eclipse.jdt.internal.core.nd.db.BTree.accept(BTree.java:649)
+	at org.eclipse.jdt.internal.core.nd.db.BTree.accept(BTree.java:647)
+	at org.eclipse.jdt.internal.core.nd.db.BTree.accept(BTree.java:598)
+	at org.eclipse.jdt.internal.core.nd.field.FieldSearchIndex.findBest(FieldSearchIndex.java:232)
+	at apex.jorje.lsp.impl.index.ApexIndex.getResourceFile(ApexIndex.java:129)
+	at apex.jorje.lsp.impl.services.ApexPreludeManagedService.scanApexStandardLibraryIfNecessary(ApexPreludeManagedService.java:165)
+	at apex.jorje.lsp.impl.services.ApexPreludeManagedService.startUp(ApexPreludeManagedService.java:93)
+	at com.google.common.util.concurrent.AbstractIdleService$2$1.run(AbstractIdleService.java:54)
+	at com.google.common.util.concurrent.Callables$3.run(Callables.java:95)
+	at java.lang.Thread.run(Thread.java:748)
