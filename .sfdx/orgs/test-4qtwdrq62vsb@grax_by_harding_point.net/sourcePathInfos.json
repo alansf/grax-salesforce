@@ -557,10 +557,10 @@
         {
             "sourcePath": "/Users/joegaska/Desktop/HardingPoint/OneDrive - Medicalforce/HardingPoint/Development/HardingPoint/salesforce/GRAXForSFDC/GRAXConnect/main/default/classes/GRAXBatch.cls",
             "isDirectory": false,
-            "size": 2543,
-            "modifiedTime": 1516890622582,
-            "changeTime": 1516890622582,
-            "contentHash": "a9271d76083e7c72615a6067c23e9180e2f83f8e",
+            "size": 3161,
+            "modifiedTime": 1516905341798,
+            "changeTime": 1516905341798,
+            "contentHash": "d78f950e2356a344893562b2585b0f097cbf1b3b",
             "isMetadataFile": false,
             "state": "u"
         }
@@ -585,10 +585,10 @@
             "sourcePath": "/Users/joegaska/Desktop/HardingPoint/OneDrive - Medicalforce/HardingPoint/Development/HardingPoint/salesforce/GRAXForSFDC/GRAXConnect/main/default/classes/GRAXConfiguration.cls",
             "isDirectory": false,
             "isMetadataFile": false,
-            "size": 3146,
-            "modifiedTime": 1516901960960,
-            "changeTime": 1516901960960,
-            "contentHash": "39b004ded783fd4609423c5f0911738928e8f7be"
+            "size": 4254,
+            "modifiedTime": 1516907289806,
+            "changeTime": 1516907289806,
+            "contentHash": "c0b14a2d480ef73258e5f4e727f2d7621ccb224b"
         }
     ],
     [
@@ -609,10 +609,10 @@
         {
             "sourcePath": "/Users/joegaska/Desktop/HardingPoint/OneDrive - Medicalforce/HardingPoint/Development/HardingPoint/salesforce/GRAXForSFDC/GRAXConnect/main/default/pages/GRAXConfiguration.page",
             "isDirectory": false,
-            "size": 1918,
-            "modifiedTime": 1516900552215,
-            "changeTime": 1516900552215,
-            "contentHash": "cff1ccab2c44e9f00ee429c018dde22704a14d93",
+            "size": 2496,
+            "modifiedTime": 1516906960636,
+            "changeTime": 1516906960636,
+            "contentHash": "d0b74b016950f9ef474575a60fc6fee1768c506b",
             "isMetadataFile": false,
             "state": "u"
         }

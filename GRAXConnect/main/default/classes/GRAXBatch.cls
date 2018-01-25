@@ -28,7 +28,18 @@ global class GRAXBatch implements
 
     global GRAXBatch(String ObjectName){
         if (ObjectName!=''){
-            Query = BuildQuery(ObjectName);
+        	    List<GRAXQuery__c> GRAXSavedQueries = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c  From GRAXQuery__c where ObjectName__c=:ObjectName];
+    			if (!GRAXSavedQueries.isEmpty()){
+    				GRAXQuery__c GRAXSavedQuery = GRAXSavedQueries[0];
+    				Query = 'SELECT ' + GRAXSavedQuery.Selected_Fields__c + ' FROM ' + GRAXSavedQuery.ObjectName__c;
+    				if (GRAXSavedQuery.Filter__c!='')
+    					Query+= ' WHERE ' + GRAXSavedQuery.Filter__c;
+    				
+    				if (GRAXSavedQuery.Order_By__c!='')
+    					Query+= ' ORDER BY ' + GRAXSavedQuery.Order_By__c;
+    			}
+        		else
+            		Query = BuildQuery(ObjectName);
         }
         CurrentObjectName = ObjectName;
     }
