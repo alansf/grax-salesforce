@@ -1,4 +1,4 @@
-public class herokuauthclass{
+public class GRAXHerokuAuth{
 
 public string authtoken{get;set;}
 public string refereshtoken{get;set;}
