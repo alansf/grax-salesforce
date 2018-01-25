@@ -32,10 +32,10 @@ global class GRAXBatch implements
     			if (!GRAXSavedQueries.isEmpty()){
     				GRAXQuery__c GRAXSavedQuery = GRAXSavedQueries[0];
     				Query = 'SELECT ' + GRAXSavedQuery.Selected_Fields__c + ' FROM ' + GRAXSavedQuery.ObjectName__c;
-    				if (GRAXSavedQuery.Filter__c!='')
+    				if (GRAXSavedQuery.Filter__c!='' && GRAXSavedQuery.Filter__c!=null)
     					Query+= ' WHERE ' + GRAXSavedQuery.Filter__c;
     				
-    				if (GRAXSavedQuery.Order_By__c!='')
+    				if (GRAXSavedQuery.Order_By__c!='' && GRAXSavedQuery.Order_By__c!=null)
     					Query+= ' ORDER BY ' + GRAXSavedQuery.Order_By__c;
     			}
         		else

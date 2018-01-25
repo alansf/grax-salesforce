@@ -89,7 +89,7 @@ public class GRAXConfiguration {
     			defaultfields = query[0].Selected_Fields__c;
     			string currentfields = ','+ query[0].Selected_Fields__c + ',';
     			for(FieldProperties obj : FieldProperties){
-    				if (currentfields.indexOf(',' + obj.fieldname + ',')>0){
+    				if (currentfields.indexOf(',' + obj.fieldname + ',') >0 ){
     					FieldProperties[counter].fieldselected=true;
     				}
     				counter++;
