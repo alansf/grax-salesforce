@@ -1,7 +1,7 @@
-public class HardingPointAPI {
+public class GRAXApi {
     // -------------------------------------------------
-    // https://www.hardingpoint.com/
-    // Support Contact - Support At HardingPoint.com
+    // https://grax.io
+    // Support Contact - Support@Grax.io
     // -------------------------------------------------
     public static String jsonContent(List<Object> triggerNew, List<Object> triggerOld) {
 
@@ -14,7 +14,7 @@ public class HardingPointAPI {
             oldObjects = JSON.serialize(triggerOld);
         }
         String userId = JSON.serialize(UserInfo.getUserId());
-        HardingPoint__c hpd = HardingPoint__c.getOrgDefaults();
+        GRAXSettings__c hpd = GRAXSettings__c.getOrgDefaults();
 
         // This is the URL for Neo4j
         // System.debug('graphdburl:' + hpd.graphdburl__c);
@@ -29,7 +29,7 @@ public class HardingPointAPI {
     public static void calloutnow(String url, String content) {
         Http h = new Http();
         HttpRequest req = new HttpRequest();
-        HardingPoint__c hpd = HardingPoint__c.getOrgDefaults();
+        GRAXSettings__c hpd = GRAXSettings__c.getOrgDefaults();
         // ------------------------------
         //  Use for Org Wide Override
         // ------------------------------
@@ -58,7 +58,7 @@ public class HardingPointAPI {
 
     @future(callout=true)
     public static void callout(String url, String content) {
-        HardingPointAPI.calloutnow(url,content);
+        GRAXApi.calloutnow(url,content);
     }
 
     public static SObject mock(String sobjectName) {

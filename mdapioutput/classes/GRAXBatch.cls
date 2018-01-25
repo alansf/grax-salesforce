@@ -1,4 +1,4 @@
-global class HardingPointBatch implements
+global class GRAXBatch implements
     Database.Batchable<sObject>, Database.AllowsCallouts, Database.Stateful {
     // instance member to retain state across transactions
     global Integer recordsProcessed = 0;
@@ -6,10 +6,11 @@ global class HardingPointBatch implements
     global String Query = '';
     global String CurrentObjectName = '';
 
-    string BuildQuery(string ObjectName){
+    string BuildQuery(string ObjectName){     
+        string BuildQuery = '';
+        
         SObjectType t = Schema.getGlobalDescribe().get(ObjectName);
         SObject o = t.newSobject();
-        string BuildQuery = '';
         Map<String, Schema.SObjectField> m = t.getDescribe().fields.getMap();
         for (String fieldName : m.keySet()) {
             if (BuildQuery!=''){
@@ -17,6 +18,7 @@ global class HardingPointBatch implements
             }
           BuildQuery += fieldName;
         }
+
         if (BuildQuery!=''){
             // Query = 'Select ' + BuildQuery + ' From ' + ObjectName + ' LIMIT ' + recordLimit;
             Query = 'Select ' + BuildQuery + ' From ' + ObjectName;
@@ -24,9 +26,20 @@ global class HardingPointBatch implements
         return Query;
    }
 
-    global HardingPointBatch(String ObjectName){
+    global GRAXBatch(String ObjectName){
         if (ObjectName!=''){
-            Query = BuildQuery(ObjectName);
+        	    List<GRAXQuery__c> GRAXSavedQueries = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c  From GRAXQuery__c where ObjectName__c=:ObjectName];
+    			if (!GRAXSavedQueries.isEmpty()){
+    				GRAXQuery__c GRAXSavedQuery = GRAXSavedQueries[0];
+    				Query = 'SELECT ' + GRAXSavedQuery.Selected_Fields__c + ' FROM ' + GRAXSavedQuery.ObjectName__c;
+    				if (GRAXSavedQuery.Filter__c!='' && GRAXSavedQuery.Filter__c!=null)
+    					Query+= ' WHERE ' + GRAXSavedQuery.Filter__c;
+    				
+    				if (GRAXSavedQuery.Order_By__c!='' && GRAXSavedQuery.Order_By__c!=null)
+    					Query+= ' ORDER BY ' + GRAXSavedQuery.Order_By__c;
+    			}
+        		else
+            		Query = BuildQuery(ObjectName);
         }
         CurrentObjectName = ObjectName;
     }
@@ -47,7 +60,7 @@ global class HardingPointBatch implements
             triggerNew.add(currentObject);
             recordsProcessed++;
         }
-        HardingPointAPI.calloutnow(url,HardingPointAPI.jsonContent(triggerNew,triggerOld));
+        GRAXApi.calloutnow(url,GRAXApi.jsonContent(triggerNew,triggerOld));
     }
 
     global void finish(Database.BatchableContext bc){
@@ -64,7 +77,7 @@ global class HardingPointBatch implements
     }
 
     public static void ProcessHistory(String ObjectName){
-        HardingPointBatch newbatch = new HardingPointBatch(ObjectName);
+        GRAXBatch newbatch = new GRAXBatch(ObjectName);
         Database.executeBatch(newbatch, 10);
     }
 }

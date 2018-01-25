@@ -6,10 +6,11 @@
   </types>
   <types>
     <name>ApexClass</name>
-    <members>GraphConnect</members>
-    <members>HardingPointAPI</members>
-    <members>HardingPointBatch</members>
-    <members>herokuauthclass</members>
+    <members>GRAXApi</members>
+    <members>GRAXBatch</members>
+    <members>GRAXConfiguration</members>
+    <members>GRAXConnect</members>
+    <members>GRAXHerokuAuth</members>
   </types>
   <types>
     <name>ContentAsset</name>
@@ -20,20 +21,40 @@
     <members>GRAX_UtilityBar</members>
   </types>
   <types>
+    <name>Layout</name>
+    <members>GRAXQuery__c-GRAXQueries Layout</members>
+  </types>
+  <types>
+    <name>CustomObjectTranslation</name>
+    <members>GRAXQuery__c-en_US</members>
+  </types>
+  <types>
     <name>CustomObject</name>
-    <members>HardingPoint__c</members>
+    <members>GRAXQuery__c</members>
+    <members>GRAXSettings__c</members>
   </types>
   <types>
     <name>CustomField</name>
-    <members>HardingPoint__c.ApiToken__c</members>
-    <members>HardingPoint__c.GatewayToken__c</members>
-    <members>HardingPoint__c.LicenseToken__c</members>
-    <members>HardingPoint__c.graphdburl__c</members>
+    <members>GRAXQuery__c.Filter__c</members>
+    <members>GRAXQuery__c.ObjectName__c</members>
+    <members>GRAXQuery__c.Order_By__c</members>
+    <members>GRAXQuery__c.Selected_Fields__c</members>
+    <members>GRAXSettings__c.ApiToken__c</members>
+    <members>GRAXSettings__c.GatewayToken__c</members>
+    <members>GRAXSettings__c.LicenseToken__c</members>
+    <members>GRAXSettings__c.QueryLimit__c</members>
+    <members>GRAXSettings__c.QueryOrderBy__c</members>
+    <members>GRAXSettings__c.graphdburl__c</members>
+  </types>
+  <types>
+    <name>ListView</name>
+    <members>GRAXQuery__c.All</members>
   </types>
   <types>
     <name>ApexPage</name>
-    <members>GRAX_GraphConnect</members>
-    <members>HerokuAuthenticate</members>
+    <members>GRAXConfiguration</members>
+    <members>GRAXConnect</members>
+    <members>GRAXHerokuAuth</members>
   </types>
   <types>
     <name>RemoteSiteSetting</name>
@@ -46,9 +67,9 @@
   </types>
   <types>
     <name>CustomTab</name>
-    <members>GRAX_GraphX</members>
+    <members>GRAXQuery__c</members>
+    <members>GRAX_Configuration</members>
     <members>GRAX_Graph_Connect</members>
-    <members>Heroku_Configuration</members>
   </types>
   <version>41.0</version>
 </Package>

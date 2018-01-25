@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
-    <label>GRAX : GraphX</label>
+    <label>GRAX : Configuration</label>
     <mobileReady>false</mobileReady>
-    <motif>Custom73: Highway Sign</motif>
-    <page>GRAX_GraphConnect</page>
+    <motif>Custom8: Diamond</motif>
+    <page>GRAXConfiguration</page>
 </CustomTab>

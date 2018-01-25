@@ -1,4 +1,4 @@
-<apex:page controller="GraphConnect">
+<apex:page controller="GRAXConnect">
 <apex:form >
 <apex:commandButton value="Initial Connect" action="{!connect}"/>
 </apex:form>
