@@ -92,7 +92,10 @@ public class GRAXConfiguration {
     		}
     		defaultfields = fieldlist;
     		newQuery.Selected_Fields__c = defaultfields;
+    		newQuery.Order_By__c=defaultprocessordering;
+    		newQuery.Filter__c=defaultfilter;
     		upsert newQuery ObjectName__c;
+    		
     		return null;   
 	}
     

@@ -1,6 +1,6 @@
-Jan 25, 2018 11:49:30 AM apex.jorje.parser.impl.BaseApexLexer dedupe
-INFO: Deduped array ApexLexer.DFA22_transition. Found 7730596 shorts which is 14MB not including array overhead. Removed 7073965 shorts which is 13MB not counting array overhead.Took 48ms.
-Jan 25, 2018 11:49:34 AM com.google.common.util.concurrent.ServiceManager$ServiceListener failed
+Jan 25, 2018 12:31:20 PM apex.jorje.parser.impl.BaseApexLexer dedupe
+INFO: Deduped array ApexLexer.DFA22_transition. Found 7730596 shorts which is 14MB not including array overhead. Removed 7073965 shorts which is 13MB not counting array overhead.Took 61ms.
+Jan 25, 2018 12:31:24 PM com.google.common.util.concurrent.ServiceManager$ServiceListener failed
 SEVERE: Service Apex Prelude Service [FAILED] has failed in the STARTING state.
 org.eclipse.jdt.internal.core.nd.db.IndexException: Corrupted database: apex.db
 	at org.eclipse.jdt.internal.core.nd.db.Database.databaseCorruptionDetected(Database.java:427)
@@ -39,3 +39,267 @@ Exception in thread "Apex Prelude Service STARTING" org.eclipse.jdt.internal.cor
 	at com.google.common.util.concurrent.AbstractIdleService$2$1.run(AbstractIdleService.java:54)
 	at com.google.common.util.concurrent.Callables$3.run(Callables.java:95)
 	at java.lang.Thread.run(Thread.java:748)
+Jan 25, 2018 12:32:29 PM apex.jorje.semantic.compiler.CodeUnit traverse
+INFO: unexpected error during apex MemberResolveVisitor:
+public class GRAXConfiguration {
+
+    List<FieldProperties> FieldProperties;
+    public string objToQuery {get;set;}
+     
+    public string defaultfields {get;set;}
+    public string defaultfilter {get;set;}
+    public string defaultprocessordering {get;set;}
+      
+    public GRAXConfiguration () { 
+    		defaultprocessordering = 'LastUpdated DESC';
+    		defaultfilter = '';
+    }  
+    
+    public List<FieldProperties> getfieldProperties ()
+    {
+        FieldProperties= new List<FieldProperties>();
+        SObjectType objType = Schema.getGlobalDescribe().get(objtoquery);
+        if (objType != null)
+        {
+        Map<String,Schema.SObjectField> fields = objType.getDescribe().fields.getMap();
+        for (String s : fields.keySet()) 
+             {
+                if (fields.get(s).getDescribe().isAccessible()){
+                		FieldProperties.add(new FieldProperties(objtoquery, s));
+                }
+             }
+        }
+        return FieldProperties;
+    }
+    
+   
+    public List<SelectOption> getItems() 
+    {
+       string cobjname;
+       List<SelectOption> options = new List<SelectOption>();
+       List<Schema.SObjectType> gd = Schema.getGlobalDescribe().Values();  
+       for(Schema.SObjectType f : gd){
+			cobjname = f.getDescribe().getName();
+			options.add(new SelectOption(cobjname ,cobjname ));
+       }  
+       options.sort();
+       return options;
+    }
+    
+    public class FieldProperties
+    {
+        private string sObjtoquery;
+        
+        public string fieldname{get;set;}
+        public string fieldtype{get;set;}
+        public boolean fieldselected{get;set;}
+        
+        public FieldProperties() {}  
+        
+        public FieldProperties(string objname, string fieldname, boolean selected) {
+            this.sObjtoquery = objname;
+            this.fieldname = fieldname;
+            this.fieldselected=selected;
+            getAttributes(objname, fieldname);
+        }
+    
+        public void getAttributes(string objtoquery, string afieldname,select)
+        {
+          SObjectType objType = Schema.getGlobalDescribe().get(objtoquery);
+          Map<String,Schema.SObjectField> fields = objType.getDescribe().fields.getMap();
+          if (fields.get(afieldname).getDescribe().isAccessible())
+          {  
+			fieldname = afieldname;
+			fieldtype = string.valueof(fields.get(afieldname).getDescribe().getType());
+			if (fieldtype=='REFERENCE' || fieldname=='name' || fieldname=='id'){
+				fieldselected=true;
+			}
+          }
+        }
+    } 
+    
+    Public Pagereference QueryObject()
+    {    return null;    }
+    
+    Public Pagereference SaveSelection()
+    {    
+    		GRAXQuery__c newQuery = new GRAXQuery__c();
+    		newQuery.ObjectName__c = objToQuery;
+    		
+    		string fieldlist = '';
+    		for(FieldProperties obj : FieldProperties){
+    			if (obj.fieldselected){
+    				if (fieldlist!='')
+    					fieldlist+=',';
+    				fieldlist+=obj.fieldname;
+    			}
+    		}
+    		defaultfields = fieldlist;
+    		newQuery.Selected_Fields__c = defaultfields;
+    		upsert newQuery ObjectName__c;
+    		return null;   
+	}
+    
+ }
+
+java.lang.NullPointerException
+	at apex.jorje.semantic.symbol.resolver.TypeRefResolvers.get(TypeRefResolvers.java:60)
+	at apex.jorje.semantic.symbol.resolver.StandardSymbolResolver.lookupTypeInfo(StandardSymbolResolver.java:155)
+	at apex.jorje.semantic.symbol.type.reference.TypeReferences$ResolvableTypeRef.resolve(TypeReferences.java:100)
+	at apex.jorje.semantic.ast.member.Parameter.resolve(Parameter.java:169)
+	at apex.jorje.semantic.ast.visitor.MemberResolveVisitor.visit(MemberResolveVisitor.java:137)
+	at apex.jorje.semantic.ast.visitor.MemberResolveVisitor.visit(MemberResolveVisitor.java:40)
+	at apex.jorje.semantic.ast.member.Parameter.traverse(Parameter.java:101)
+	at apex.jorje.semantic.ast.member.Method.traverse(Method.java:99)
+	at apex.jorje.semantic.ast.compilation.UserClass.traverse(UserClass.java:125)
+	at apex.jorje.semantic.ast.compilation.UserClass.traverse(UserClass.java:116)
+	at apex.jorje.semantic.compiler.CodeUnit.traverse(CodeUnit.java:175)
+	at apex.jorje.semantic.compiler.CompilerOperations$MemberResolveOperation.invoke(CompilerOperations.java:82)
+	at apex.jorje.semantic.compiler.ApexCompiler.processNext(ApexCompiler.java:231)
+	at apex.jorje.semantic.compiler.ApexCompiler.compileInternal(ApexCompiler.java:137)
+	at apex.jorje.semantic.compiler.ApexCompiler.compile(ApexCompiler.java:125)
+	at apex.jorje.lsp.impl.services.StandardCompilerService.compile(StandardCompilerService.java:122)
+	at apex.jorje.lsp.impl.diagnostics.DiagnosticsReporter.analyzeErrors(DiagnosticsReporter.java:147)
+	at apex.jorje.lsp.impl.diagnostics.DiagnosticsReporter.generateDiagnostics(DiagnosticsReporter.java:119)
+	at apex.jorje.lsp.impl.diagnostics.DiagnosticsReporter.publishDiagnostics(DiagnosticsReporter.java:106)
+	at java.util.Optional.map(Optional.java:215)
+	at apex.jorje.lsp.impl.diagnostics.DiagnosticsReporter.handleDidChange(DiagnosticsReporter.java:80)
+	at apex.jorje.lsp.impl.document.DocumentLifecycleDispatcher.lambda$null$2(DocumentLifecycleDispatcher.java:71)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+
+Jan 25, 2018 12:32:29 PM apex.jorje.semantic.compiler.CodeUnit traverse
+INFO: unexpected error during apex MemberResolveVisitor:
+public class GRAXConfiguration {
+
+    List<FieldProperties> FieldProperties;
+    public string objToQuery {get;set;}
+     
+    public string defaultfields {get;set;}
+    public string defaultfilter {get;set;}
+    public string defaultprocessordering {get;set;}
+      
+    public GRAXConfiguration () { 
+    		defaultprocessordering = 'LastUpdated DESC';
+    		defaultfilter = '';
+    }  
+    
+    public List<FieldProperties> getfieldProperties ()
+    {
+        FieldProperties= new List<FieldProperties>();
+        SObjectType objType = Schema.getGlobalDescribe().get(objtoquery);
+        if (objType != null)
+        {
+        Map<String,Schema.SObjectField> fields = objType.getDescribe().fields.getMap();
+        for (String s : fields.keySet()) 
+             {
+                if (fields.get(s).getDescribe().isAccessible()){
+                		FieldProperties.add(new FieldProperties(objtoquery, s));
+                }
+             }
+        }
+        return FieldProperties;
+    }
+    
+   
+    public List<SelectOption> getItems() 
+    {
+       string cobjname;
+       List<SelectOption> options = new List<SelectOption>();
+       List<Schema.SObjectType> gd = Schema.getGlobalDescribe().Values();  
+       for(Schema.SObjectType f : gd){
+			cobjname = f.getDescribe().getName();
+			options.add(new SelectOption(cobjname ,cobjname ));
+       }  
+       options.sort();
+       return options;
+    }
+    
+    public class FieldProperties
+    {
+        private string sObjtoquery;
+        
+        public string fieldname{get;set;}
+        public string fieldtype{get;set;}
+        public boolean fieldselected{get;set;}
+        
+        public FieldProperties() {}  
+        
+        public FieldProperties(string objname, string fieldname, boolean selected) {
+            this.sObjtoquery = objname;
+            this.fieldname = fieldname;
+            this.fieldselected=selected;
+            getAttributes(objname, fieldname);
+        }
+    
+        public void getAttributes(string objtoquery, string afieldname,select)
+        {
+          SObjectType objType = Schema.getGlobalDescribe().get(objtoquery);
+          Map<String,Schema.SObjectField> fields = objType.getDescribe().fields.getMap();
+          if (fields.get(afieldname).getDescribe().isAccessible())
+          {  
+			fieldname = afieldname;
+			fieldtype = string.valueof(fields.get(afieldname).getDescribe().getType());
+			if (fieldtype=='REFERENCE' || fieldname=='name' || fieldname=='id'){
+				fieldselected=true;
+			}
+          }
+        }
+    } 
+    
+    Public Pagereference QueryObject()
+    {    return null;    }
+    
+    Public Pagereference SaveSelection()
+    {    
+    		GRAXQuery__c newQuery = new GRAXQuery__c();
+    		newQuery.ObjectName__c = objToQuery;
+    		
+    		string fieldlist = '';
+    		for(FieldProperties obj : FieldProperties){
+    			if (obj.fieldselected){
+    				if (fieldlist!='')
+    					fieldlist+=',';
+    				fieldlist+=obj.fieldname;
+    			}
+    		}
+    		defaultfields = fieldlist;
+    		newQuery.Selected_Fields__c = defaultfields;
+    		upsert newQuery ObjectName__c;
+    		return null;   
+	}
+    
+ }
+
+java.lang.NullPointerException
+	at apex.jorje.semantic.symbol.resolver.TypeRefResolvers.get(TypeRefResolvers.java:60)
+	at apex.jorje.semantic.symbol.resolver.StandardSymbolResolver.lookupTypeInfo(StandardSymbolResolver.java:155)
+	at apex.jorje.semantic.symbol.type.reference.TypeReferences$ResolvableTypeRef.resolve(TypeReferences.java:100)
+	at apex.jorje.semantic.ast.member.Parameter.resolve(Parameter.java:169)
+	at apex.jorje.semantic.ast.visitor.MemberResolveVisitor.visit(MemberResolveVisitor.java:137)
+	at apex.jorje.semantic.ast.visitor.MemberResolveVisitor.visit(MemberResolveVisitor.java:40)
+	at apex.jorje.semantic.ast.member.Parameter.traverse(Parameter.java:101)
+	at apex.jorje.semantic.ast.member.Method.traverse(Method.java:99)
+	at apex.jorje.semantic.ast.compilation.UserClass.traverse(UserClass.java:125)
+	at apex.jorje.semantic.ast.compilation.UserClass.traverse(UserClass.java:116)
+	at apex.jorje.semantic.compiler.CodeUnit.traverse(CodeUnit.java:175)
+	at apex.jorje.semantic.compiler.CompilerOperations$MemberResolveOperation.invoke(CompilerOperations.java:82)
+	at apex.jorje.semantic.compiler.ApexCompiler.processNext(ApexCompiler.java:231)
+	at apex.jorje.semantic.compiler.ApexCompiler.compileInternal(ApexCompiler.java:137)
+	at apex.jorje.semantic.compiler.ApexCompiler.compile(ApexCompiler.java:125)
+	at apex.jorje.lsp.impl.services.StandardCompilerService.compile(StandardCompilerService.java:122)
+	at apex.jorje.lsp.impl.index.ApexIndexer.lambda$insertTypeInfo$1(ApexIndexer.java:393)
+	at java.util.Optional.ifPresent(Optional.java:159)
+	at apex.jorje.lsp.impl.index.ApexIndexer.insertTypeInfo(ApexIndexer.java:385)
+	at apex.jorje.lsp.impl.index.ApexIndexer.updateTypeInfo(ApexIndexer.java:425)
+	at apex.jorje.lsp.impl.index.ApexIndexer.handleDidChange(ApexIndexer.java:435)
+	at apex.jorje.lsp.impl.document.DocumentLifecycleDispatcher.lambda$null$2(DocumentLifecycleDispatcher.java:71)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+
