@@ -50,6 +50,7 @@ public class GRAXConfiguration {
         
         public string fieldname{get;set;}
         public string fieldtype{get;set;}
+        public string referenceto{get;set;}
         public boolean fieldselected{get;set;}
         
         public FieldProperties() {}  
@@ -71,6 +72,7 @@ public class GRAXConfiguration {
 			fieldtype = string.valueof(fields.get(afieldname).getDescribe().getType());
 			if (fieldtype=='REFERENCE' || fieldname=='name' || fieldname=='id'){
 				fieldselected=true;
+				referenceto = string.valueof(fields.get(afieldname).getDescribe().getReferenceTo());
 			}
           }
         }

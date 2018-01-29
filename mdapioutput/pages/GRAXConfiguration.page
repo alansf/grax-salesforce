@@ -21,7 +21,7 @@
 	                 </apex:pageBlockSection>
                  </apex:pageBlockSectionItem>
             </apex:pageBlockSection>
-             <apex:pageBlockSection title="Selected fields for GRAX" columns="2">
+             <apex:pageBlockSection title="Selected fields for GRAX" columns="3">
 	             <apex:pageBlockSectionItem>
 	             	<apex:pageBlockTable value="{!fieldProperties}" var="f">
 	              	  <apex:column >
@@ -32,6 +32,7 @@
 					  </apex:column>
 	                  <apex:column value="{!f.fieldname}" headerValue="Field Name"/>
 	                  <apex:column value="{!f.fieldtype}" headerValue="Field Type"/>
+	                  <apex:column value="{!f.referernceto}" headerValue="Referenced To"/>
 	              </apex:pageBlockTable>
 	             </apex:pageBlockSectionItem>
              	 <apex:pageBlockSectionItem>

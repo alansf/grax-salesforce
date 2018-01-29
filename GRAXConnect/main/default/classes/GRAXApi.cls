@@ -4,6 +4,10 @@ public class GRAXApi {
     // Support Contact - Support@Grax.io
     // -------------------------------------------------
     public static String jsonContent(List<Object> triggerNew, List<Object> triggerOld) {
+    		return jsonContent(triggerNew,triggerOld,'');
+    }
+ 
+    public static String jsonContent(List<Object> triggerNew, List<Object> triggerOld, String graxconfig) {
 
         String newObjects = '[]';
         if (triggerNew != null) {
@@ -19,8 +23,16 @@ public class GRAXApi {
         // This is the URL for Neo4j
         // System.debug('graphdburl:' + hpd.graphdburl__c);
         String graphdburl = hpd.graphdburl__c;
-
-        String content = '{"new": ' + newObjects + ', "old": ' + oldObjects + ', "orgId": "'+ UserInfo.getOrganizationId() +  '", "userId": ' + userId + ', "graphdburl": "' + graphdburl + '"}';
+        
+		// 
+        String content = '{' + 
+        						'"orgId": "'+ UserInfo.getOrganizationId() + '",' +
+        						'"userId": ' + userId + ',' + 
+        						'"graphdburl": "' + graphdburl + '",' + 
+        						'"graxconfig": ' + graxconfig + ',' + 
+        						'"new": ' + newObjects + ',' + 
+        						'"old": ' + oldObjects + 
+        					'}';
         // String content = '{"new": ' + newObjects + ', "orgId": "'+ UserInfo.getOrganizationId() +  '", "userId": ' + userId + ', "graphdburl": "' + graphdburl + '"}';
 
         return content;
@@ -51,7 +63,8 @@ public class GRAXApi {
         if ( hpd.GatewayToken__c != null){
             req.setHeader('x-api-key', hpd.GatewayToken__c);
         }
-        req.setHeader('sfdcorgid', UserInfo.getOrganizationId() );
+        req.setHeader('sfdcorgid', UserInfo.getOrganizationId());
+        
         req.setBody(content);
         h.send(req);
     }
