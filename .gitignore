@@ -1,11 +1,11 @@
 
-.DS_Store
-.sfdx
-.project
-.salesforce
-.settings
-node_modules
-.idea
+.DS_Store/
+.sfdx/
+.project/
+.salesforce/
+.settings/
+node_modules/
+.idea/
 mdapioutput/
 mdapioutput/*.*
 
