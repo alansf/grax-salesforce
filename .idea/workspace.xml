@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="92bc7183-79ec-4929-a63e-4edb40c138ec" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/.sfdx/sfdx-config.json" afterPath="$PROJECT_DIR$/.sfdx/sfdx-config.json" />
-      <change beforePath="$PROJECT_DIR$/GRAXConnect/main/default/profiles/Admin.profile-meta.xml" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/profiles/Admin.profile-meta.xml" />
+      <change beforePath="$PROJECT_DIR$/.forceignore" afterPath="$PROJECT_DIR$/.forceignore" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -37,9 +35,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/.forceignore" />
         <option value="$PROJECT_DIR$/mdapioutput/profiles/Admin.profile" />
         <option value="$PROJECT_DIR$/GRAXConnect/main/default/profiles/Admin.profile-meta.xml" />
+        <option value="$PROJECT_DIR$/.forceignore" />
       </list>
     </option>
   </component>
@@ -150,12 +148,12 @@
       <workItem from="1516283680507" duration="1703000" />
       <workItem from="1517504742910" duration="1302000" />
       <workItem from="1517512868196" duration="523000" />
-      <workItem from="1517516137838" duration="335000" />
+      <workItem from="1517516137838" duration="391000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3863000" />
+    <option name="totallyTimeSpent" value="3919000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="30" width="1440" height="777" extended-state="0" />
@@ -228,13 +226,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.forceignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="2" lean-forward="false" selection-start-line="5" selection-start-column="2" selection-end-line="5" selection-end-column="2" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/GRAXConnect/main/default/profiles/Custom%3A Marketing Profile.profile-meta.xml" />
     <entry file="file://$PROJECT_DIR$/.sfdx/sfdx-config.json">
       <provider selected="true" editor-type-id="text-editor">
@@ -300,6 +291,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1005">
           <caret line="67" column="19" lean-forward="true" selection-start-line="67" selection-start-column="19" selection-end-line="67" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.forceignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="5" lean-forward="false" selection-start-line="4" selection-start-column="5" selection-end-line="4" selection-end-column="5" />
           <folding />
         </state>
       </provider>
