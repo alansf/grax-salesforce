@@ -111,12 +111,13 @@ public class GRAXConfiguration {
     
     private void SynchSaved(String ObjectName){
     	    integer counter = 0;
-    		List<GRAXQuery__c> query = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c  From GRAXQuery__c where ObjectName__c=:ObjectName];
+    		List<GRAXQuery__c> query = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c,graxconfig__c  From GRAXQuery__c where ObjectName__c=:ObjectName];
     		if (!query.isEmpty()){
     			enablesynch = false;
     			defaultfilter = query[0].Filter__c;
     			defaultprocessordering = query[0].Order_By__c;
     			defaultfields = query[0].Selected_Fields__c;
+    			graxconfig = query[0].graxconfig__c;
     			string currentfields = ','+ query[0].Selected_Fields__c + ',';
     			for(FieldProperties obj : FieldProperties){
     				if (currentfields.indexOf(',' + obj.fieldname + ',') >0 ){
