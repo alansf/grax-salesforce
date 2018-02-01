@@ -4,5 +4,6 @@
 
 .sfdx
 mdapioutput/
+mdapioutput/*.*
 package.xml
 # Admin.profile
