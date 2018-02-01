@@ -3,5 +3,6 @@
 #
 
 .sfdx
+./mdapioutput
 package.xml
 # Admin.profile
