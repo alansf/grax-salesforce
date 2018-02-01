@@ -225,15 +225,15 @@
     [
         "/Users/joegaska/Desktop/HardingPoint/OneDrive - Medicalforce/HardingPoint/Development/HardingPoint/salesforce/GRAXForSFDC/GRAXConnect/main/default/classes/GRAXFlow.cls",
         {
-            "state": "u",
             "sourcePath": "/Users/joegaska/Desktop/HardingPoint/OneDrive - Medicalforce/HardingPoint/Development/HardingPoint/salesforce/GRAXForSFDC/GRAXConnect/main/default/classes/GRAXFlow.cls",
             "isDirectory": false,
-            "isMetadataFile": false,
             "size": 499,
             "modifiedTime": 1517507231382,
             "changeTime": 1517507231382,
-            "isWorkspace": false,
-            "contentHash": "33075dbc29673215d2a3388ee16e8db4ffc6cdbb"
+            "contentHash": "33075dbc29673215d2a3388ee16e8db4ffc6cdbb",
+            "isMetadataFile": false,
+            "state": "u",
+            "isWorkspace": false
         }
     ],
     [
@@ -1082,16 +1082,15 @@
     [
         "/Users/joegaska/Desktop/HardingPoint/OneDrive - Medicalforce/HardingPoint/Development/HardingPoint/salesforce/GRAXForSFDC/GRAXConnect/main/default/tabs/GRAX_Configuration.tab-meta.xml",
         {
+            "state": "u",
             "sourcePath": "/Users/joegaska/Desktop/HardingPoint/OneDrive - Medicalforce/HardingPoint/Development/HardingPoint/salesforce/GRAXForSFDC/GRAXConnect/main/default/tabs/GRAX_Configuration.tab-meta.xml",
             "isDirectory": false,
-            "size": 260,
-            "modifiedTime": 1516895601878,
-            "changeTime": 1516895601878,
-            "contentHash": "fb67520fd4c91ff2250feb2989dd2d1f16689892",
             "isMetadataFile": true,
-            "state": "u",
+            "size": 258,
+            "modifiedTime": 1517507809299,
+            "changeTime": 1517507809299,
             "isWorkspace": false,
-            "isArtifactRoot": false
+            "contentHash": "3475c2cedfcadf060436ef8e8ba263e9e91f9c48"
         }
     ],
     [
