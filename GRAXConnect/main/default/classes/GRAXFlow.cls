@@ -4,8 +4,11 @@ public with sharing class GRAXFlow {
     }
     
     public string getPropURLToDisplay() { 
-        string salesforceURL = 'https://grax.io'; 
-        return salesforceURL;
+    	    String flowUrl = 'https://grax.io';
+    		GRAXSettings__c graxsettings = GRAXSettings__c.getOrgDefaults();
+    		if (graxsettings.GRAX_Flow_URL__c==null)
+        		flowUrl = graxsettings.GRAX_Flow_URL__c; 
+        return flowUrl;
     }
     
     public pagereference connect(){

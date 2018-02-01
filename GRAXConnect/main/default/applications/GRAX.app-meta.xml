@@ -10,6 +10,7 @@
     <label>GRAX</label>
     <navType>Standard</navType>
     <tab>GRAX_Intro</tab>
+    <tab>GRAX_Flow</tab>
     <tab>GRAX_Connect</tab>
     <tab>GRAX_Configuration</tab>
     <tab>GRAXQuery__c</tab>

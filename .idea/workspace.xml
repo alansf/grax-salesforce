@@ -2,42 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="92bc7183-79ec-4929-a63e-4edb40c138ec" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-e8bi0ay1so5b@grax_by_harding_point.net/maxrevision.json" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-e8bi0ay1so5b@grax_by_harding_point.net/metadataTypeInfos.json" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-e8bi0ay1so5b@grax_by_harding_point.net/sourcePathInfos.json" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-e8bi0ay1so5b@grax_by_harding_point.net/sourcePathInfos.json.bak" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-etdovmevlw2r@grax_by_harding_point.net/maxrevision.json" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-etdovmevlw2r@grax_by_harding_point.net/metadataTypeInfos.json" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-etdovmevlw2r@grax_by_harding_point.net/sourcePathInfos.json" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-etdovmevlw2r@grax_by_harding_point.net/sourcePathInfos.json.bak" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-ryv3jmsjjbz1@grax_by_harding_point.net/metadataTypeInfos.json" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-ryv3jmsjjbz1@grax_by_harding_point.net/sourcePathInfos.json" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-ryv3jmsjjbz1@grax_by_harding_point.net/sourcePathInfos.json.bak" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/classes/GRAXFlow.cls" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/classes/GRAXFlow.cls-meta.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/objects/GRAXQuery__c/listViews/All_GRAX_Queries.listView-meta.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/pages/GRAXAbout.page" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/pages/GRAXAbout.page-meta.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/pages/GRAXFlow.page" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/pages/GRAXFlow.page-meta.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/profiles/Admin.profile-meta.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/tabs/GRAX_Connect.tab-meta.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/tabs/GRAX_Intro.tab-meta.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/config/developer-scratch-def.json" />
-      <change beforePath="$PROJECT_DIR$/.forceignore" afterPath="$PROJECT_DIR$/.forceignore" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/.sfdx/orgs/test-wnfnjbhsozwt@grax_by_harding_point.net/sourcePathInfos.json" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-wnfnjbhsozwt@grax_by_harding_point.net/sourcePathInfos.json" />
-      <change beforePath="$PROJECT_DIR$/.sfdx/orgs/test-wnfnjbhsozwt@grax_by_harding_point.net/sourcePathInfos.json.bak" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-wnfnjbhsozwt@grax_by_harding_point.net/sourcePathInfos.json.bak" />
-      <change beforePath="$PROJECT_DIR$/.sfdx/sfdx-config.json" afterPath="$PROJECT_DIR$/.sfdx/sfdx-config.json" />
-      <change beforePath="$PROJECT_DIR$/.sfdx/tools/apex.db" afterPath="$PROJECT_DIR$/.sfdx/tools/apex.db" />
-      <change beforePath="$PROJECT_DIR$/.sfdx/tools/apex.log" afterPath="$PROJECT_DIR$/.sfdx/tools/apex.log" />
+      <change beforePath="$PROJECT_DIR$/.sfdx/orgs/test-etdovmevlw2r@grax_by_harding_point.net/maxrevision.json" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-etdovmevlw2r@grax_by_harding_point.net/maxrevision.json" />
+      <change beforePath="$PROJECT_DIR$/.sfdx/orgs/test-etdovmevlw2r@grax_by_harding_point.net/sourcePathInfos.json" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-etdovmevlw2r@grax_by_harding_point.net/sourcePathInfos.json" />
       <change beforePath="$PROJECT_DIR$/GRAXConnect/main/default/applications/GRAX.app-meta.xml" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/applications/GRAX.app-meta.xml" />
-      <change beforePath="$PROJECT_DIR$/GRAXConnect/main/default/classes/GRAXApi.cls" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/classes/GRAXApi.cls" />
-      <change beforePath="$PROJECT_DIR$/GRAXConnect/main/default/classes/GRAXConfiguration.cls" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/classes/GRAXConfiguration.cls" />
-      <change beforePath="$PROJECT_DIR$/GRAXConnect/main/default/objects/GRAXQuery__c/listViews/All.listView-meta.xml" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/objects/GRAXQuery__c/listViews/All.listView-meta.xml" />
-      <change beforePath="$PROJECT_DIR$/GRAXConnect/main/default/pages/GRAXConnect.page" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/pages/GRAXConnect.page" />
-      <change beforePath="$PROJECT_DIR$/GRAXConnect/main/default/tabs/GRAX_Graph_Connect.tab-meta.xml" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/config/project-scratch-def.json" afterPath="$PROJECT_DIR$/config/enterprise-scratch-def.json" />
+      <change beforePath="$PROJECT_DIR$/GRAXConnect/main/default/profiles/Admin.profile-meta.xml" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/profiles/Admin.profile-meta.xml" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -50,7 +19,18 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="GRAXBatch.cls" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/GRAXConnect/main/default/classes/GRAXBatch.cls">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -136,6 +116,14 @@
               <item name="GRAXConnect" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="default" type="462c0819:PsiDirectoryNode" />
+              <item name="classes" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="GRAXForSFDC" type="b2602c69:ProjectViewProjectNode" />
+              <item name="GRAXForSFDC" type="462c0819:PsiDirectoryNode" />
+              <item name="GRAXConnect" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="default" type="462c0819:PsiDirectoryNode" />
               <item name="profiles" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -177,17 +165,18 @@
       <option name="presentableId" value="Default" />
       <updated>1516283678039</updated>
       <workItem from="1516283680507" duration="1703000" />
-      <workItem from="1517504742910" duration="1077000" />
+      <workItem from="1517504742910" duration="1302000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2780000" />
+    <option name="totallyTimeSpent" value="3005000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="74" y="30" width="1440" height="777" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.42291668" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2534722" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -266,6 +255,22 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.sfdx/sfdx-config.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GRAXConnect/main/default/classes/GRAXApi.cls">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GRAXConnect/main/default/classes/GRAXBatch.cls">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
