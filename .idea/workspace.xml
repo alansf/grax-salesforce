@@ -3,6 +3,49 @@
   <component name="ChangeListManager">
     <list default="true" id="92bc7183-79ec-4929-a63e-4edb40c138ec" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.forceignore" afterPath="$PROJECT_DIR$/.forceignore" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/applications/GRAX.app" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/classes/GRAXApi.cls" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/classes/GRAXApi.cls-meta.xml" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/classes/GRAXBatch.cls" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/classes/GRAXBatch.cls-meta.xml" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/classes/GRAXConfiguration.cls" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/classes/GRAXConfiguration.cls-meta.xml" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/classes/GRAXConnect.cls" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/classes/GRAXConnect.cls-meta.xml" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/classes/GRAXFlow.cls" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/classes/GRAXFlow.cls-meta.xml" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/classes/GRAXHerokuAuth.cls" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/classes/GRAXHerokuAuth.cls-meta.xml" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/contentassets/GRAX_LOGO.asset" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/contentassets/GRAX_LOGO.asset-meta.xml" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/flexipages/GRAX_UtilityBar.flexipage" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/layouts/GRAXQuery__c-GRAXQueries Layout.layout" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/objectTranslations/GRAXQuery__c-en_US.objectTranslation" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/objects/GRAXQuery__c.object" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/objects/GRAXSettings__c.object" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/package.xml" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/pages/GRAXAbout.page" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/pages/GRAXAbout.page-meta.xml" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/pages/GRAXConfiguration.page" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/pages/GRAXConfiguration.page-meta.xml" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/pages/GRAXConnect.page" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/pages/GRAXConnect.page-meta.xml" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/pages/GRAXFlow.page" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/pages/GRAXFlow.page-meta.xml" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/pages/GRAXHerokuAuth.page" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/pages/GRAXHerokuAuth.page-meta.xml" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/profiles/Admin.profile" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/remoteSiteSettings/GRAX_connect.remoteSite" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/remoteSiteSettings/GRAX_dev.remoteSite" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/remoteSiteSettings/GRAX_heroku_token.remoteSite" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/remoteSiteSettings/GRAX_prod.remoteSite" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/remoteSiteSettings/GRAX_qa.remoteSite" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/remoteSiteSettings/GRAX_test.remoteSite" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/tabs/GRAXQuery__c.tab" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/tabs/GRAX_Configuration.tab" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/tabs/GRAX_Connect.tab" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/tabs/GRAX_Flow.tab" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/mdapioutput/tabs/GRAX_Intro.tab" afterPath="" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -148,12 +191,12 @@
       <workItem from="1516283680507" duration="1703000" />
       <workItem from="1517504742910" duration="1302000" />
       <workItem from="1517512868196" duration="523000" />
-      <workItem from="1517516137838" duration="1052000" />
+      <workItem from="1517516137838" duration="1126000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4580000" />
+    <option name="totallyTimeSpent" value="4654000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="30" width="1440" height="777" extended-state="0" />
@@ -297,8 +340,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.forceignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="11" />
+        <state relative-caret-position="165">
+          <caret line="11" column="5" lean-forward="false" selection-start-line="11" selection-start-column="5" selection-end-line="11" selection-end-column="5" />
           <folding />
         </state>
       </provider>
