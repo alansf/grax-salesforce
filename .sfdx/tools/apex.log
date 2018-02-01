@@ -1,4 +1,4 @@
-Feb 01, 2018 12:44:21 PM org.eclipse.lsp4j.jsonrpc.json.ConcurrentMessageProcessor run
+Feb 01, 2018 12:47:11 PM org.eclipse.lsp4j.jsonrpc.json.ConcurrentMessageProcessor run
 SEVERE: null
 java.lang.NullPointerException
 	at org.eclipse.lsp4j.jsonrpc.RemoteEndpoint.handleRequest(RemoteEndpoint.java:214)
@@ -12,9 +12,9 @@ java.lang.NullPointerException
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
 	at java.lang.Thread.run(Thread.java:748)
 
-Feb 01, 2018 12:44:21 PM apex.jorje.parser.impl.BaseApexLexer dedupe
-INFO: Deduped array ApexLexer.DFA22_transition. Found 7730596 shorts which is 14MB not including array overhead. Removed 7073965 shorts which is 13MB not counting array overhead.Took 67ms.
-Feb 01, 2018 12:44:24 PM com.google.common.util.concurrent.ServiceManager$ServiceListener failed
+Feb 01, 2018 12:47:11 PM apex.jorje.parser.impl.BaseApexLexer dedupe
+INFO: Deduped array ApexLexer.DFA22_transition. Found 7730596 shorts which is 14MB not including array overhead. Removed 7073965 shorts which is 13MB not counting array overhead.Took 81ms.
+Feb 01, 2018 12:47:14 PM com.google.common.util.concurrent.ServiceManager$ServiceListener failed
 SEVERE: Service Apex Prelude Service [FAILED] has failed in the STARTING state.
 org.eclipse.jdt.internal.core.nd.db.IndexException: Corrupted database: apex.db
 	at org.eclipse.jdt.internal.core.nd.db.Database.databaseCorruptionDetected(Database.java:427)
