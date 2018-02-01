@@ -2,5 +2,14 @@
 # More information: https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_exclude_source.htm
 #
 
-package.xml
+.DS_Store
+.sfdx
+.project
+.salesforce
+.settings
+node_modules
+.idea
+mdapioutput/
+mdapioutput/*.*
+# package.xml
 # Admin.profile
