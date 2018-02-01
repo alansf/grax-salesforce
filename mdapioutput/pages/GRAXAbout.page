@@ -1,3 +1,0 @@
-<apex:page controller="GRAXFlow">
-<iframe height="600px" id="theIframe" name="theIframe" src="https://grax.io" width="100%" frameBorder="0"></iframe>
-</apex:page>
