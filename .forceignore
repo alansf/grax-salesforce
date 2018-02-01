@@ -2,7 +2,6 @@
 # More information: https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_exclude_source.htm
 #
 
-
 .DS_Store
 .sfdx
 .project
@@ -10,7 +9,6 @@
 .settings
 node_modules
 .idea
-
 mdapioutput/
 mdapioutput/*.*
 package.xml
