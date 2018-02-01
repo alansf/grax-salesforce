@@ -3,11 +3,33 @@ public class GRAXApi {
     // https://grax.io
     // Support Contact - Support@Grax.io
     // -------------------------------------------------
-    public static String jsonContent(List<Object> triggerNew, List<Object> triggerOld) {
+    public static String jsonContent(List<SObject> triggerNew, List<SObject> triggerOld) {
+    		return jsonContent(triggerNew,triggerOld,'');
+    }
+    
+    public static List<Object> NormalizeList(List<Object> UpdateObjects){
+    		if (UpdateObjects!=null){
+    			if (!UpdateObjects.isEmpty()){
+    				/*
+    				String ObjectName = String.ValueOf(UpdateObjects.getSObjectType());
+    				List<GRAXQuery__c> GRAXquery = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c,graxconfig__c  From GRAXQuery__c where ObjectName__c=:ObjectName];
+    				if (!GRAXquery.isEmpty()){
+    					if (GRAXquery[0].Selected_Fields__c!=null){
+    						String[] fieldList = GRAXquery[0].Selected_Fields__c.split(',');
+    					}
+    				}
+    				*/
+    			}
+    		}
+    		return UpdateObjects;
+    }
+ 
+    public static String jsonContent(List<Object> triggerNew, List<Object> triggerOld, String graxconfig) {
 
         String newObjects = '[]';
         if (triggerNew != null) {
-            newObjects = JSON.serialize(triggerNew);
+        		
+            newObjects = JSON.serialize(NormalizeList(triggerNew));
         }
         String oldObjects = '[]';
         if (triggerOld != null) {
@@ -19,41 +41,44 @@ public class GRAXApi {
         // This is the URL for Neo4j
         // System.debug('graphdburl:' + hpd.graphdburl__c);
         String graphdburl = hpd.graphdburl__c;
-
-        String content = '{"new": ' + newObjects + ', "old": ' + oldObjects + ', "orgId": "'+ UserInfo.getOrganizationId() +  '", "userId": ' + userId + ', "graphdburl": "' + graphdburl + '"}';
+        
+		// 
+        String content = '{' + 
+        						'"orgId": "'+ UserInfo.getOrganizationId() + '",' +
+        						'"userId": ' + userId + ',' + 
+        						'"graphdburl": "' + graphdburl + '",' + 
+        						'"graxconfig": ' + graxconfig + ',' + 
+        						'"new": ' + newObjects + ',' + 
+        						'"old": ' + oldObjects + 
+        					'}';
         // String content = '{"new": ' + newObjects + ', "orgId": "'+ UserInfo.getOrganizationId() +  '", "userId": ' + userId + ', "graphdburl": "' + graphdburl + '"}';
 
         return content;
     }
 
     public static void calloutnow(String url, String content) {
-        Http h = new Http();
-        HttpRequest req = new HttpRequest();
         GRAXSettings__c hpd = GRAXSettings__c.getOrgDefaults();
-        // ------------------------------
-        //  Use for Org Wide Override
-        // ------------------------------
-        //if (hpd.APIURL__c!=''){
-        //    req.setEndpoint(hpd.APIURL__c);
-        //}else{
-            req.setEndpoint(url);
-        //}
-        // ------------------------------
-        req.setMethod('POST');
-        req.setHeader('Content-Type', 'application/json');
-        // Does not work!
-        if ( hpd.LicenseToken__c != null ){
-            req.setHeader('licensetoken',hpd.LicenseToken__c);
+        if (url!=null && hpd.LicenseToken__c != null && hpd.ApiToken__c != null && hpd.GatewayToken__c != null){
+        		Http h = new Http();
+        		HttpRequest req = new HttpRequest();
+        		// ------------------------------
+	        //  Use for Org Wide Override
+	        // ------------------------------
+	        //if (hpd.APIURL__c!=''){
+	        //    req.setEndpoint(hpd.APIURL__c);
+	        //}else{
+	            req.setEndpoint(url);
+	        //}
+	        // ------------------------------
+        		req.setMethod('POST');
+        		req.setHeader('Content-Type', 'application/json');
+        		req.setHeader('licensetoken',hpd.LicenseToken__c);
+        		req.setHeader('authorizationToken', hpd.ApiToken__c);
+        		req.setHeader('x-api-key', hpd.GatewayToken__c);
+        		req.setHeader('sfdcorgid', UserInfo.getOrganizationId());
+	        req.setBody(content);
+	        h.send(req);
         }
-        if ( hpd.ApiToken__c != null ){
-            req.setHeader('authorizationToken', hpd.ApiToken__c);
-        }
-        if ( hpd.GatewayToken__c != null){
-            req.setHeader('x-api-key', hpd.GatewayToken__c);
-        }
-        req.setHeader('sfdcorgid', UserInfo.getOrganizationId() );
-        req.setBody(content);
-        h.send(req);
     }
 
     @future(callout=true)

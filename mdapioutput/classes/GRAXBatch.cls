@@ -45,7 +45,7 @@ global class GRAXBatch implements
     }
 
     global Database.QueryLocator start(Database.BatchableContext bc) {
-        System.debug('Starting Batch Query: ' + Query);
+        System.debug('[GRAX.io] Starting Batch Query: ' + Query);
         return Database.getQueryLocator(Query);
     }
 
@@ -54,13 +54,24 @@ global class GRAXBatch implements
         List<Object> triggerOld = new List<Object>();
 
         String url = 'https://prod.hardingpoint.com/v9.3/api';
+        String graxconfig ='';
+        if (scope.size()>0){
+        		SObject obj = scope[0];
+        		String ObjectName = string.valueof(obj.getSObjectType());
+        		
+        		List<GRAXQuery__c> queries = [Select ObjectName__c,graxconfig__c  From GRAXQuery__c where ObjectName__c=:ObjectName];
+        		if (queries.size()>0)
+        			graxconfig = queries[0].graxconfig__c;
+        			
+        		System.debug('[GRAX.io] graxconfig: ' + graxconfig);
+        }
 
         for (SObject currentObject : scope) {
-            System.debug('Processing: ' + currentObject.Id);
+            System.debug('[GRAX.io] Processing: ' + currentObject.Id);
             triggerNew.add(currentObject);
             recordsProcessed++;
         }
-        GRAXApi.calloutnow(url,GRAXApi.jsonContent(triggerNew,triggerOld));
+        GRAXApi.calloutnow(url,GRAXApi.jsonContent(triggerNew,triggerOld,graxconfig));
     }
 
     global void finish(Database.BatchableContext bc){
@@ -78,6 +89,6 @@ global class GRAXBatch implements
 
     public static void ProcessHistory(String ObjectName){
         GRAXBatch newbatch = new GRAXBatch(ObjectName);
-        Database.executeBatch(newbatch, 10);
+        Database.executeBatch(newbatch, 100);
     }
 }

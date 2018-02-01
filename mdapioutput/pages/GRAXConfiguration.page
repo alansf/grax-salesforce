@@ -27,12 +27,13 @@
 	              	  <apex:column >
 					  	<apex:facet name="header"> 
 						</apex:facet>
-						<apex:inputCheckbox value="{!f.fieldselected}" id="checkedone">
+						<apex:inputCheckbox value="{!f.fieldselected}" id="checkedone" disabled="{!f.disabled}">
 					  </apex:inputCheckbox>
 					  </apex:column>
 	                  <apex:column value="{!f.fieldname}" headerValue="Field Name"/>
 	                  <apex:column value="{!f.fieldtype}" headerValue="Field Type"/>
-	                  <apex:column value="{!f.referernceto}" headerValue="Referenced To"/>
+	                  <apex:column value="{!f.referenceto}" headerValue="Referenced To"/>
+	                  <apex:column value="{!f.message}" headerValue="Message"/>
 	              </apex:pageBlockTable>
 	             </apex:pageBlockSectionItem>
              	 <apex:pageBlockSectionItem>
@@ -40,6 +41,7 @@
 	             	 	  <apex:inputTextarea id="defaultFields" value="{!defaultfields}" cols="100" rows="10"/>
 				          <apex:inputTextarea id="defaultFilter" value="{!defaultfilter}" cols="100" rows="10"/>
 				          <apex:inputTextarea id="defaultProcessingOrder" value="{!defaultprocessordering}" cols="100" rows="10"/>
+				          <apex:inputTextarea id="graxconfig" value="{!graxconfig}" cols="100" rows="10"/>
 			          </apex:pageBlockSection>
              	 </apex:pageBlockSectionItem>
             </apex:pageBlockSection>

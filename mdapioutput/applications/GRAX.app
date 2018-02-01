@@ -9,7 +9,11 @@
     <formFactors>Large</formFactors>
     <label>GRAX</label>
     <navType>Standard</navType>
-    <tab>GRAX_Graph_Connect</tab>
+    <tab>GRAX_Intro</tab>
+    <tab>GRAX_Flow</tab>
+    <tab>GRAX_Connect</tab>
+    <tab>GRAX_Configuration</tab>
+    <tab>GRAXQuery__c</tab>
     <uiType>Lightning</uiType>
     <utilityBar>GRAX_UtilityBar</utilityBar>
 </CustomApplication>

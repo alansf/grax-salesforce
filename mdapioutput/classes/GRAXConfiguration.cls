@@ -1,16 +1,33 @@
 public class GRAXConfiguration {
 
     List<FieldProperties> FieldProperties;
+    Map<String,GRAXQuery__c> sychedObjectsSaved;
+    Map<String,String> RelatedToList;
+    
     public string objToQuery {get;set;}
      
     public string defaultfields {get;set;}
     public string defaultfilter {get;set;}
     public string defaultprocessordering {get;set;}
     
+    public string graxconfig {get;set;}
+    
     public boolean enablesynch {get;set;}
       
     public GRAXConfiguration () { 
+    		sychedObjectsSaved = getSynchedObjects();
+    		RelatedToList = new Map<String,String>();
     }  
+    
+    public Map<String,GRAXQuery__c> getSynchedObjects()
+    {
+    		Map<String,GRAXQuery__c> synchedObjects = new Map<String,GRAXQuery__c>();
+    		List<GRAXQuery__c> queries = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c  From GRAXQuery__c];
+    		for (GRAXQuery__c query : queries){
+    			synchedObjects.put(query.ObjectName__c,query);
+    		}
+    		return synchedObjects;
+    }
     
     public List<FieldProperties> getfieldProperties ()
     {
@@ -22,7 +39,7 @@ public class GRAXConfiguration {
         for (String s : fields.keySet()) 
              {
                 if (fields.get(s).getDescribe().isAccessible()){
-                		FieldProperties.add(new FieldProperties(objtoquery, s));
+                		FieldProperties.add(new FieldProperties(objtoquery, s, sychedObjectsSaved));
                 }
              }
         }
@@ -47,22 +64,24 @@ public class GRAXConfiguration {
     public class FieldProperties
     {
         private string sObjtoquery;
-        
         public string fieldname{get;set;}
         public string fieldtype{get;set;}
         public string referenceto{get;set;}
+        public string message{get;set;}
+        
         public boolean fieldselected{get;set;}
+        public boolean disabled{get;set;} 		// Disable if Object not Synched
         
         public FieldProperties() {}  
         
-        public FieldProperties(string objname, string fieldname) {
+        public FieldProperties(string objname, string fieldname, Map<String,GRAXQuery__c> sychedObjectsSaved) {
             this.sObjtoquery = objname;
             this.fieldname = fieldname;
             this.fieldselected = false;
-            getAttributes(objname, fieldname);
+            getAttributes(objname, fieldname, sychedObjectsSaved);
         }
     
-        public void getAttributes(string objtoquery, string afieldname)
+        public void getAttributes(string objtoquery, string afieldname, Map<String,GRAXQuery__c> sychedObjectsSaved)
         {
           SObjectType objType = Schema.getGlobalDescribe().get(objtoquery);
           Map<String,Schema.SObjectField> fields = objType.getDescribe().fields.getMap();
@@ -70,9 +89,18 @@ public class GRAXConfiguration {
           {  
 			fieldname = afieldname;
 			fieldtype = string.valueof(fields.get(afieldname).getDescribe().getType());
-			if (fieldtype=='REFERENCE' || fieldname=='name' || fieldname=='id'){
+			if (fieldname=='name' || fieldname=='id'){
 				fieldselected=true;
-				referenceto = string.valueof(fields.get(afieldname).getDescribe().getReferenceTo());
+			}else if (fieldtype=='REFERENCE') {
+				referenceto = string.valueof(fields.get(afieldname).getDescribe().getReferenceTo()).replace('(','').replace(')','');
+				if (sychedObjectsSaved.get(referenceto)!=null || referenceto==objToQuery){
+					fieldselected=true;
+					message = 'Synchronized';
+				}else{
+					fieldselected=false;
+					disabled = true;
+					message = 'Not Synchronized';
+				}
 			}
           }
         }
@@ -83,12 +111,13 @@ public class GRAXConfiguration {
     
     private void SynchSaved(String ObjectName){
     	    integer counter = 0;
-    		List<GRAXQuery__c> query = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c  From GRAXQuery__c where ObjectName__c=:ObjectName];
+    		List<GRAXQuery__c> query = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c,graxconfig__c  From GRAXQuery__c where ObjectName__c=:ObjectName];
     		if (!query.isEmpty()){
     			enablesynch = false;
     			defaultfilter = query[0].Filter__c;
     			defaultprocessordering = query[0].Order_By__c;
     			defaultfields = query[0].Selected_Fields__c;
+    			graxconfig = query[0].graxconfig__c;
     			string currentfields = ','+ query[0].Selected_Fields__c + ',';
     			for(FieldProperties obj : FieldProperties){
     				if (currentfields.indexOf(',' + obj.fieldname + ',') >0 ){
@@ -104,16 +133,30 @@ public class GRAXConfiguration {
     }
     
     private void SynchSelectedFields(){
-    		string fieldlist = '';
+    		string fieldlist = ''; 		 
+    		List<FieldProperties> SelectedProperties = new List<FieldProperties>();
     		for(FieldProperties obj : FieldProperties){
     			if (obj!=null){
 	    			if (obj.fieldselected){
+	    				SelectedProperties.add(obj);
+	    				if (obj.referenceto!=null)
+	    					RelatedToList.put(obj.fieldname, obj.referenceto);
+	    					
 	    				if (fieldlist!='')
 	    					fieldlist+=',';
 	    				fieldlist+=obj.fieldname;
 	    			}
     			}
     		}
+    		// graxconfig = JSON.serialize(SelectedProperties);
+    		graxconfig = '{"sobject":\"' + objToQuery + '\",' + 
+    							'"fieldsselected":"' + fieldlist + '",' +
+    							'"orderby":"' + defaultprocessordering + '",' + 
+    							'"filterby":"' + defaultfilter+ '",' + 
+    							'"lookupmap":' + 
+    								JSON.serialize(RelatedToList) + 
+    						'}';
+    		
     		defaultfields = fieldlist;
     }
     
@@ -125,6 +168,7 @@ public class GRAXConfiguration {
     		newQuery.Selected_Fields__c = defaultfields;
     		newQuery.Order_By__c=defaultprocessordering;
     		newQuery.Filter__c=defaultfilter;
+    		newQuery.graxconfig__c = graxconfig;
     		upsert newQuery ObjectName__c;
     		enablesynch = true;
     		return null;   

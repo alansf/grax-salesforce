@@ -26,6 +26,10 @@
                 <behavior>Edit</behavior>
                 <field>Order_By__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>graxconfig__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
