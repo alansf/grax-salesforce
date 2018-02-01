@@ -3,21 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="92bc7183-79ec-4929-a63e-4edb40c138ec" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/.sfdx/orgs/test-etdovmevlw2r@grax_by_harding_point.net/sourcePathInfos.json" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-etdovmevlw2r@grax_by_harding_point.net/sourcePathInfos.json" />
-      <change beforePath="$PROJECT_DIR$/.sfdx/orgs/test-etdovmevlw2r@grax_by_harding_point.net/sourcePathInfos.json.bak" afterPath="$PROJECT_DIR$/.sfdx/orgs/test-etdovmevlw2r@grax_by_harding_point.net/sourcePathInfos.json.bak" />
+      <change beforePath="$PROJECT_DIR$/.sfdx/sfdx-config.json" afterPath="$PROJECT_DIR$/.sfdx/sfdx-config.json" />
       <change beforePath="$PROJECT_DIR$/GRAXConnect/main/default/profiles/Admin.profile-meta.xml" afterPath="$PROJECT_DIR$/GRAXConnect/main/default/profiles/Admin.profile-meta.xml" />
-      <change beforePath="$PROJECT_DIR$/mdapioutput/applications/GRAX.app" afterPath="$PROJECT_DIR$/mdapioutput/applications/GRAX.app" />
-      <change beforePath="$PROJECT_DIR$/mdapioutput/classes/GRAXApi.cls" afterPath="$PROJECT_DIR$/mdapioutput/classes/GRAXApi.cls" />
-      <change beforePath="$PROJECT_DIR$/mdapioutput/classes/GRAXBatch.cls" afterPath="$PROJECT_DIR$/mdapioutput/classes/GRAXBatch.cls" />
-      <change beforePath="$PROJECT_DIR$/mdapioutput/classes/GRAXConfiguration.cls" afterPath="$PROJECT_DIR$/mdapioutput/classes/GRAXConfiguration.cls" />
-      <change beforePath="$PROJECT_DIR$/mdapioutput/layouts/GRAXQuery__c-GRAXQueries Layout.layout" afterPath="$PROJECT_DIR$/mdapioutput/layouts/GRAXQuery__c-GRAXQueries Layout.layout" />
-      <change beforePath="$PROJECT_DIR$/mdapioutput/objects/GRAXQuery__c.object" afterPath="$PROJECT_DIR$/mdapioutput/objects/GRAXQuery__c.object" />
-      <change beforePath="$PROJECT_DIR$/mdapioutput/objects/GRAXSettings__c.object" afterPath="$PROJECT_DIR$/mdapioutput/objects/GRAXSettings__c.object" />
-      <change beforePath="$PROJECT_DIR$/mdapioutput/package.xml" afterPath="$PROJECT_DIR$/mdapioutput/package.xml" />
-      <change beforePath="$PROJECT_DIR$/mdapioutput/pages/GRAXConfiguration.page" afterPath="$PROJECT_DIR$/mdapioutput/pages/GRAXConfiguration.page" />
-      <change beforePath="$PROJECT_DIR$/mdapioutput/pages/GRAXConnect.page" afterPath="$PROJECT_DIR$/mdapioutput/pages/GRAXConnect.page" />
-      <change beforePath="$PROJECT_DIR$/mdapioutput/tabs/GRAX_Configuration.tab" afterPath="$PROJECT_DIR$/mdapioutput/tabs/GRAX_Configuration.tab" />
-      <change beforePath="$PROJECT_DIR$/mdapioutput/tabs/GRAX_Graph_Connect.tab" afterPath="" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -30,13 +17,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf />
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
       <find>IBM Watson</find>
       <find>ManageSearchPromotionRules</find>
       <find>GRAX</find>
+      <find>t</find>
     </findStrings>
     <replaceStrings>
       <replace>GRAX by Harding Point</replace>
@@ -113,6 +101,14 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="default" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="GRAXForSFDC" type="b2602c69:ProjectViewProjectNode" />
+              <item name="GRAXForSFDC" type="462c0819:PsiDirectoryNode" />
+              <item name="GRAXConnect" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="default" type="462c0819:PsiDirectoryNode" />
+              <item name="profiles" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -153,12 +149,13 @@
       <updated>1516283678039</updated>
       <workItem from="1516283680507" duration="1703000" />
       <workItem from="1517504742910" duration="1302000" />
-      <workItem from="1517512868196" duration="485000" />
+      <workItem from="1517512868196" duration="523000" />
+      <workItem from="1517516137838" duration="335000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3490000" />
+    <option name="totallyTimeSpent" value="3863000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="30" width="1440" height="777" extended-state="0" />
@@ -167,7 +164,6 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -179,6 +175,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -197,7 +194,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -258,11 +254,41 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1305">
           <caret line="87" column="22" lean-forward="false" selection-start-line="87" selection-start-column="22" selection-end-line="87" selection-end-column="22" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/GRAXConnect/main/default/classes/GRAXBatch.cls">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GRAXConnect/main/default/tabs/GRAX_Intro.tab-meta.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GRAXConnect/main/default/tabs/GRAX_Flow.tab-meta.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GRAXConnect/main/default/tabs/GRAX_Connect.tab-meta.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/GRAXConnect/main/default/tabs/GRAX_Configuration.tab-meta.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -272,8 +298,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/GRAXConnect/main/default/profiles/Admin.profile-meta.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1035">
-          <caret line="69" column="43" lean-forward="true" selection-start-line="69" selection-start-column="43" selection-end-line="69" selection-end-column="43" />
+        <state relative-caret-position="1005">
+          <caret line="67" column="19" lean-forward="true" selection-start-line="67" selection-start-column="19" selection-end-line="67" selection-end-column="19" />
           <folding />
         </state>
       </provider>

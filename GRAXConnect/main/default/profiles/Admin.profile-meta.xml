@@ -82,8 +82,4 @@
         <apexPage>GRAXHerokuAuth</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
-    <tabVisibilities>
-        <tab>GRAX_Flow</tab>
-        <visibility>DefaultOn</visibility>
-    </tabVisibilities>
 </Profile>
