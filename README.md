@@ -46,6 +46,11 @@ If you want to use the GRAX SDK within a non-scratch environment you can deploy 
 
     ```bash
     sfdx force:auth:web:login --setdefaultusername
+    
+    OR
+    
+    sfdx force:auth:web:login -a<ALIAS> -r <INSTANCEURL>
+   
     ```
     In the browser window that opens, sign in to your org with your credentials. More information [here](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_web_flow.htm)
 
@@ -59,5 +64,12 @@ If you want to use the GRAX SDK within a non-scratch environment you can deploy 
 
     ```bash
     sfdx force:mdapi:deploy -d mdapioutput/ -w 100
+    
+    OR
+    
+    sfdx force:mdapi:deploy -d mdapioutput/ -w 100 -u <ALIAS>
+    
     ```
+    
+    
 

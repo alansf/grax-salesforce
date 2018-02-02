@@ -43,11 +43,15 @@ public class GRAXApi {
         String graphdburl = hpd.graphdburl__c;
         
 		// 
+		String graxconfigsetting = '';
+        if (graxconfig!=null && graxconfig!='')
+            graxconfigsetting = '"graxconfig": ' + graxconfig + ',';
+		
         String content = '{' + 
         						'"orgId": "'+ UserInfo.getOrganizationId() + '",' +
         						'"userId": ' + userId + ',' + 
         						'"graphdburl": "' + graphdburl + '",' + 
-        						'"graxconfig": ' + graxconfig + ',' + 
+        						graxconfigsetting + 
         						'"new": ' + newObjects + ',' + 
         						'"old": ' + oldObjects + 
         					'}';
