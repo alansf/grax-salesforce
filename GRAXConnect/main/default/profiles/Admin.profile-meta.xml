@@ -98,4 +98,8 @@
         <tab>GRAX_Intro</tab>
         <visibility>DefaultOn</visibility>
     </tabVisibilities>
+    <tabVisibilities>
+        <tab>GRAX_Intro</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
 </Profile>

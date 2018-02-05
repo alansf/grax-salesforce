@@ -48,15 +48,34 @@ public class GRAXConfiguration {
     }
     
    
-    public List<SelectOption> getItems() 
+public List<SelectOption> getItems() 
     {
+        List<SelectOption> options = new List<SelectOption>();
+        Map<String, SObjectType> sObjects = Schema.getGlobalDescribe();
+        for (String apiName : sObjects.keySet())
+        {
+            Map<String, Schema.RecordTypeInfo> types = sObjects.get(apiName).getDescribe().getRecordTypeInfosByName();
+            if (types.size() > 0){
+                // system.debug(apiName);
+                // system.debug('[GRAX.io] Type: ' + sObjects.get(apiName).getDescribe().getRecordTypeInfosByName());
+                // system.debug('[GRAX.io] ' + sObjects.get(apiName));
+                options.add(new SelectOption(apiName ,apiName ));
+            }
+            
+        }
+        
+       // ------------------------------------------------------------------
+       /* Breaks for > 1000
        string cobjname;
        List<SelectOption> options = new List<SelectOption>();
        List<Schema.SObjectType> gd = Schema.getGlobalDescribe().Values();  
        for(Schema.SObjectType f : gd){
-			cobjname = f.getDescribe().getName();
-			options.add(new SelectOption(cobjname ,cobjname ));
+            cobjname = f.getDescribe().getName();
+            options.add(new SelectOption(cobjname ,cobjname ));
        }  
+       */
+       // ------------------------------------------------------------------
+       
        options.sort();
        return options;
     }
