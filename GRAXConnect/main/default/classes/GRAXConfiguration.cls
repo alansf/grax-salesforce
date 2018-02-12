@@ -13,10 +13,27 @@
     public string graxconfig {get;set;}
     
     public boolean enablesynch {get;set;}
+    
+    public boolean isconfigured {get;set;}
+    
+    public String Message {get;set;}
       
     public GRAXConfiguration () { 
     		sychedObjectsSaved = getSynchedObjects();
     		RelatedToList = new Map<String,String>();
+    		isconfigured = GRAXApi.IsConfigured();
+    		if (isconfigured==false)
+    			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error, '<a href="/one/one.app#/setup/CustomSettings/home">GRAX Settings Incomplete</a>'));
+    }
+    
+    public string getPropURLToDisplay() { 
+        string salesforceURL = 'https://graphconnect.hardingpoint.com?sfdcdomain=https://' + URL.getSalesforceBaseUrl().getHost() + '/'; 
+        return salesforceURL;
+    }
+    
+    public pagereference DeployTrigger(){
+        pagereference p=new pagereference(getPropURLToDisplay());
+        return p;
     }  
     
     public Map<String,GRAXQuery__c> getSynchedObjects()

@@ -2,13 +2,12 @@
 	<style type="text/css">
         .objectSelectWidth { width: 500px; }
     </style>
-    <apex:pageMessages /><br />
     <apex:form id="form">
         <apex:pageBlock >
-            <apex:pageMessages />
+            <apex:pageMessages escape="false"/>
             <apex:pageBlockSection columns="2" >
             		<apex:pageBlockSectionItem>
-                <apex:selectList value="{!objToQuery}" multiselect="false" size="1" styleClass="objectSelectWidth">
+                <apex:selectList value="{!objToQuery}" multiselect="false" size="1" styleClass="objectSelectWidth" disabled="{! NOT(isconfigured)}">
                     <apex:selectOptions value="{!items}"/>
                     <apex:actionSupport reRender="form" event="onchange" />
                 </apex:selectList>
@@ -16,8 +15,9 @@
                 <apex:pageBlockSectionItem>
                 		<apex:pageBlockSection columns="3">
 		                 <!--  <apex:commandButton value="Update Field List" action="{!QueryObject}"/> -->
-		                 <apex:commandButton value="Save Query" action="{!SaveSelection}"/>
-		                 <apex:commandButton value="Synchronize" action="{!Synchronize}" disabled="{!enablesynch}"/>
+		                 <apex:commandButton value="Save Query" action="{!SaveSelection}" disabled="{! NOT(isconfigured)}"/>
+		                 <apex:commandButton value="Synchronize" action="{!Synchronize}" disabled="{! enablesynch && NOT(isconfigured)}"/>
+		                 <apex:commandButton value="Deploy Trigger" action="{!DeployTrigger}"  disabled="{! enablesynch && NOT(isconfigured)}"/>
 	                 </apex:pageBlockSection>
                  </apex:pageBlockSectionItem>
             </apex:pageBlockSection>

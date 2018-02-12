@@ -34,9 +34,23 @@ public class GRAXApi {
     		return UpdateObjects;
     }
     
+    public static Boolean IsConfigured(){
+    		Boolean returnvalue = false;
+    		GRAXSettings__c graxConfig = GRAXSettings__c.getOrgDefaults();
+    		if (graxConfig != null){
+    			if ((graxConfig.graphdburl__c != null && graxConfig.graphdburl__c != '')&&			
+    				(graxConfig.LicenseToken__c != null && graxConfig.LicenseToken__c != '')&&
+    				(graxConfig.GatewayToken__c != null && graxConfig.GatewayToken__c != '')&&
+    				(graxConfig.ApiToken__c != null && graxConfig.ApiToken__c != ''))
+    				returnvalue = true;
+    		}
+    		
+    		return returnvalue;
+    }
+    
     public static String NormalizeJSON(String jsonContent, String ObjectName){
     		// JSONParser parser = JSON.createParser(jsonContent);
-    
+    		return '';
     }
     
     public static String jsonContent(List<SObject> triggerNew, List<SObject> triggerOld) {
