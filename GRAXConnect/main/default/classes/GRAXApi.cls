@@ -44,7 +44,6 @@ public class GRAXApi {
     				(graxConfig.ApiToken__c != null && graxConfig.ApiToken__c != ''))
     				returnvalue = true;
     		}
-    		
     		return returnvalue;
     }
     

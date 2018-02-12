@@ -38,10 +38,10 @@
 	             </apex:pageBlockSectionItem>
              	 <apex:pageBlockSectionItem>
              	 	  <apex:pageBlockSection title="GRAX Query Data" columns="1">
-	             	 	  <apex:inputTextarea id="defaultFields" value="{!defaultfields}" cols="100" rows="10"/>
-				          <apex:inputTextarea id="defaultFilter" value="{!defaultfilter}" cols="100" rows="10"/>
-				          <apex:inputTextarea id="defaultProcessingOrder" value="{!defaultprocessordering}" cols="100" rows="10"/>
-				          <apex:inputTextarea id="graxconfig" value="{!graxconfig}" cols="100" rows="10"/>
+	             	 	  <apex:inputTextarea id="defaultFields" value="{!defaultfields}" cols="100" rows="10"  disabled="{!NOT(isconfigured)}"/>
+				          <apex:inputTextarea id="defaultFilter" value="{!defaultfilter}" cols="100" rows="10"  disabled="{!NOT(isconfigured)}"/>
+				          <apex:inputTextarea id="defaultProcessingOrder" value="{!defaultprocessordering}" cols="100" rows="10"  disabled="{!NOT(isconfigured)}"/>
+				          <apex:inputTextarea id="graxconfig" value="{!graxconfig}" cols="100" rows="10"  disabled="{!NOT(isconfigured)}"/>
 			          </apex:pageBlockSection>
              	 </apex:pageBlockSectionItem>
             </apex:pageBlockSection>

@@ -15,8 +15,6 @@
     public boolean enablesynch {get;set;}
     
     public boolean isconfigured {get;set;}
-    
-    public String Message {get;set;}
       
     public GRAXConfiguration () { 
     		sychedObjectsSaved = getSynchedObjects();

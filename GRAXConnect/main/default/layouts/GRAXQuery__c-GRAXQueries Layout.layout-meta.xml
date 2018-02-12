@@ -30,6 +30,10 @@
                 <behavior>Edit</behavior>
                 <field>graxconfig__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Last_Synch__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>

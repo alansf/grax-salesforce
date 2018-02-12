@@ -28,12 +28,26 @@ global class GRAXBatch implements
 
     global GRAXBatch(String ObjectName){
         if (ObjectName!=''){
-        	    List<GRAXQuery__c> GRAXSavedQueries = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c  From GRAXQuery__c where ObjectName__c=:ObjectName];
+        	    List<GRAXQuery__c> GRAXSavedQueries = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c, Last_Synch__c  From GRAXQuery__c where ObjectName__c=:ObjectName];
     			if (!GRAXSavedQueries.isEmpty()){
     				GRAXQuery__c GRAXSavedQuery = GRAXSavedQueries[0];
+    				
     				Query = 'SELECT ' + GRAXSavedQuery.Selected_Fields__c + ' FROM ' + GRAXSavedQuery.ObjectName__c;
+    				
+    				String WhereClause = '';
     				if (GRAXSavedQuery.Filter__c!='' && GRAXSavedQuery.Filter__c!=null)
-    					Query+= ' WHERE ' + GRAXSavedQuery.Filter__c;
+    					WhereClause = GRAXSavedQuery.Filter__c;
+    				
+    				if (GRAXSavedQuery.Last_Synch__c != null){
+    					if (WhereClause!='')
+    						WhereClause += ' AND ';
+    						
+    					DateTime lastSynch = GRAXSavedQuery.Last_Synch__c;
+    					WhereClause += '	lastmodifieddate >= ' + lastSynch.format('yyyy-MM-dd\'T\'hh:mm:ss\'Z\'');
+    				}	
+    				
+    				if (WhereClause != '')
+    					Query+= ' WHERE ' + WhereClause;
     				
     				if (GRAXSavedQuery.Order_By__c!='' && GRAXSavedQuery.Order_By__c!=null)
     					Query+= ' ORDER BY ' + GRAXSavedQuery.Order_By__c;
@@ -75,16 +89,22 @@ global class GRAXBatch implements
     }
 
     global void finish(Database.BatchableContext bc){
-        System.debug(recordsProcessed + ' Records Synchronized. Harding Point Graph Synchronized for ' + CurrentObjectName);
+        System.debug('[GRAX.io] ' + recordsProcessed + ' Records Synchronized for ' + CurrentObjectName);
         AsyncApexJob job = [SELECT Id, Status, NumberOfErrors,
             JobItemsProcessed,
             TotalJobItems
             FROM AsyncApexJob
             WHERE Id = :bc.getJobId()];
 
-        // CreatedBy.Email
-        // call some utility to send email
-        // EmailUtils.sendMessage(a, recordsProcessed);
+		List<GRAXQuery__c> queries = [Select ObjectName__c,Last_Synch__c,Total_Records_Processed__c  From GRAXQuery__c where ObjectName__c=:CurrentObjectName];
+		if (queries.size()>0){
+			queries[0].Last_Synch__c = Datetime.now();
+			if (queries[0].Total_Records_Processed__c==null)
+				queries[0].Total_Records_Processed__c = 0;
+			
+			queries[0].Total_Records_Processed__c = queries[0].Total_Records_Processed__c + recordsProcessed;
+			update queries;
+		}
     }
 
     public static void ProcessHistory(String ObjectName){
