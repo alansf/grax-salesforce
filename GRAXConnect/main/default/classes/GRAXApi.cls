@@ -3,37 +3,56 @@ public class GRAXApi {
     // https://grax.io
     // Support Contact - Support@Grax.io
     // -------------------------------------------------
-    public static String jsonContent(List<SObject> triggerNew, List<SObject> triggerOld) {
-    		return jsonContent(triggerNew,triggerOld,'');
-    }
     
-    public static List<Object> NormalizeList(List<Object> UpdateObjects){
+    public static List<Object> NormalizeList(List<SObject> UpdateObjects){
     		if (UpdateObjects!=null){
     			if (!UpdateObjects.isEmpty()){
-    				/*
-    				String ObjectName = String.ValueOf(UpdateObjects.getSObjectType());
+    				Integer counter = 0;
+    				Schema.SObjectType sObjectType = UpdateObjects.getSObjectType();
+    				String ObjectName = '' + sObjectType;
     				List<GRAXQuery__c> GRAXquery = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c,graxconfig__c  From GRAXQuery__c where ObjectName__c=:ObjectName];
     				if (!GRAXquery.isEmpty()){
     					if (GRAXquery[0].Selected_Fields__c!=null){
-    						String[] fieldList = GRAXquery[0].Selected_Fields__c.split(',');
+    						String fieldList = ',' + GRAXquery[0].Selected_Fields__c.toLowerCase() + ',';
+    						Map<String, Schema.SObjectType> gd = Schema.getGlobalDescribe(); Schema.SObjectType ctype = gd.get(ObjectName); 
+    						Map<String, Schema.SobjectField> fmap = ctype.getDescribe().fields.getMap();
+    						for (String s : fmap.keySet()){
+    							if (fieldList.indexOf(s.toLowerCase())==-1){
+    								for (Integer i = 0; i < UpdateObjects.size(); i++) {
+    									try{
+    						 				UpdateObjects[i].put(s,null);
+    						 				counter++;
+    						 			}catch(Exception ex){}	
+    						 		}
+    							}
+    						}
+    						System.debug('[GRAX.io] Normalized: ' + counter + ' Values');
     					}
     				}
-    				*/
     			}
     		}
     		return UpdateObjects;
     }
+    
+    public static String NormalizeJSON(String jsonContent, String ObjectName){
+    		// JSONParser parser = JSON.createParser(jsonContent);
+    
+    }
+    
+    public static String jsonContent(List<SObject> triggerNew, List<SObject> triggerOld) {
+    		return jsonContent(triggerNew,triggerOld,'');
+    }
  
-    public static String jsonContent(List<Object> triggerNew, List<Object> triggerOld, String graxconfig) {
+    public static String jsonContent(List<SObject> triggerNew, List<SObject> triggerOld, String graxconfig) {
 
         String newObjects = '[]';
+        
         if (triggerNew != null) {
-        		
-            newObjects = JSON.serialize(NormalizeList(triggerNew));
+            newObjects = JSON.serialize(triggerNew);
         }
         String oldObjects = '[]';
         if (triggerOld != null) {
-            oldObjects = JSON.serialize(triggerOld);
+            oldObjects = JSON.serialize(NormalizeList(triggerOld));
         }
         String userId = JSON.serialize(UserInfo.getUserId());
         GRAXSettings__c hpd = GRAXSettings__c.getOrgDefaults();
@@ -88,6 +107,18 @@ public class GRAXApi {
     @future(callout=true)
     public static void callout(String url, String content) {
         GRAXApi.calloutnow(url,content);
+    }
+    
+    public static String graxconfig(String sobjectName){
+    		String graxconfig ='';
+    		if (sobjectName!='' && sobjectName!=null){
+    			List<GRAXQuery__c> queries = [Select ObjectName__c, graxconfig__c  From GRAXQuery__c where ObjectName__c=:sobjectName];
+			if (queries.size()>0){
+				graxconfig = queries[0].graxconfig__c;
+				System.debug('[GRAX.io] graxconfig: ' + graxconfig);
+			}
+    		}
+		return graxconfig;
     }
 
     public static SObject mock(String sobjectName) {

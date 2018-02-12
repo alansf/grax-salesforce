@@ -1,4 +1,4 @@
-public class GRAXConfiguration {
+	public class GRAXConfiguration {
 
     List<FieldProperties> FieldProperties;
     Map<String,GRAXQuery__c> sychedObjectsSaved;
@@ -112,7 +112,7 @@ public List<SelectOption> getItems()
 				fieldselected=true;
 			}else if (fieldtype=='REFERENCE') {
 				referenceto = string.valueof(fields.get(afieldname).getDescribe().getReferenceTo()).replace('(','').replace(')','');
-				if (sychedObjectsSaved.get(referenceto)!=null || referenceto==objToQuery){
+				if (sychedObjectsSaved.get(referenceto.toLowerCase())!=null || referenceto.toLowerCase()==objToQuery.toLowerCase()){
 					fieldselected=true;
 					message = 'Synchronized';
 				}else{

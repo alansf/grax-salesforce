@@ -40,6 +40,7 @@ You can automatically deploy the SDK to a new scratch environment using the _Dep
     sfdx force:source:push
     ```
 
+### Non-Scratch Environment Deployment
 If you want to use the GRAX SDK within a non-scratch environment you can deploy it using the Salesforce DX CLI.
 
 1. Authenticate the Salesforce DX CLI to the target environment:
@@ -49,7 +50,7 @@ If you want to use the GRAX SDK within a non-scratch environment you can deploy 
     
     OR
     
-    sfdx force:auth:web:login -a<ALIAS> -r <INSTANCEURL>
+    sfdx force:auth:web:login -a <ALIAS> -r <INSTANCEURL>
    
     ```
     In the browser window that opens, sign in to your org with your credentials. More information [here](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_web_flow.htm)

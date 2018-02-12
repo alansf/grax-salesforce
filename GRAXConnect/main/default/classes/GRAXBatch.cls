@@ -50,8 +50,8 @@ global class GRAXBatch implements
     }
 
     global void execute(Database.BatchableContext bc, List<SObject> scope){
-        List<Object> triggerNew = new List<Object>();
-        List<Object> triggerOld = new List<Object>();
+        List<SObject> triggerNew = new List<SObject>();
+        List<SObject> triggerOld = new List<SObject>();
 
         String url = 'https://prod.hardingpoint.com/v9.3/api';
         String graxconfig ='';
