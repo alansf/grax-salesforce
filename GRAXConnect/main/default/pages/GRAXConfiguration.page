@@ -28,7 +28,7 @@
 					  	<apex:facet name="header"> 
 						</apex:facet>
 						<apex:inputCheckbox value="{!f.fieldselected}" id="checkedone" disabled="{!f.disabled}">
-					  </apex:inputCheckbox>
+					  	</apex:inputCheckbox>
 					  </apex:column>
 	                  <apex:column value="{!f.fieldname}" headerValue="Field Name"/>
 	                  <apex:column value="{!f.fieldtype}" headerValue="Field Type"/>
@@ -37,16 +37,18 @@
 	              </apex:pageBlockTable>
 	             </apex:pageBlockSectionItem>
              	 <apex:pageBlockSectionItem>
+             	 	 <apex:outputPanel id="querydata">
              	 	  <apex:pageBlockSection title="GRAX Query Data" columns="1" collapsible="false" showHeader="false">
              	 	  	  <b>Select</b>
-	             	 	  <apex:inputTextarea id="defaultFields" value="{!defaultfields}" cols="100" rows="5"  disabled="{!NOT(isconfigured)}"/>
-	             	 	  <b>Where</b>
+	             	 	  <apex:inputTextarea id="defaultFields" value="{!defaultfields}" cols="100" rows="5" disabled="true"/>
+	             	 	  <b>From {!objToQuery} Where</b>
 				          <apex:inputTextarea id="defaultFilter" value="{!defaultfilter}" cols="100" rows="5"  disabled="{!NOT(isconfigured)}"/>
 				          <b>Order By</b>
 				          <apex:inputTextarea id="defaultProcessingOrder" value="{!defaultprocessordering}" cols="100" rows="5"  disabled="{!NOT(isconfigured)}"/>
 				          <b>GRAX JSON Configuration</b>
 				          <apex:inputTextarea id="graxconfig" value="{!graxconfig}" cols="100" rows="5"  disabled="true"/>
 			          </apex:pageBlockSection>
+			         </apex:outputPanel> 
              	 </apex:pageBlockSectionItem>
             </apex:pageBlockSection>
         </apex:pageBlock>

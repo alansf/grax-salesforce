@@ -171,8 +171,8 @@ public List<SelectOption> getItems()
     		}
     		else{
     			enablesynch = true;
-    			defaultprocessordering = 'lastmodifieddate DESC';
-    			defaultfilter = 'CALENDAR_YEAR(lastmodifieddate) > 2016';
+    			defaultprocessordering = 'LastModifiedDate DESC';
+    			defaultfilter = 'CALENDAR_YEAR(LastModifiedDate) > 2016';
     			SynchSelectedFields();
     		}
     }
@@ -203,6 +203,12 @@ public List<SelectOption> getItems()
     						'}';
     		
     		defaultfields = fieldlist;
+    }
+    
+    public Pagereference UpdateFieldList()
+    {
+    		SynchSelectedFields();
+    		return null;
     }
     
     Public Pagereference SaveSelection()
