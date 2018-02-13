@@ -24,7 +24,7 @@ global class GRAXBatch implements
             Query = 'Select ' + BuildQuery + ' From ' + ObjectName;
         }
         return Query;
-   }
+    }
 
     global GRAXBatch(String ObjectName){
         if (ObjectName!=''){
@@ -96,7 +96,7 @@ global class GRAXBatch implements
             FROM AsyncApexJob
             WHERE Id = :bc.getJobId()];
 
-		List<GRAXQuery__c> queries = [Select ObjectName__c,Last_Synch__c,Total_Records_Processed__c  From GRAXQuery__c where ObjectName__c=:CurrentObjectName];
+		List<GRAXQuery__c> queries = [Select ObjectName__c,Last_Synch__c,Total_Records_Processed__c From GRAXQuery__c where ObjectName__c=:CurrentObjectName];
 		if (queries.size()>0){
 			queries[0].Last_Synch__c = Datetime.now();
 			if (queries[0].Total_Records_Processed__c==null)
@@ -104,11 +104,12 @@ global class GRAXBatch implements
 			
 			queries[0].Total_Records_Processed__c = queries[0].Total_Records_Processed__c + recordsProcessed;
 			update queries;
-		}
+		} 
     }
 
     public static void ProcessHistory(String ObjectName){
         GRAXBatch newbatch = new GRAXBatch(ObjectName);
         Database.executeBatch(newbatch, 100);
     }
+    
 }

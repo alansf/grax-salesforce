@@ -11,15 +11,15 @@
     public string defaultprocessordering {get;set;}
     
     public string graxconfig {get;set;}
-    
     public boolean enablesynch {get;set;}
-    
     public boolean isconfigured {get;set;}
       
-    public GRAXConfiguration () { 
+    public GRAXConfiguration () {     		
+    	
     		sychedObjectsSaved = getSynchedObjects();
     		RelatedToList = new Map<String,String>();
     		isconfigured = GRAXApi.IsConfigured();
+
     		if (isconfigured==false)
     			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error, '<a href="/one/one.app#/setup/CustomSettings/home">GRAX Settings Incomplete</a>'));
     }
@@ -37,7 +37,7 @@
     public Map<String,GRAXQuery__c> getSynchedObjects()
     {
     		Map<String,GRAXQuery__c> synchedObjects = new Map<String,GRAXQuery__c>();
-    		List<GRAXQuery__c> queries = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c  From GRAXQuery__c];
+    		List<GRAXQuery__c> queries = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c,Hourly_Synch_Period__c,GRAX_Configured__c  From GRAXQuery__c];
     		for (GRAXQuery__c query : queries){
     			synchedObjects.put(query.ObjectName__c,query);
     		}
@@ -65,6 +65,7 @@
    
 public List<SelectOption> getItems() 
     {
+    		String objectname;
         List<SelectOption> options = new List<SelectOption>();
         Map<String, SObjectType> sObjects = Schema.getGlobalDescribe();
         for (String apiName : sObjects.keySet())
@@ -73,10 +74,14 @@ public List<SelectOption> getItems()
             if (types.size() > 0){
                 // system.debug(apiName);
                 // system.debug('[GRAX.io] Type: ' + sObjects.get(apiName).getDescribe().getRecordTypeInfosByName());
+                // system.debug('[GRAX.io] Type: ' + sObjects.get(apiName).getDescribe().getName());
+                objectname = sObjects.get(apiName).getDescribe().getName();
                 // system.debug('[GRAX.io] ' + sObjects.get(apiName));
-                options.add(new SelectOption(apiName ,apiName ));
+                // options.add(new SelectOption(apiName ,apiName ));
+                
+                objectname = sObjects.get(apiName).getDescribe().getName();
+                options.add(new SelectOption(objectname ,objectname ));
             }
-            
         }
         
        // ------------------------------------------------------------------
@@ -92,6 +97,7 @@ public List<SelectOption> getItems()
        // ------------------------------------------------------------------
        
        options.sort();
+       
        return options;
     }
     
@@ -145,7 +151,7 @@ public List<SelectOption> getItems()
     
     private void SynchSaved(String ObjectName){
     	    integer counter = 0;
-    		List<GRAXQuery__c> query = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c,graxconfig__c  From GRAXQuery__c where ObjectName__c=:ObjectName];
+    		List<GRAXQuery__c> query = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c,graxconfig__c,GRAX_Configured__c  From GRAXQuery__c where ObjectName__c=:ObjectName];
     		if (!query.isEmpty()){
     			enablesynch = false;
     			defaultfilter = query[0].Filter__c;
@@ -162,6 +168,8 @@ public List<SelectOption> getItems()
     		}
     		else{
     			enablesynch = true;
+    			defaultprocessordering = 'lastmodifieddate DESC';
+    			defaultfilter = 'CALENDAR_YEAR(lastmodifieddate) > 2016';
     			SynchSelectedFields();
     		}
     }
@@ -204,12 +212,16 @@ public List<SelectOption> getItems()
     		newQuery.Filter__c=defaultfilter;
     		newQuery.graxconfig__c = graxconfig;
     		upsert newQuery ObjectName__c;
+    		GRAXApi.cloudconfig(objToQuery);
     		enablesynch = true;
     		return null;   
 	}
 	
 	Public Pagereference Synchronize(){ 
 		SaveSelection();
+		
+
+		
 		GRAXBatch.ProcessHistory(objToQuery);
 		return null;
     }
