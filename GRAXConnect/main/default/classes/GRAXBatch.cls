@@ -67,7 +67,7 @@ global class GRAXBatch implements
         List<SObject> triggerNew = new List<SObject>();
         List<SObject> triggerOld = new List<SObject>();
 
-        String url = 'https://prod.hardingpoint.com/v9.3/api';
+        String url = 'https://dev.hardingpoint.com/v9.3/api';
         String graxconfig ='';
         if (scope.size()>0){
         		SObject obj = scope[0];

@@ -9,7 +9,7 @@
             		<apex:pageBlockSectionItem>
                 <apex:selectList value="{!objToQuery}" multiselect="false" size="1" styleClass="objectSelectWidth" disabled="{! NOT(isconfigured)}" label="Object">
                     <apex:selectOptions value="{!items}"/>
-                    <apex:actionSupport reRender="form" event="onchange" />
+                    <apex:actionSupport reRender="form" event="onchange"/>
                 </apex:selectList>
                 <apex:commandButton value="Save Query" action="{!SaveSelection}" disabled="{! NOT(isconfigured)}"/>
                 </apex:pageBlockSectionItem>

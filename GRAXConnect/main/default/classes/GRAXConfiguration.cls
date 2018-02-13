@@ -46,6 +46,7 @@
     
     public List<FieldProperties> getfieldProperties ()
     {
+    		String fieldName;
         FieldProperties= new List<FieldProperties>();
         SObjectType objType = Schema.getGlobalDescribe().get(objtoquery);
         if (objType != null)
@@ -54,7 +55,9 @@
         for (String s : fields.keySet()) 
              {
                 if (fields.get(s).getDescribe().isAccessible()){
-                		FieldProperties.add(new FieldProperties(objtoquery, s, sychedObjectsSaved));
+                		fieldName = fields.get(s).getDescribe().getName();
+                		FieldProperties.add(new FieldProperties(objtoquery, fieldName, sychedObjectsSaved));
+                		// FieldProperties.add(new FieldProperties(objtoquery, s, sychedObjectsSaved));
                 }
              }
         }
@@ -133,7 +136,7 @@ public List<SelectOption> getItems()
 				fieldselected=true;
 			}else if (fieldtype=='REFERENCE') {
 				referenceto = string.valueof(fields.get(afieldname).getDescribe().getReferenceTo()).replace('(','').replace(')','');
-				if (sychedObjectsSaved.get(referenceto.toLowerCase())!=null || referenceto.toLowerCase()==objToQuery.toLowerCase()){
+				if (sychedObjectsSaved.get(referenceto)!=null || sychedObjectsSaved.get(referenceto.toLowerCase())!=null || referenceto.toLowerCase()==objToQuery.toLowerCase()){
 					fieldselected=true;
 					message = 'Synchronized';
 				}else{
@@ -213,6 +216,7 @@ public List<SelectOption> getItems()
     		newQuery.graxconfig__c = graxconfig;
     		upsert newQuery ObjectName__c;
     		GRAXApi.cloudconfig(objToQuery);
+    		sychedObjectsSaved = getSynchedObjects();
     		enablesynch = true;
     		return null;   
 	}
