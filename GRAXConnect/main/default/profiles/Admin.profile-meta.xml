@@ -6,6 +6,10 @@
         <visible>true</visible>
     </applicationVisibilities>
     <classAccesses>
+        <apexClass>GRAXAccountTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>GRAXApi</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -22,6 +26,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>GRAXContactTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>GRAXFlow</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -33,6 +41,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>GRAXQuery__c.Filter__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAXQuery__c.GRAX_Configured__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -97,4 +110,12 @@
         <apexPage>GRAXHerokuAuth</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
+    <tabVisibilities>
+        <tab>GRAXQuery__c</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
+    <tabVisibilities>
+        <tab>GRAX_Configuration</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
 </Profile>

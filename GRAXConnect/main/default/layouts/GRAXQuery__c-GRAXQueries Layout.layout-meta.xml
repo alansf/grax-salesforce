@@ -42,6 +42,10 @@
                 <behavior>Edit</behavior>
                 <field>Hourly_Synch_Period__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>GRAX_Configured__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
