@@ -213,6 +213,7 @@ public List<SelectOption> getItems()
     
     Public Pagereference SaveSelection()
     {    
+    		GRAXApi.cloudconfig(objToQuery);
     		GRAXQuery__c newQuery = new GRAXQuery__c();
     		newQuery.ObjectName__c = objToQuery;
     		SynchSelectedFields();
@@ -220,8 +221,8 @@ public List<SelectOption> getItems()
     		newQuery.Order_By__c=defaultprocessordering;
     		newQuery.Filter__c=defaultfilter;
     		newQuery.graxconfig__c = graxconfig;
+    		newQuery.GRAX_Configured__c=Datetime.now();
     		upsert newQuery ObjectName__c;
-    		GRAXApi.cloudconfig(objToQuery);
     		sychedObjectsSaved = getSynchedObjects();
     		enablesynch = true;
     		return null;   
