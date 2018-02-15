@@ -122,8 +122,4 @@
         <apexPage>GRAXFlow</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
-    <pageAccesses>
-        <apexPage>GRAXHerokuAuth</apexPage>
-        <enabled>true</enabled>
-    </pageAccesses>
 </Profile>
