@@ -5,6 +5,9 @@ public virtual with sharing class GRAXSettings {
 	public String LicenseToken = '';
 	public String GatewayToken = '';
 	public String ApiToken = '';
+	
+	// Default to the testing URL
+	public String ApiURL = 'https://test.hardingpoint.com/v9.3/api';
 
 	public Boolean isObjectConfigured = false;
 	
@@ -33,6 +36,9 @@ public virtual with sharing class GRAXSettings {
 			LicenseToken = graxConfig.LicenseToken__c;
 			GatewayToken = graxConfig.GatewayToken__c;
 			ApiToken = graxConfig.ApiToken__c;
+			
+			if (graxConfig.GRAX_API_Url__c != '' && graxConfig.GRAX_API_Url__c != null)
+				ApiURL=graxConfig.GRAX_API_Url__c;
 			
     			if ((graphdburl != null && graphdburl != '')&&			
     				(LicenseToken != null && LicenseToken != '')&&

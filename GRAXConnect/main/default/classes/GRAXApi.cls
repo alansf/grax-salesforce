@@ -44,7 +44,7 @@ public class GRAXApi extends GRAXCloud {
 		
         String content = '{' + 
         						'"orgId": "'+ UserInfo.getOrganizationId() + '",' +
-        						'"userId": ' + UserInfo.getUserId() + ',' + 
+        						'"userId": ' + JSON.serialize(UserInfo.getUserId()) + ',' + 
         						'"graphdburl": "' + gxcSettings.graphdburl + '",' + 
         						graxconfigsetting + 
         						'"new": ' + newObjects + ',' + 
@@ -63,13 +63,13 @@ public class GRAXApi extends GRAXCloud {
     }
 
 	public static void cloudconfig(String sobjectName){
-		GRAXSettings__c hpd = GRAXSettings__c.getOrgDefaults();
-		String url = 'https://dev.hardingpoint.com/v9.3/api/applications/neo4j/configure';
+		GRAXSettings gxcSettings = new GRAXSettings(sobjectName);
+		String url = gxcSettings.ApiURL + '/applications/neo4j/configure';
 		String payload = '{' +
 				'"sfdcorgid": "'+ UserInfo.getOrganizationId() + '",' +
 				'"userId": "' + UserInfo.getUserId() + '",' + 
 				'"sfdcobjectname": "' + sobjectName + '",' +
-				'"graphdburl": "' + hpd.graphdburl__c + '"' +
+				'"graphdburl": "' + gxcSettings.graphdburl + '"' +
 			'}';
 		GRAXApi.callout(url,payload);
 	}

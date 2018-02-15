@@ -53,7 +53,6 @@ global class GRAXBatch implements
     			if (gxcSettings.GRAXQuery.Order_By__c!='' && gxcSettings.GRAXQuery.Order_By__c!=null)
     				Query+= ' ORDER BY ' + gxcSettings.GRAXQuery.Order_By__c;
         }
-        
         return Query;
     }
 
@@ -74,7 +73,6 @@ global class GRAXBatch implements
         List<SObject> triggerNew = new List<SObject>();
         List<SObject> triggerOld = new List<SObject>();
 
-        String url = 'https://dev.hardingpoint.com/v9.3/api';
         String graxconfig ='';
         
         if (scope.size()>0){
@@ -92,7 +90,12 @@ global class GRAXBatch implements
             		triggerNew.add(currentObject);
             		recordsProcessed++;
         		}
-        		GRAXApi.calloutnow(url,GRAXApi.jsonContent(triggerNew,triggerOld,graxconfig));    		
+        		
+        		System.debug('[GRAX.io] gxcSettings.ApiURL: ' + gxcSettings.ApiURL);
+        		System.debug('[GRAX.io] triggerNew: ' + JSON.serialize(triggerNew));
+        		System.debug('[GRAX.io] graxconfig: ' + JSON.serialize(graxconfig));
+        		
+        		GRAXApi.calloutnow(gxcSettings.ApiURL,GRAXApi.jsonContent(triggerNew,triggerOld,graxconfig));    		
         }        
     }
 
