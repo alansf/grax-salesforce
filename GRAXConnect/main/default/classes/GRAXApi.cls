@@ -1,137 +1,65 @@
-public class GRAXApi {
+public class GRAXApi extends GRAXCloud {
     // -------------------------------------------------
     // https://grax.io
     // Support Contact - Support@Grax.io
     // -------------------------------------------------
     
-    public static List<Object> NormalizeList(List<SObject> UpdateObjects){
-    		if (UpdateObjects!=null){
-    			if (!UpdateObjects.isEmpty()){
-    				Integer counter = 0;
-    				Schema.SObjectType sObjectType = UpdateObjects.getSObjectType();
-    				String ObjectName = '' + sObjectType;
-    				List<GRAXQuery__c> GRAXquery = [Select Id, Name, ObjectName__c,Selected_Fields__c,Order_By__c,Filter__c,graxconfig__c  From GRAXQuery__c where ObjectName__c=:ObjectName];
-    				if (!GRAXquery.isEmpty()){
-    					if (GRAXquery[0].Selected_Fields__c!=null){
-    						String fieldList = ',' + GRAXquery[0].Selected_Fields__c.toLowerCase() + ',';
-    						Map<String, Schema.SObjectType> gd = Schema.getGlobalDescribe(); Schema.SObjectType ctype = gd.get(ObjectName); 
-    						Map<String, Schema.SobjectField> fmap = ctype.getDescribe().fields.getMap();
-    						for (String s : fmap.keySet()){
-    							if (fieldList.indexOf(s.toLowerCase())==-1){
-    								for (Integer i = 0; i < UpdateObjects.size(); i++) {
-    									try{
-    						 				UpdateObjects[i].put(s,null);
-    						 				counter++;
-    						 			}catch(Exception ex){}	
-    						 		}
-    							}
-    						}
-    						System.debug('[GRAX.io] Normalized: ' + counter + ' Values');
-    					}
-    				}
-    			}
-    		}
-    		return UpdateObjects;
-    }
-    
-    public static Boolean IsConfigured(){
-    		Boolean returnvalue = false;
-    		GRAXSettings__c graxConfig = GRAXSettings__c.getOrgDefaults();
-    		if (graxConfig != null){
-    			if ((graxConfig.graphdburl__c != null && graxConfig.graphdburl__c != '')&&			
-    				(graxConfig.LicenseToken__c != null && graxConfig.LicenseToken__c != '')&&
-    				(graxConfig.GatewayToken__c != null && graxConfig.GatewayToken__c != '')&&
-    				(graxConfig.ApiToken__c != null && graxConfig.ApiToken__c != ''))
-    				returnvalue = true;
-    		}
-    		return returnvalue;
-    }
-    
-    public static String NormalizeJSON(String jsonContent, String ObjectName){
-    		// JSONParser parser = JSON.createParser(jsonContent);
-    		return '';
-    }
-    
     public static String jsonContent(List<SObject> triggerNew, List<SObject> triggerOld) {
     		return jsonContent(triggerNew,triggerOld,'');
     }
+    
+    public static List<Id> GetIds(List<SObject> sObjects){
+	    List<Id> ids = new List<Id>();
+	    for(SObject sObj : sObjects){
+	        ids.add(sObj.Id);
+	    }
+	    return ids;
+	}
  
     public static String jsonContent(List<SObject> triggerNew, List<SObject> triggerOld, String graxconfig) {
 
         String newObjects = '[]';
-        
-        if (triggerNew != null) {
-            newObjects = JSON.serialize(triggerNew);
-        }
         String oldObjects = '[]';
-        if (triggerOld != null) {
-            oldObjects = JSON.serialize(NormalizeList(triggerOld));
-        }
-        String userId = JSON.serialize(UserInfo.getUserId());
-        GRAXSettings__c hpd = GRAXSettings__c.getOrgDefaults();
-
-        // This is the URL for Neo4j
-        // System.debug('graphdburl:' + hpd.graphdburl__c);
-        String graphdburl = hpd.graphdburl__c;
         
-		// 
+        Schema.SObjectType sObjectType = triggerNew.getSObjectType();
+    		String ObjectType = '' + sObjectType;
+        	GRAXSettings gxcSettings = new GRAXSettings(ObjectType);
+        
+        if (triggerNew != null && graxconfig!='') {
+            newObjects = JSON.serialize(triggerNew);
+        }else{
+        		List<Id> Ids = GetIds(triggerNew);
+        		String Query = 'Select ' + gxcSettings.GRAXQuery.Selected_Fields__c + ' FROM ' + ObjectType + ' Where Id in :Ids';
+        		newObjects = JSON.serialize(Database.query(Query));
+        		graxconfig = gxcSettings.GRAXQuery.graxconfig__c;
+        }
+        
+        if (triggerOld != null) {
+            oldObjects = JSON.serialize(triggerOld);
+        }
+        
 		String graxconfigsetting = '';
         if (graxconfig!=null && graxconfig!='')
             graxconfigsetting = '"graxconfig": ' + graxconfig + ',';
 		
         String content = '{' + 
         						'"orgId": "'+ UserInfo.getOrganizationId() + '",' +
-        						'"userId": ' + userId + ',' + 
-        						'"graphdburl": "' + graphdburl + '",' + 
+        						'"userId": ' + UserInfo.getUserId() + ',' + 
+        						'"graphdburl": "' + gxcSettings.graphdburl + '",' + 
         						graxconfigsetting + 
         						'"new": ' + newObjects + ',' + 
         						'"old": ' + oldObjects + 
-        					'}';
-        // String content = '{"new": ' + newObjects + ', "orgId": "'+ UserInfo.getOrganizationId() +  '", "userId": ' + userId + ', "graphdburl": "' + graphdburl + '"}';
+        					'}';        
 
         return content;
     }
-
-    public static void calloutnow(String url, String content) {
-        GRAXSettings__c hpd = GRAXSettings__c.getOrgDefaults();
-        if (url!=null && hpd.LicenseToken__c != null && hpd.ApiToken__c != null && hpd.GatewayToken__c != null){
-        		Http h = new Http();
-        		HttpRequest req = new HttpRequest();
-        		// ------------------------------
-	        //  Use for Org Wide Override
-	        // ------------------------------
-	        //if (hpd.APIURL__c!=''){
-	        //    req.setEndpoint(hpd.APIURL__c);
-	        //}else{
-	            req.setEndpoint(url);
-	        //}
-	        // ------------------------------
-        		req.setMethod('POST');
-        		req.setHeader('Content-Type', 'application/json');
-        		req.setHeader('licensetoken',hpd.LicenseToken__c);
-        		req.setHeader('authorizationToken', hpd.ApiToken__c);
-        		req.setHeader('x-api-key', hpd.GatewayToken__c);
-        		req.setHeader('sfdcorgid', UserInfo.getOrganizationId());
-	        req.setBody(content);
-	        h.send(req);
-        }
-    }
-
-    @future(callout=true)
-    public static void callout(String url, String content) {
-        GRAXApi.calloutnow(url,content);
-    }
     
     public static String graxconfig(String sobjectName){
-    		String graxconfig ='';
-    		if (sobjectName!='' && sobjectName!=null){
-    			List<GRAXQuery__c> queries = [Select ObjectName__c, graxconfig__c  From GRAXQuery__c where ObjectName__c=:sobjectName];
-			if (queries.size()>0){
-				graxconfig = queries[0].graxconfig__c;
-				System.debug('[GRAX.io] graxconfig: ' + graxconfig);
-			}
-    		}
-		return graxconfig;
+    		GRAXSettings gxcSettings = new GRAXSettings(sobjectName);
+    		if (gxcSettings.isObjectConfigured)	
+			return gxcSettings.GRAXQuery.graxconfig__c;
+		else
+			return '';
     }
 
 	public static void cloudconfig(String sobjectName){
