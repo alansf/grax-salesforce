@@ -38,10 +38,10 @@ public class GRAXApi extends GRAXCloud {
 	        gxcSettings.debug('GRAXCloud.jsonContent',Operation + ' : ObjectType=' + ObjectType);
 	        
 	        // If graxconfig is NOT null it has been passed in from outside a trigger and is correct
-	        if (graxconfig != null && triggerNew != null) {
+	        if ((graxconfig != null && graxconfig != '') && triggerNew != null) {
 	        		gxcSettings.debug('GRAXCloud.jsonContent',' Called from GRAX Configuration');
 	            newObjects = JSON.serialize(triggerNew);
-	        }else if (triggerNew != null && graxconfig == null){
+	        }else if (triggerNew != null && (graxconfig == null || graxconfig == '') ){
 	        		gxcSettings.debug('GRAXCloud.jsonContent',' Called from Trigger');
 	        		List<Id> Ids = GetIds(triggerNew);
 	        		String Query = 'Select ' + gxcSettings.GRAXQuery.Selected_Fields__c + ' FROM ' + ObjectType + ' Where Id in :Ids';
@@ -70,8 +70,7 @@ public class GRAXApi extends GRAXCloud {
 	
 	        return content;
 		}else{
-			// This should never happen
-			System.debug('[GRAX.io] ERROR triggerNew==null && triggerOld==null');
+			GRAXSettings.debug('GRAXCloud.jsonContent','Both Lists Empty, should never happen','ERROR triggerNew==null && triggerOld==null', 0);
 			return '{}';
 		}
         

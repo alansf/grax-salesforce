@@ -112,6 +112,7 @@ public virtual with sharing class GRAXSettings {
     			Source += ': ';
     		if (error!='')
     			error = ' [GRAX Error] ' + error;
+    			
     		System.debug('[GRAX.io] ' + source + output + error);
     }
     // ------------------------------------------------------------------------

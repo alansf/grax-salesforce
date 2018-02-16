@@ -11,21 +11,25 @@
 	    public string defaultprocessordering {get;set;}
 	    
 	    public string graxconfig {get;set;}
-	    public boolean enablesynch {get;set;}
+	    public boolean disablesynch {get;set;}
+	    public boolean disablesave {get;set;}
+	    public boolean historyprocessed {get;set;}
+	    
 	    public boolean isconfigured {get;set;}
 	      
-	    public GRAXConfiguration () {     		
-	    	
-	    		sychedObjectsSaved = getSynchedObjects();
-	    		RelatedToList = new Map<String,String>();
+	    public GRAXConfiguration () {    
 	    		isconfigured = GRAXApi.IsConfigured();
-	
+	    		disablesave = true;
 	    		if (isconfigured==false)
 	    			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error, '<a href="/one/one.app#/setup/CustomSettings/home">GRAX Settings Incomplete</a>'));
+	    		else{
+	    			sychedObjectsSaved = getSynchedObjects();
+		    		RelatedToList = new Map<String,String>();
+	    		}
 	    }
 	    
 	    public string getPropURLToDisplay() { 
-	        string salesforceURL = 'https://graphconnect.hardingpoint.com?sfdcdomain=https://' + URL.getSalesforceBaseUrl().getHost() + '/'; 
+	        string salesforceURL = 'https://graphconnect.hardingpoint.com?sfdcobject=' + objToQuery + '&sfdcdomain=https://' + URL.getSalesforceBaseUrl().getHost() + '/'; 
 	        return salesforceURL;
 	    }
 	    
@@ -39,15 +43,17 @@
 	    		return GRAXSettings.getSynchedObjects();
 	    }
 	    
-	    public List<FieldProperties> getfieldProperties ()
+	    public List<FieldProperties> getfieldProperties()
 	    {
 	    		String fieldName;
 	        FieldProperties= new List<FieldProperties>();
-	        SObjectType objType = Schema.getGlobalDescribe().get(objtoquery);
+	       
+	        SObjectType objType = Schema.getGlobalDescribe().get(objToQuery);
 	        if (objType != null)
 	        {
-	        Map<String,Schema.SObjectField> fields = objType.getDescribe().fields.getMap();
-	        for (String s : fields.keySet()) 
+	        		disablesave = false;
+		        Map<String,Schema.SObjectField> fields = objType.getDescribe().fields.getMap();
+		        for (String s : fields.keySet()) 
 	             {
 	                if (fields.get(s).getDescribe().isAccessible()){
 	                		fieldName = fields.get(s).getDescribe().getName();
@@ -62,10 +68,11 @@
 	    
 	   
 	public List<SelectOption> getItems() 
-	    {
+	    {   
 	    		String objectname;
 	        List<SelectOption> options = new List<SelectOption>();
 	        Map<String, SObjectType> sObjects = Schema.getGlobalDescribe();
+	        	options.add(new SelectOption('' ,'<---- SELECT SALESFORCE OBJECT ---->' ));
 	        for (String apiName : sObjects.keySet())
 	        {
 	            Map<String, Schema.RecordTypeInfo> types = sObjects.get(apiName).getDescribe().getRecordTypeInfosByName();
@@ -148,29 +155,40 @@
 	    {    return null;    }
 	    
 	    private void SynchSaved(String ObjectName){
-	    	    integer counter = 0;
-	    	    
-	    	    GRAXSettings gxs = new GRAXSettings(ObjectName);
-	    		if (gxs.isObjectConfigured){
-	    			enablesynch = false;
-	    			defaultfilter = gxs.GRAXQuery.Filter__c;
-	    			defaultprocessordering = gxs.GRAXQuery.Order_By__c;
-	    			defaultfields = gxs.GRAXQuery.Selected_Fields__c;
-	    			graxconfig = gxs.GRAXQuery.graxconfig__c;
-	    			string currentfields = ','+ gxs.GRAXQuery.Selected_Fields__c + ',';
-	    			for(FieldProperties obj : FieldProperties){
-	    				if (currentfields.indexOf(',' + obj.fieldname + ',') >0 ){
-	    					FieldProperties[counter].fieldselected=true;
-	    				}
-	    				counter++;
-	    			}
-	    		}
-	    		else{
-	    			enablesynch = true;
-	    			defaultprocessordering = 'LastModifiedDate DESC';
-	    			defaultfilter = 'CALENDAR_YEAR(LastModifiedDate) > 2016';
-	    			SynchSelectedFields();
-	    		}
+	    	    if (ObjectName!='' && ObjectName!=null)
+	    	    {
+	    	    		integer counter = 0;
+	    	    		disablesave = false;
+	    	    		GRAXSettings gxs = new GRAXSettings(ObjectName);
+		    		if (gxs.isObjectConfigured){
+		    			disablesynch = false;
+		    			defaultfilter = gxs.GRAXQuery.Filter__c;
+		    			defaultprocessordering = gxs.GRAXQuery.Order_By__c;
+		    			defaultfields = gxs.GRAXQuery.Selected_Fields__c;
+		    			graxconfig = gxs.GRAXQuery.graxconfig__c;
+		    			string currentfields = ','+ gxs.GRAXQuery.Selected_Fields__c + ',';
+		    			for(FieldProperties obj : FieldProperties){
+		    				if (currentfields.indexOf(',' + obj.fieldname + ',') >0 ){
+		    					FieldProperties[counter].fieldselected=true;
+		    				}
+		    				counter++;
+		    			}
+		    		}
+		    		else{
+		    			disablesynch = true;
+		    			defaultprocessordering = 'LastModifiedDate DESC';
+		    			defaultfilter = 'CALENDAR_YEAR(LastModifiedDate) > 2016';
+		    			SynchSelectedFields();
+		    		}
+	    	    }
+	    	    else{
+	    	    		disablesave = true;
+	    	    		disablesynch = true;
+	    	    		defaultprocessordering = '';
+	    	    		graxconfig = '';
+	    	    		defaultfilter = '';
+	    	    		defaultfields = '';
+	    	    	}
 	    }
 	    
 	    private void SynchSelectedFields(){
@@ -220,13 +238,14 @@
 	    		newQuery.GRAX_Configured__c=Datetime.now();
 	    		upsert newQuery ObjectName__c;
 	    		sychedObjectsSaved = getSynchedObjects();
-	    		enablesynch = true;
+	    		disablesynch = false;
 	    		return null;   
 		}
 		
 		Public Pagereference Synchronize(){ 
 			SaveSelection();
 			GRAXBatch.ProcessHistory(objToQuery);
+			historyprocessed = true;
 			return null;
 	    }
     

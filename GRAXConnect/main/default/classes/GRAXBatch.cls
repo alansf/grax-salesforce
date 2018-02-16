@@ -16,6 +16,7 @@ global class GRAXBatch implements
         		gxcSettings = new GRAXSettings('GRAXBatch', ObjectName);
         
         if (!gxcSettings.isObjectConfigured){
+        		gxcSettings.debug('BuildQuery', ' @@@ Building Query Dynamically @@@ !!!');
         		// ------------------------------------------------------
         		// This should NEVER happen
         		SObjectType t = Schema.getGlobalDescribe().get(ObjectName);
