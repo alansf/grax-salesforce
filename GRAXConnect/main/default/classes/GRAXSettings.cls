@@ -16,6 +16,13 @@ public virtual with sharing class GRAXSettings {
 	
 	// GRAX Saved Query Singular
 	public GRAXQuery__c GRAXQuery = null;
+	
+	private String ExecutionSource = '';
+
+	public GRAXSettings(String executionSource, String objectName) {
+		ExecutionSource = executionSource;
+		ProperlyConfigured = Initialize(objectName);
+	}
 
 	// Load Settings for Object
 	public GRAXSettings(String objectName) {
@@ -80,5 +87,32 @@ public virtual with sharing class GRAXSettings {
 	    		}
 	    		return GRAXObjects;
 	}
+	
+	// ------------------------------------------------------------------------
+	// Should move these to a seperate class
+	public void debug(String output){
+    		debug('', output, '');
+    }
     
+    public void debug(String MethodName, String output){
+    		debug(MethodName, output, '');
+    }
+    
+    public void debug(String MethodName, String output, String Error){
+    		String Source = ExecutionSource;
+    		if (Source!='' && MethodName!='')
+    			Source += '.' + MethodName;
+    		else if (MethodName!='')
+    			Source = MethodName;
+    		GRAXSettings.debug(Source, output, Error, 0);
+    }
+    
+    public static void debug(String source, String output, String error, Integer level){
+    		if (Source!='')
+    			Source += ': ';
+    		if (error!='')
+    			error = ' [GRAX Error] ' + error;
+    		System.debug('[GRAX.io] ' + source + output + error);
+    }
+    // ------------------------------------------------------------------------
 }

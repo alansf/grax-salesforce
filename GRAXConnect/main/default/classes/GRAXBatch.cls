@@ -13,7 +13,7 @@ global class GRAXBatch implements
         string BuildQuery = '';
         
         if (!gxcSettings.isObjectConfigured)
-        		gxcSettings = new GRAXSettings(ObjectName);
+        		gxcSettings = new GRAXSettings('GRAXBatch', ObjectName);
         
         if (!gxcSettings.isObjectConfigured){
         		// ------------------------------------------------------
@@ -58,14 +58,14 @@ global class GRAXBatch implements
 
     global GRAXBatch(String ObjectName){
         if (ObjectName!=''){
-        		gxcSettings = new GRAXSettings(ObjectName);
+        		gxcSettings = new GRAXSettings('GRAXBatch', ObjectName);
         		Query = BuildQuery(ObjectName);
         }
         CurrentObjectName = ObjectName;
     }
 
     global Database.QueryLocator start(Database.BatchableContext bc) {
-        System.debug('[GRAX.io] Starting Batch Query: ' + Query);
+        gxcSettings.debug('start','Starting Batch Query: ' + Query);
         return Database.getQueryLocator(Query);
     }
 
@@ -82,25 +82,24 @@ global class GRAXBatch implements
         		
     			if (gxcSettings.isObjectConfigured){
     				graxconfig = gxcSettings.GRAXQuery.graxconfig__c;
-    				System.debug('[GRAX.io] graxconfig: ' + graxconfig);
     			}    
     			
     			for (SObject currentObject : scope) {
-            		System.debug('[GRAX.io] Processing: ' + currentObject.Id);
+            		gxcSettings.debug('Processing: ' + currentObject.Id);
             		triggerNew.add(currentObject);
             		recordsProcessed++;
         		}
         		
-        		System.debug('[GRAX.io] gxcSettings.ApiURL: ' + gxcSettings.ApiURL);
-        		System.debug('[GRAX.io] triggerNew: ' + JSON.serialize(triggerNew));
-        		System.debug('[GRAX.io] graxconfig: ' + JSON.serialize(graxconfig));
+        		gxcSettings.debug('execute', 'gxcSettings.ApiURL: ' + gxcSettings.ApiURL);
+        		gxcSettings.debug('execute', 'graxconfig: ' + JSON.serialize(graxconfig));
+        		gxcSettings.debug('execute', 'triggerNew: ' + JSON.serialize(triggerNew));
         		
         		GRAXApi.calloutnow(gxcSettings.ApiURL,GRAXApi.jsonContent(triggerNew,triggerOld,graxconfig));    		
         }        
     }
 
     global void finish(Database.BatchableContext bc){
-        System.debug('[GRAX.io] ' + recordsProcessed + ' Records Synchronized for ' + CurrentObjectName);
+        gxcSettings.debug('finish', recordsProcessed + ' Records Synchronized for ' + CurrentObjectName);
         AsyncApexJob job = [SELECT Id, Status, NumberOfErrors,
             JobItemsProcessed,
             TotalJobItems

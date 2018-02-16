@@ -18,40 +18,63 @@ public class GRAXApi extends GRAXCloud {
  
     public static String jsonContent(List<SObject> triggerNew, List<SObject> triggerOld, String graxconfig) {
 
-        String newObjects = '[]';
-        String oldObjects = '[]';
+		if (triggerNew != null || triggerOld != null){
+			String newObjects = '[]';
+	        String oldObjects = '[]';
+	        String Operation = '';
+	        
+	        Schema.SObjectType sObjectType;
+	        if (triggerNew != null){
+	        		Operation = 'Insert Operation';
+	        		sObjectType = triggerNew.getSObjectType();
+	        	}else if (triggerOld != null){
+	        		Operation = 'Delete Operation';
+	        		sObjectType = triggerOld.getSObjectType();
+	        	}
+	        
+	    		String ObjectType = '' + sObjectType;
+	        	GRAXSettings gxcSettings = new GRAXSettings(ObjectType);
+	        
+	        gxcSettings.debug('GRAXCloud.jsonContent',Operation + ' : ObjectType=' + ObjectType);
+	        
+	        // If graxconfig is NOT null it has been passed in from outside a trigger and is correct
+	        if (graxconfig != null && triggerNew != null) {
+	        		gxcSettings.debug('GRAXCloud.jsonContent',' Called from GRAX Configuration');
+	            newObjects = JSON.serialize(triggerNew);
+	        }else if (triggerNew != null && graxconfig == null){
+	        		gxcSettings.debug('GRAXCloud.jsonContent',' Called from Trigger');
+	        		List<Id> Ids = GetIds(triggerNew);
+	        		String Query = 'Select ' + gxcSettings.GRAXQuery.Selected_Fields__c + ' FROM ' + ObjectType + ' Where Id in :Ids';
+	        		newObjects = JSON.serialize(Database.query(Query));
+	        }
+	        
+	        if (graxconfig=='')
+	        		graxconfig = gxcSettings.GRAXQuery.graxconfig__c;
+	        
+	        if (triggerOld != null) {
+	            oldObjects = JSON.serialize(triggerOld);
+	        }
+	        
+			String graxconfigsetting = '';
+	        if (graxconfig!=null && graxconfig!='')
+	            graxconfigsetting = '"graxconfig": ' + graxconfig + ',';
+			
+	        String content = '{' + 
+	        						'"orgId": "'+ UserInfo.getOrganizationId() + '",' +
+	        						'"userId": ' + JSON.serialize(UserInfo.getUserId()) + ',' + 
+	        						'"graphdburl": "' + gxcSettings.graphdburl + '",' + 
+	        						graxconfigsetting + 
+	        						'"new": ' + newObjects + ',' + 
+	        						'"old": ' + oldObjects + 
+	        					'}';        
+	
+	        return content;
+		}else{
+			// This should never happen
+			System.debug('[GRAX.io] ERROR triggerNew==null && triggerOld==null');
+			return '{}';
+		}
         
-        Schema.SObjectType sObjectType = triggerNew.getSObjectType();
-    		String ObjectType = '' + sObjectType;
-        	GRAXSettings gxcSettings = new GRAXSettings(ObjectType);
-        
-        if (triggerNew != null && graxconfig!='') {
-            newObjects = JSON.serialize(triggerNew);
-        }else{
-        		List<Id> Ids = GetIds(triggerNew);
-        		String Query = 'Select ' + gxcSettings.GRAXQuery.Selected_Fields__c + ' FROM ' + ObjectType + ' Where Id in :Ids';
-        		newObjects = JSON.serialize(Database.query(Query));
-        		graxconfig = gxcSettings.GRAXQuery.graxconfig__c;
-        }
-        
-        if (triggerOld != null) {
-            oldObjects = JSON.serialize(triggerOld);
-        }
-        
-		String graxconfigsetting = '';
-        if (graxconfig!=null && graxconfig!='')
-            graxconfigsetting = '"graxconfig": ' + graxconfig + ',';
-		
-        String content = '{' + 
-        						'"orgId": "'+ UserInfo.getOrganizationId() + '",' +
-        						'"userId": ' + JSON.serialize(UserInfo.getUserId()) + ',' + 
-        						'"graphdburl": "' + gxcSettings.graphdburl + '",' + 
-        						graxconfigsetting + 
-        						'"new": ' + newObjects + ',' + 
-        						'"old": ' + oldObjects + 
-        					'}';        
-
-        return content;
     }
     
     public static String graxconfig(String sobjectName){

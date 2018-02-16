@@ -11,7 +11,6 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
         if (gx.ProperlyConfigured){
         		Http h = new Http();
         		HttpRequest req = new HttpRequest();
-        		
         		// ------------------------------
 	        if (url==''){
 	            req.setEndpoint(gx.ApiURL);
