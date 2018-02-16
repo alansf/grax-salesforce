@@ -54,14 +54,14 @@
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
     <externalSharingModel>ReadWrite</externalSharingModel>
-    <label>GRAX : Configuration</label>
+    <label>GRAX : Query</label>
     <nameField>
         <displayFormat>GRAX-{000000}</displayFormat>
         <label>GRAXQueries Name</label>
         <trackHistory>false</trackHistory>
         <type>AutoNumber</type>
     </nameField>
-    <pluralLabel>GRAX : Configuration</pluralLabel>
+    <pluralLabel>GRAX : Queries</pluralLabel>
     <searchLayouts/>
     <sharingModel>ReadWrite</sharingModel>
     <visibility>Public</visibility>
