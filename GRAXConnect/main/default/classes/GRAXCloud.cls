@@ -8,17 +8,16 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
     // Main method for calling out to GRAX cloud
     public static void calloutnow(String url, String content) {
         GRAXCloud gx = new GRAXCloud();
-        if (url!=null && gx.ProperlyConfigured){
+        if (gx.ProperlyConfigured){
         		Http h = new Http();
         		HttpRequest req = new HttpRequest();
+        		
         		// ------------------------------
-	        //  Use for Org Wide Override
-	        // ------------------------------
-	        //if (hpd.APIURL__c!=''){
-	        //    req.setEndpoint(hpd.APIURL__c);
-	        //}else{
+	        if (url==''){
+	            req.setEndpoint(gx.ApiURL);
+	        }else{
 	            req.setEndpoint(url);
-	        //}
+	        }
 	        // ------------------------------
         		req.setMethod('POST');
         		req.setHeader('Content-Type', 'application/json');

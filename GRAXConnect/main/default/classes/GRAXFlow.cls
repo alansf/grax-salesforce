@@ -1,6 +1,5 @@
 public with sharing class GRAXFlow {
     public GRAXFlow() {
-
     }
     
     public string getPropURLToDisplay() { 
