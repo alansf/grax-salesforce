@@ -1,6 +1,6 @@
 <apex:page controller="GRAXConfiguration" showChat="false" showHeader="false"> 
 	<style type="text/css">
-        .objectSelectWidth { width: 500px; }
+        .objectSelectWidth { width: 300px; }
         .labelWidth { width: 200px; text-align: left; align: left;}
         .graxButton {display: block; width: 200px; text-align: center;}
     </style>
