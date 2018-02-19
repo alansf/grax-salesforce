@@ -89,18 +89,6 @@
 	            }
 	        }
 	        
-	       // ------------------------------------------------------------------
-	       /* Breaks for > 1000
-	       string cobjname;
-	       List<SelectOption> options = new List<SelectOption>();
-	       List<Schema.SObjectType> gd = Schema.getGlobalDescribe().Values();  
-	       for(Schema.SObjectType f : gd){
-	            cobjname = f.getDescribe().getName();
-	            options.add(new SelectOption(cobjname ,cobjname ));
-	       }  
-	       */
-	       // ------------------------------------------------------------------
-	       
 	       options.sort();
 	       
 	       return options;
@@ -167,6 +155,8 @@
 		    			defaultfields = gxs.GRAXQuery.Selected_Fields__c;
 		    			graxconfig = gxs.GRAXQuery.graxconfig__c;
 		    			string currentfields = ','+ gxs.GRAXQuery.Selected_Fields__c + ',';
+		    			
+		    			
 		    			for(FieldProperties obj : FieldProperties){
 		    				if (currentfields.indexOf(',' + obj.fieldname + ',') >0 ){
 		    					FieldProperties[counter].fieldselected=true;
@@ -192,19 +182,29 @@
 	    }
 	    
 	    private void SynchSelectedFields(){
-	    		string fieldlist = ''; 		 
+	    		string fieldlist = ''; 	
+	    		String TypeMap = '';	 
 	    		List<FieldProperties> SelectedProperties = new List<FieldProperties>();
 	    		for(FieldProperties obj : FieldProperties){
 	    			if (obj!=null){
 		    			if (obj.fieldselected){
 		    				SelectedProperties.add(obj);
-		    				if (obj.referenceto!=null)
+		    				if (TypeMap!='')
+		    					TypeMap+= ',';
+		    					
+		    				if (obj.referenceto!=null){
 		    					RelatedToList.put(obj.fieldname, obj.referenceto);
+		    				}
+		    				
+		    				TypeMap += '\"' + obj.fieldname + '\":\"' + obj.fieldtype + '\"';
 		    					
 		    				if (fieldlist!='')
 		    					fieldlist+=',';
+		    					
 		    				fieldlist+=obj.fieldname;
+		    				
 		    			}
+		    			
 	    			}
 	    		}
 	    		// graxconfig = JSON.serialize(SelectedProperties);
@@ -212,6 +212,7 @@
 	    							'"fieldsselected":"' + fieldlist + '",' +
 	    							'"orderby":"' + defaultprocessordering + '",' + 
 	    							'"filterby":"' + defaultfilter+ '",' + 
+	    							'"typemap":{' + TypeMap + '},' + 
 	    							'"lookupmap":' + 
 	    								JSON.serialize(RelatedToList) + 
 	    						'}';

@@ -9,7 +9,7 @@ global class GRAXBatch implements
     
     global GRAXSettings gxcSettings = null;
 
-    string BuildQuery(string ObjectName){     
+    String BuildQuery(string ObjectName){     
         string BuildQuery = '';
         
         if (!gxcSettings.isObjectConfigured)

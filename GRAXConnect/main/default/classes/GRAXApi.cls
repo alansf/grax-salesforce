@@ -8,6 +8,7 @@ public class GRAXApi extends GRAXCloud {
     		return jsonContent(triggerNew,triggerOld,'');
     }
     
+    // Gets a list of Ids
     public static List<Id> GetIds(List<SObject> sObjects){
 	    List<Id> ids = new List<Id>();
 	    for(SObject sObj : sObjects){
