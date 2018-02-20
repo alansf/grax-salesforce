@@ -18,7 +18,7 @@
 	    public boolean isconfigured {get;set;}
 	      
 	    public GRAXConfiguration () {    
-	    		isconfigured = GRAXApi.IsConfigured();
+	    		isconfigured = GRAXSettings.IsConfigured();
 	    		disablesave = true;
 	    		if (isconfigured==false)
 	    			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error, '<a href="/one/one.app#/setup/CustomSettings/home">GRAX Settings Incomplete</a>'));
@@ -167,7 +167,8 @@
 		    		else{
 		    			disablesynch = true;
 		    			defaultprocessordering = 'LastModifiedDate DESC';
-		    			defaultfilter = 'CALENDAR_YEAR(LastModifiedDate) > 2016';
+		    			defaultfilter = '';
+		    			// defaultfilter = 'CALENDAR_YEAR(LastModifiedDate) > 2016';
 		    			SynchSelectedFields();
 		    		}
 	    	    }

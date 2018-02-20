@@ -39,14 +39,17 @@ global class GRAXBatch implements
     			String WhereClause = '';
     			if (gxcSettings.GRAXQuery.Filter__c!='' && gxcSettings.GRAXQuery.Filter__c!=null)
     				WhereClause = gxcSettings.GRAXQuery.Filter__c;
+    			
     				
-    			if (gxcSettings.GRAXQuery.Last_Synch__c != null){
-    				if (WhereClause!='')
-    					WhereClause += ' AND ';
-    						
-    				DateTime lastSynch = gxcSettings.GRAXQuery.Last_Synch__c;
-    				WhereClause += '	lastmodifieddate >= ' + lastSynch.format('yyyy-MM-dd\'T\'hh:mm:ss\'Z\'');
-    			}	
+    			// TEMPORARILY REMOVED
+    			//if (gxcSettings.GRAXQuery.Last_Synch__c != null){
+    			//	if (WhereClause!='')
+    			//		WhereClause += ' AND ';
+    			//			
+    			//	DateTime lastSynch = gxcSettings.GRAXQuery.Last_Synch__c;
+    			//	WhereClause += '	lastmodifieddate >= ' + lastSynch.format('yyyy-MM-dd\'T\'hh:mm:ss\'Z\'');
+    			//}	
+    			
     				
     			if (WhereClause != '')
     				Query+= ' WHERE ' + WhereClause;
@@ -95,7 +98,7 @@ global class GRAXBatch implements
         		gxcSettings.debug('execute', 'graxconfig: ' + JSON.serialize(graxconfig));
         		gxcSettings.debug('execute', 'triggerNew: ' + JSON.serialize(triggerNew));
         		
-        		GRAXApi.calloutnow(gxcSettings.ApiURL,GRAXApi.jsonContent(triggerNew,triggerOld,graxconfig));    		
+        		GRAXCloud.calloutnow(gxcSettings.ApiURL,GRAXApi.jsonContent(triggerNew,triggerOld,graxconfig));    		
         }        
     }
 
