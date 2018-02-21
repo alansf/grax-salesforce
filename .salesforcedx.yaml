@@ -1,0 +1,5 @@
+scratch-org-def: config/developer-scratch-def.json
+  run-apex-tests: true
+  delete-scratch-org: false
+  show-scratch-org-url: true
+  open-path: one/one.app#/n/GRAX_Configuration
