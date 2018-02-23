@@ -72,7 +72,8 @@ If you want to use the GRAX SDK within a non-scratch environment you can deploy 
     
     ```
     
-1. Having Isues? 
+### Having Isues? 
+Below are a few helpful commands to analyze your SFDX environment to look for issues.
 
 	```bash
 	
