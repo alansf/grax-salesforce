@@ -76,10 +76,8 @@ If you want to use the GRAX SDK within a non-scratch environment you can deploy 
 Below are a few helpful commands to analyze your SFDX environment to look for issues.
 
 
-    ```bash
 	sfdx force:org:list
 	
 	sfdx force:alias:list
-    
-    ```
+
 
