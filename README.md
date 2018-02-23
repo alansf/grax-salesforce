@@ -72,5 +72,14 @@ If you want to use the GRAX SDK within a non-scratch environment you can deploy 
     
     ```
     
-    
+1. Having Isues? 
+
+	```bash
+	
+	sfdx force:org:list
+	
+	sfdx force:alias:list
+	
+	
+	```
 
