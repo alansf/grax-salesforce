@@ -29,9 +29,6 @@ Below are the instructions to deploy GRAX to any Salesforce environment.
 1. Authenticate the Salesforce DX CLI to the target environment:
 
     ```bash
-    sfdx force:auth:web:login --setdefaultusername
-    
-    OR
     
     sfdx force:auth:web:login -a <ALIAS> -r <INSTANCEURL>
    
@@ -47,9 +44,6 @@ Below are the instructions to deploy GRAX to any Salesforce environment.
 1. Deploy the source code:
 
     ```bash
-    sfdx force:mdapi:deploy -d mdapioutput/ -w 100
-    
-    OR
     
     sfdx force:mdapi:deploy -d mdapioutput/ -w 100 -u <ALIAS>
     
