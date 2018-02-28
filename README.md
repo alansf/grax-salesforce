@@ -14,34 +14,33 @@ automatically using [Salesforce DX](https://developer.salesforce.com/tools/sfdxc
 * <b>Manual Deployment</b> - Use this to deploy to any Salesforce environment.
 ---------------------------------------------------------------------------------------------------------
 
+### Getting Started
 
-### Salesforce DX Automatic deployment
-You can automatically deploy the SDK to a new scratch environment using the _Deploy to SFDX_ button.
-
-[![Deploy](https://deploy-to-sfdx.com/dist/assets/images/DeployToSFDX.svg)](https://deploy-to-sfdx.com/)
-
-
-### Salesforce DX Manual deployment
 1. Clone this repository from GitHub using the following command:
 
     ```bash
     git clone https://github.com/HardingPoint/GRAXForSFDC && cd GRAXForSFDC
     ```
 
-1. Create a new scratch environment (optional if you don't want to re-use an existing one):
+### GRAX Development
+
+Open use Force IDE 2 or deploy to scratch org using commands below.
+
+1. Create a new scratch environment or use IDE.
 
     ```bash
     sfdx force:org:create -a grax-sdk -s -f config/developer-scratch-def.json
     ```
 
-1. Push the source to the scratch environment:
+1. Push the source to the scratch environment or use IDE
 
     ```bash
     sfdx force:source:push
-    ```
+    ```    
 
-### Non-Scratch Environment Deployment
-If you want to use the GRAX SDK within a non-scratch environment you can deploy it using the Salesforce DX CLI.
+### GRAX Deployment
+
+Below are the instructions to deploy GRAX to any Salesforce environment.
 
 1. Authenticate the Salesforce DX CLI to the target environment:
 
@@ -71,6 +70,17 @@ If you want to use the GRAX SDK within a non-scratch environment you can deploy 
     sfdx force:mdapi:deploy -d mdapioutput/ -w 100 -u <ALIAS>
     
     ```
+
+
+
+### Salesforce DX Automatic deployment
+
+CAUTION : Preferred you use Salesforce IDE. 
+
+You can automatically deploy the SDK to a new scratch environment using the _Deploy to SFDX_ button.
+
+[![Deploy](https://deploy-to-sfdx.com/dist/assets/images/DeployToSFDX.svg)](https://deploy-to-sfdx.com/)
+
     
 ### Having Isues? 
 Below are a few helpful commands to analyze your SFDX environment to look for issues.

@@ -30,6 +30,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>GRAXDeploy</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>GRAXException</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -42,7 +46,7 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>GRAXHerokuAuth</apexClass>
+        <apexClass>GRAXDeploy</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -115,27 +119,19 @@
         <enabled>true</enabled>
     </pageAccesses>
     <pageAccesses>
+        <apexPage>GRAXDeploy</apexPage>
+        <enabled>true</enabled>
+    </pageAccesses>
+    <pageAccesses>
         <apexPage>GRAXFlow</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
     <pageAccesses>
-        <apexPage>GRAXHerokuAuth</apexPage>
+        <apexPage>GRAXDeploy</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
     <tabVisibilities>
-        <tab>GRAXQuery__c</tab>
-        <visibility>DefaultOn</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-        <tab>GRAX_Configuration</tab>
-        <visibility>DefaultOn</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-        <tab>GRAX_Flow</tab>
-        <visibility>DefaultOn</visibility>
-    </tabVisibilities>
-    <tabVisibilities>
-        <tab>GRAX_Intro</tab>
+        <tab>GRAX_DEPLOY</tab>
         <visibility>DefaultOn</visibility>
     </tabVisibilities>
 </Profile>

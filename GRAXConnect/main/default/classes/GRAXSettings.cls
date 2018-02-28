@@ -7,7 +7,7 @@ public virtual with sharing class GRAXSettings {
 	public String ApiToken = '';
 	
 	// Default to the testing URL
-	public String ApiURL = 'https://test.hardingpoint.com/v9.3/api';
+	public String ApiURL = 'https://dev.hardingpoint.com/v9.3/api';
 
 	public Boolean isObjectConfigured = false;
 	
