@@ -26,6 +26,12 @@ automatically using [Salesforce DX](https://developer.salesforce.com/tools/sfdxc
 
 Below are the instructions to deploy GRAX to any Salesforce environment.
 
+1. Convert the source code:
+
+    ```bash
+    sfdx force:source:convert -d mdapioutput/
+    ```
+
 1. Authenticate the Salesforce DX CLI to the target environment:
 
     ```bash
@@ -34,12 +40,6 @@ Below are the instructions to deploy GRAX to any Salesforce environment.
    
     ```
     In the browser window that opens, sign in to your org with your credentials. More information [here](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_web_flow.htm)
-
-1. Convert the source code:
-
-    ```bash
-    sfdx force:source:convert -d mdapioutput/
-    ```
 
 1. Deploy the source code:
 
