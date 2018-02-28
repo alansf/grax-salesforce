@@ -1,10 +1,11 @@
-public virtual with sharing class GRAXSettings {
+public virtual class GRAXSettings {
 
 	public Boolean ProperlyConfigured = false; 
 	public String graphdburl = '';
 	public String LicenseToken = '';
 	public String GatewayToken = '';
 	public String ApiToken = '';
+	public GRAXSettings__c graxConfig;
 	
 	// Default to the testing URL
 	public String ApiURL = 'https://dev.hardingpoint.com/v9.3/api';
@@ -34,9 +35,13 @@ public virtual with sharing class GRAXSettings {
 		ProperlyConfigured = Initialize('');
     }
     
+    public void UpdateSettings(){	
+    		upsert graxConfig;
+    }
+    
     // Load the configuration & object settings.
     private Boolean Initialize(String ObjectName){
-    		GRAXSettings__c graxConfig = GRAXSettings__c.getOrgDefaults();
+    		graxConfig = GRAXSettings__c.getOrgDefaults();
 		if (graxConfig != null){
 			// GRAX Custom Settings Values.
 			graphdburl = graxConfig.graphdburl__c;

@@ -25,14 +25,14 @@
  						<b>1 - Heroku Deploy</b>
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
- 						<apex:commandButton value="Deploy GRAX" action="{!DeployGraxApp}" styleClass="graxButton" />
+ 						<apex:commandButton id="deploy" value="Deploy GRAX" action="{!DeployGraxApp}" styleClass="graxButton" />
  					</apex:pageBlockSectionItem>
  					
  					 <apex:pageBlockSectionItem>
  						<b>2 - Heroku Authorization</b>
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
- 						<apex:commandButton value="Authorize Heroku" action="{!AuthorizeHeroku}" styleClass="graxButton"  disabled="{!NOT(appselectdisabled)}"/>
+ 						<apex:commandButton id="authorizeheroku" value="Authorize Heroku" action="{!AuthorizeHeroku}" styleClass="graxButton"  disabled="{!NOT(appselectdisabled)}"/>
  					</apex:pageBlockSectionItem>
  					
  					<apex:pageBlockSectionItem>
@@ -43,6 +43,13 @@
 						 	<apex:selectOptions value="{!graxapps}"/>
 						 	<apex:actionSupport reRender="form" event="onchange"/>
 						 </apex:selectList>
+ 					</apex:pageBlockSectionItem>
+ 					
+ 					<apex:pageBlockSectionItem>
+ 						<b>3 - Update Settings</b>
+ 					</apex:pageBlockSectionItem>
+ 					<apex:pageBlockSectionItem>
+						<apex:commandButton id="updatesettings" value="Update Settings" action="{!UpdateCustomSettings}" styleClass="graxButton" />
  					</apex:pageBlockSectionItem>
  					
  				</apex:pageBlockSection>
@@ -59,23 +66,28 @@
  					</apex:pageBlockSectionItem>
 
  					<apex:pageBlockSectionItem>
- 						<apex:outputLabel for="apitoken" value="Gateway" style="objectTitleWidth"/>
+ 						<apex:outputLabel for="gatewaytoken" value="Gateway" style="objectTitleWidth"/>
  						<apex:inputTextarea id="gatewaytoken" value="{!graxsetting_gatewaytoken}" cols="150" rows="1"/>
  					</apex:pageBlockSectionItem>
  					
  					<apex:pageBlockSectionItem>
- 						<apex:outputLabel for="apitoken" value="License" style="objectTitleWidth"/>
+ 						<apex:outputLabel for="licensetoken" value="License" style="objectTitleWidth"/>
  						<apex:inputTextarea id="licensetoken" value="{!graxsetting_licensetoken}" cols="150" rows="1"/>
  					</apex:pageBlockSectionItem>
  					
  					<apex:pageBlockSectionItem>
- 						<apex:outputLabel for="apitoken" value="URL" style="objectTitleWidth"/>
+ 						<apex:outputLabel for="graphdburl" value="URL" style="objectTitleWidth"/>
  						<apex:inputTextarea id="graphdburl" value="{!graxsetting_graphdburl}" cols="150" rows="1" />
  					</apex:pageBlockSectionItem>
  					
  					<apex:pageBlockSectionItem>
- 						<apex:outputLabel for="apitoken" value="Flow" style="objectTitleWidth"/>
+ 						<apex:outputLabel for="flowurl" value="Flow" style="objectTitleWidth"/>
  						<apex:inputTextarea id="flowurl" value="{!graxsetting_flowurl}" cols="150" rows="1"/>
+ 					</apex:pageBlockSectionItem>
+ 					
+ 					<apex:pageBlockSectionItem>
+ 						<apex:outputLabel for="apiurl" value="Flow" style="objectTitleWidth"/>
+ 						<apex:inputTextarea id="apiurl" value="{!graxsetting_apiurl}" cols="150" rows="1"/>
  					</apex:pageBlockSectionItem>
  					
  				</apex:pageBlockSection>
