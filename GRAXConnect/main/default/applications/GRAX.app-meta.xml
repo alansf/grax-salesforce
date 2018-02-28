@@ -13,6 +13,7 @@
     <tab>GRAX_Configuration</tab>
     <tab>GRAX_Flow</tab>
     <tab>GRAXQuery__c</tab>
+    <tab>GRAX_DEPLOY</tab>
     <uiType>Lightning</uiType>
     <utilityBar>GRAX_UtilityBar</utilityBar>
 </CustomApplication>
