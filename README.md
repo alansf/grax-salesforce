@@ -22,22 +22,6 @@ automatically using [Salesforce DX](https://developer.salesforce.com/tools/sfdxc
     git clone https://github.com/HardingPoint/GRAXForSFDC && cd GRAXForSFDC
     ```
 
-### GRAX Development
-
-Open use Force IDE 2 or deploy to scratch org using commands below.
-
-1. Create a new scratch environment or use IDE.
-
-    ```bash
-    sfdx force:org:create -a grax-sdk -s -f config/developer-scratch-def.json
-    ```
-
-1. Push the source to the scratch environment or use IDE
-
-    ```bash
-    sfdx force:source:push
-    ```    
-
 ### GRAX Deployment
 
 Below are the instructions to deploy GRAX to any Salesforce environment.
@@ -71,6 +55,21 @@ Below are the instructions to deploy GRAX to any Salesforce environment.
     
     ```
 
+### GRAX Development
+
+Open use Force IDE 2 or deploy to scratch org using commands below.
+
+1. Create a new scratch environment or use IDE.
+
+    ```bash
+    sfdx force:org:create -a grax-sdk -s -f config/developer-scratch-def.json
+    ```
+
+1. Push the source to the scratch environment or use IDE
+
+    ```bash
+    sfdx force:source:push
+    ```    
 
 
 ### Salesforce DX Automatic deployment
