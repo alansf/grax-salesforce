@@ -21,7 +21,7 @@
 	    		isconfigured = GRAXSettings.IsConfigured();
 	    		disablesave = true;
 	    		if (isconfigured==false)
-	    			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error, '<a href="/one/one.app#/setup/CustomSettings/home">GRAX Settings Incomplete</a>'));
+	    			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error, '<a href="/one/one.app#/n/GRAX_DEPLOY">GRAX Settings Incomplete</a>'));
 	    		else{
 	    			sychedObjectsSaved = getSynchedObjects();
 		    		RelatedToList = new Map<String,String>();

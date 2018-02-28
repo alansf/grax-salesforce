@@ -57,7 +57,7 @@
  						<b>3 - Update Settings</b>
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
-						<apex:commandButton id="updatesettings" value="Update Settings" action="{!UpdateCustomSettings}" styleClass="graxButton" />
+						<apex:commandButton id="updatesettings" value="Update Settings" action="{!UpdateCustomSettings}" styleClass="graxButton" disabled="{!appselectdisabled}"/>
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
  					</apex:pageBlockSectionItem>
