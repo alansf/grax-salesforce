@@ -110,7 +110,7 @@ public with sharing class GRAXDeploy {
 		    graxsetting_graphdburl = GetAppConfig('GRAPHCONNECT_URL');
 		    graxsetting_licensetoken = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
 		    graxsetting_flowurl = 'https://' + appName + '.herokuapp.com';
-		    graxsetting_apiurl = 'https://test.hardingpoint.com/v9.3/api';
+		    graxsetting_apiurl = ''; // Let it default to code base
     		}
     		return graxappJSON;
     }
