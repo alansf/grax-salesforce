@@ -36,7 +36,7 @@
  						<b>2 - Heroku Authorization</b>
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
- 						<apex:commandButton id="authorizeheroku" value="Authorize Heroku" action="{!AuthorizeHeroku}" styleClass="graxButton"  disabled="{!NOT(appselectdisabled)}"/>
+ 						<apex:commandButton id="authorizeheroku" value="Authorize Heroku" action="{!AuthorizeHeroku}" styleClass="graxButton" />
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
  					</apex:pageBlockSectionItem>
