@@ -8,7 +8,7 @@ public virtual class GRAXSettings {
 	public GRAXSettings__c graxConfig;
 	
 	// Default to the testing URL
-	public String ApiURL = 'https://dev.hardingpoint.com/v9.3/api';
+	public String ApiURL = 'https://test.hardingpoint.com/v9.3/api';
 
 	public Boolean isObjectConfigured = false;
 	
