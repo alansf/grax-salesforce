@@ -28,7 +28,7 @@ public with sharing class GRAXDeploy {
     public GRAXDeploy() {
     		appselectdisabled = true;
     		graxapps = new List<SelectOption>(); 
-    		graxapps.add(new SelectOption('','--SELECT APP--'));
+    		graxapps.add(new SelectOption('','-- Select Heroku Application --'));
     		graxconfig = GetConfig();	
     		graxapps = ParseJSON();
     		isconfigured = false;

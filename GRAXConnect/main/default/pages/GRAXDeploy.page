@@ -20,29 +20,27 @@
  	<apex:pageBlock id="block1">
  		<apex:pageBlockSection title="GRAX Configuration">
  			<apex:pageBlockSectionItem>
- 				<apex:pageBlockSection columns="3"> 				
- 				 	<apex:pageBlockSectionItem>
- 						<b>1 - Heroku Deploy</b>
- 					</apex:pageBlockSectionItem>
+ 				<apex:pageBlockSection columns="2"> 		
  					<apex:pageBlockSectionItem>
- 						<apex:commandButton id="deploy" value="Deploy GRAX" action="{!DeployGraxApp}" styleClass="graxButton" />
- 					</apex:pageBlockSectionItem>
- 					<apex:pageBlockSectionItem>
- 						<b>Optional</b>
- 					</apex:pageBlockSectionItem>
- 					
- 					
- 					 <apex:pageBlockSectionItem>
- 						<b>2 - Heroku Authorization</b>
+ 						<b>Authorize</b>
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
  						<apex:commandButton id="authorizeheroku" value="Authorize Heroku" action="{!AuthorizeHeroku}" styleClass="graxButton" />
  					</apex:pageBlockSectionItem>
+ 				
+ 						
+ 				 	<apex:pageBlockSectionItem>
+ 						<b>Create</b>
+ 					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
+ 						<apex:commandButton id="deploy" value="Create Heroku Application" action="{!DeployGraxApp}" styleClass="graxButton" />
  					</apex:pageBlockSectionItem>
  					
+ 					
+
+ 					
  					<apex:pageBlockSectionItem>
- 						<b>3 - Select App</b>
+ 						<b>Choose App</b>
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
  						 <apex:selectList id="objectlist" value="{!graxapp}" multiselect="false" size="1" disabled="{!appselectdisabled}">
@@ -50,16 +48,12 @@
 						 	<apex:actionSupport reRender="form" event="onchange"/>
 						 </apex:selectList>
  					</apex:pageBlockSectionItem>
- 					<apex:pageBlockSectionItem>
- 					</apex:pageBlockSectionItem>
  					
  					<apex:pageBlockSectionItem>
- 						<b>3 - Update Settings</b>
+ 						<b>Save</b>
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
-						<apex:commandButton id="updatesettings" value="Update Settings" action="{!UpdateCustomSettings}" styleClass="graxButton" disabled="{!appselectdisabled}"/>
- 					</apex:pageBlockSectionItem>
- 					<apex:pageBlockSectionItem>
+						<apex:commandButton id="updatesettings" value="Save GRAX Settings" action="{!UpdateCustomSettings}" styleClass="graxButton" disabled="{!appselectdisabled}"/>
  					</apex:pageBlockSectionItem>
  					
  				</apex:pageBlockSection>
