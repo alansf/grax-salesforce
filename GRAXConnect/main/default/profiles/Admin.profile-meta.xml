@@ -134,4 +134,16 @@
         <tab>GRAX_DEPLOY</tab>
         <visibility>DefaultOn</visibility>
     </tabVisibilities>
+    <tabVisibilities>
+        <tab>GRAX_Configuration</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
+    <tabVisibilities>
+        <tab>GRAX_Flow</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
+    <tabVisibilities>
+        <tab>GRAX_Intro</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
 </Profile>

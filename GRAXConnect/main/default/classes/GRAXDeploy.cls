@@ -16,6 +16,7 @@ public with sharing class GRAXDeploy {
 	}
 	public string graxapp {get;set;}
 	public string graxappJSON {get;set;}
+	public string graxsetting_graxapp {get;set;}
 	public string graxsetting_apitoken {get;set;}
 	public string graxsetting_gatewaytoken  {get;set;}
 	public string graxsetting_graphdburl {get;set;}
@@ -31,6 +32,15 @@ public with sharing class GRAXDeploy {
     		graxconfig = GetConfig();	
     		graxapps = ParseJSON();
     		isconfigured = false;
+    		
+    		GRAXSettings settings = new GRAXSettings();
+    		graxsetting_apitoken = settings.graxConfig.ApiToken__c;
+		graxsetting_gatewaytoken = settings.graxConfig.GatewayToken__c;
+		graxsetting_licensetoken = settings.graxConfig.LicenseToken__c;
+		graxsetting_graphdburl = settings.graxConfig.graphdburl__c;
+		graxsetting_flowurl = settings.graxConfig.GRAX_Flow_URL__c;
+		graxsetting_apiurl = settings.graxConfig.GRAX_API_Url__c;
+		graxsetting_graxapp = settings.graxConfig.Heroku_App_Name__c;
     }
     
     public pagereference AuthorizeHeroku(){
@@ -47,7 +57,7 @@ public with sharing class GRAXDeploy {
 			settings.graxConfig.graphdburl__c = graxsetting_graphdburl;
 			settings.graxConfig.GRAX_Flow_URL__c = graxsetting_flowurl;
 			settings.graxConfig.GRAX_API_Url__c = graxsetting_apiurl;
-			
+			settings.graxConfig.Heroku_App_Name__c = graxsetting_graxapp;
 			settings.UpdateSettings();
     		}
 		return null;
@@ -110,12 +120,14 @@ public with sharing class GRAXDeploy {
 			    graxappJSON = res.getBody();
 			    LastAppName = appName;
 			    
+			    graxsetting_graxapp = appName;
 			    graxsetting_apitoken = GetAppConfig('ENGAGEMENTGRAPH_APITOKEN');
 			    graxsetting_gatewaytoken = GetAppConfig('ENGAGEMENTGRAPH_GATEWAYTOKEN');
 			    graxsetting_graphdburl = GetAppConfig('GRAPHCONNECT_URL');
 			    graxsetting_licensetoken = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
 			    graxsetting_flowurl = 'https://' + appName + '.herokuapp.com';
 			    graxsetting_apiurl = ''; // Let it default to code base
+			    
 			} catch (Exception e) {
 			     //Generic exception handling code here
 			} finally {
