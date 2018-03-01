@@ -79,9 +79,13 @@ public with sharing class GRAXDeploy {
     
     private String GetUrl(string path){
     		String Url = gxs.ApiURL + path + '?';
-    		Url += 'orgid=' + UserInfo.getOrganizationId();
-    		Url += '&userid=' + UserInfo.getUserId();
-    		Url += '&host=' + ApexPages.currentPage().getHeaders().get('Host');
+    		Url += 'orgid=' + EncodingUtil.urlEncode(UserInfo.getOrganizationId(),'UTF-8');
+    		Url += '&userid=' + EncodingUtil.urlEncode(UserInfo.getUserId(),'UTF-8');
+    		Url += '&host=' + EncodingUtil.urlEncode(ApexPages.currentPage().getHeaders().get('Host'),'UTF-8');
+    		Url += '&companyname=' + EncodingUtil.urlEncode(UserInfo.getOrganizationName(),'UTF-8');
+    		Url += '&firstname=' + EncodingUtil.urlEncode(UserInfo.getFirstName(),'UTF-8');
+    		Url += '&lastname=' + EncodingUtil.urlEncode(UserInfo.getLastName(),'UTF-8');
+    		Url += '&email=' + EncodingUtil.urlEncode(UserInfo.getUserEmail(),'UTF-8');
     		return Url;
     }
 
@@ -97,20 +101,27 @@ public with sharing class GRAXDeploy {
     public String queryAppConfig(String appName){
     		graxappJSON = '';
     		if (appName!='' && appName != LastAppName){
-    			Http h = new Http();
-		    HttpRequest req = new HttpRequest();
-		    req.setEndpoint(GetUrl('/platforms/heroku/getappconfig') + '&appname=' + appName);
-		    req.setMethod('GET');
-		    HttpResponse res = h.send(req);
-		    graxappJSON = res.getBody();
-		    LastAppName = appName;
-		    
-		    graxsetting_apitoken = GetAppConfig('ENGAGEMENTGRAPH_APITOKEN');
-		    graxsetting_gatewaytoken = GetAppConfig('ENGAGEMENTGRAPH_GATEWAYTOKEN');
-		    graxsetting_graphdburl = GetAppConfig('GRAPHCONNECT_URL');
-		    graxsetting_licensetoken = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
-		    graxsetting_flowurl = 'https://' + appName + '.herokuapp.com';
-		    graxsetting_apiurl = ''; // Let it default to code base
+    			try{
+	    			Http h = new Http();
+			    HttpRequest req = new HttpRequest();
+			    req.setEndpoint(GetUrl('/platforms/heroku/getappconfig') + '&appname=' + appName);
+			    req.setMethod('GET');
+			    HttpResponse res = h.send(req);
+			    graxappJSON = res.getBody();
+			    LastAppName = appName;
+			    
+			    graxsetting_apitoken = GetAppConfig('ENGAGEMENTGRAPH_APITOKEN');
+			    graxsetting_gatewaytoken = GetAppConfig('ENGAGEMENTGRAPH_GATEWAYTOKEN');
+			    graxsetting_graphdburl = GetAppConfig('GRAPHCONNECT_URL');
+			    graxsetting_licensetoken = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
+			    graxsetting_flowurl = 'https://' + appName + '.herokuapp.com';
+			    graxsetting_apiurl = ''; // Let it default to code base
+			} catch (Exception e) {
+			     //Generic exception handling code here
+			} finally {
+			     //optional finally block
+			     //code to run whether there is an exception or not
+			}
     		}
     		return graxappJSON;
     }
@@ -134,29 +145,37 @@ public with sharing class GRAXDeploy {
     		String FieldName = '';
     		String FieldValue = '';
     		String GraxAppName = '';
-        if (graxconfig!=null && graxconfig!=''){
-        		JSONParser parser = JSON.createParser(graxconfig);
-        		while (parser.nextToken() != null) {
-        			if (parser.getCurrentToken() == JSONToken.FIELD_NAME)
-        			{
-        				FieldName = parser.getText();
-        				parser.nextToken();
-        				FieldValue = parser.getText();
-        				
-        				if (FieldName=='authorized')
-        					isconfigured = true;
-        				
-        				if (FieldName=='name')
-        					GraxAppName = FieldValue;
-        				
-        				if (FieldName=='id'){
-        					appselectdisabled = false;
-        					system.debug('[GRAX.io] ' + GraxAppName + '=' + FieldValue);
-        					graxapps.add(new SelectOption(GraxAppName,GraxAppName)); 
-        				}
-        			}	
-        		}
-        }
+    		try{
+	    		if (graxconfig!=null && graxconfig!=''){
+	        		JSONParser parser = JSON.createParser(graxconfig);
+	        		while (parser.nextToken() != null) {
+	        			if (parser.getCurrentToken() == JSONToken.FIELD_NAME)
+	        			{
+	        				FieldName = parser.getText();
+	        				parser.nextToken();
+	        				FieldValue = parser.getText();
+	        				
+	        				if (FieldName=='authorized')
+	        					isconfigured = true;
+	        				
+	        				if (FieldName=='name')
+	        					GraxAppName = FieldValue;
+	        				
+	        				if (FieldName=='id'){
+	        					appselectdisabled = false;
+	        					system.debug('[GRAX.io] ' + GraxAppName + '=' + FieldValue);
+	        					graxapps.add(new SelectOption(GraxAppName,GraxAppName)); 
+	        				}
+	        			}	
+	        		}
+	        }
+		} catch (Exception e) {
+		     //Generic exception handling code here
+		} finally {
+		     //optional finally block
+		     //code to run whether there is an exception or not
+		}
+    		
         
         graxapps.sort();
         return graxapps;
