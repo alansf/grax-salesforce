@@ -14,6 +14,11 @@ automatically using [Salesforce DX](https://developer.salesforce.com/tools/sfdxc
 * <b>Manual Deployment</b> - Use this to deploy to any Salesforce environment.
 ---------------------------------------------------------------------------------------------------------
 
+<a href="https://githubsfdeploy.herokuapp.com?owner=HardingPoint&GRAXForSFDC">
+  <img alt="Deploy to Salesforce"
+       src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/src/main/webapp/resources/img/deploy.png">
+</a>
+
 ### Getting Started
 
 1. Clone this repository from GitHub using the following command:
@@ -74,6 +79,7 @@ You can automatically deploy the SDK to a new scratch environment using the _Dep
 
 [![Deploy](https://deploy-to-sfdx.com/dist/assets/images/DeployToSFDX.svg)](https://deploy-to-sfdx.com/)
 
+https://githubsfdeploy.herokuapp.com/app/githubdeploy
     
 ### Having Isues? 
 Below are a few helpful commands to analyze your SFDX environment to look for issues.

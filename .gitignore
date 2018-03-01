@@ -6,6 +6,5 @@
 .settings/
 node_modules/
 .idea/
-mdapioutput/
-mdapioutput/*.*
+
 
