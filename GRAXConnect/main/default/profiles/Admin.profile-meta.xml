@@ -5,6 +5,11 @@
         <default>false</default>
         <visible>true</visible>
     </applicationVisibilities>
+    <applicationVisibilities>
+        <application>GRAX_Classic</application>
+        <default>false</default>
+        <visible>true</visible>
+    </applicationVisibilities>
     <classAccesses>
         <apexClass>GRAXApi</apexClass>
         <enabled>true</enabled>
@@ -43,10 +48,6 @@
     </classAccesses>
     <classAccesses>
         <apexClass>GRAXFlow</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>GRAXDeploy</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -124,10 +125,6 @@
     </pageAccesses>
     <pageAccesses>
         <apexPage>GRAXFlow</apexPage>
-        <enabled>true</enabled>
-    </pageAccesses>
-    <pageAccesses>
-        <apexPage>GRAXDeploy</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
     <tabVisibilities>
