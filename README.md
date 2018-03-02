@@ -24,17 +24,12 @@ With a few clicks you can deploy GRAX for Salesforce, synchronize your enterpris
 
 ## Manual Installation
 
-### Getting Started
+Below are the instructions to deploy GRAX to any Salesforce environment.
 
 1. Clone this repository from GitHub using the following command:
 
     ```bash
     git clone https://github.com/HardingPoint/GRAXForSFDC && cd GRAXForSFDC
-    ```
-
-### GRAX Deployment
-
-Below are the instructions to deploy GRAX to any Salesforce environment.
 
 1. Convert the source code:
 
@@ -62,6 +57,11 @@ Below are the instructions to deploy GRAX to any Salesforce environment.
 ### GRAX Development
 
 Open use Force IDE 2 or deploy to scratch org using commands below.
+
+1. Clone this repository from GitHub using the following command:
+
+    ```bash
+    git clone https://github.com/HardingPoint/GRAXForSFDC && cd GRAXForSFDC
 
 1. Create a new scratch environment or use IDE.
 
