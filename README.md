@@ -11,7 +11,7 @@ With a few clicks you can deploy GRAX for Salesforce, synchronize your enterpris
 
 1. <a href="https://developer.salesforce.com/signup">Create a Salesforce Developer Org</a>
 	
-	If you have one already you can skip to the next step.
+	<i>(Skip to the next step if you have one)</>
 
 1. <a href="https://deploytosalesforce.herokuapp.com?owner=HardingPoint&repo=GRAXForSFDC">Deploy GRAXForSFDC to your Salesforce Instance</a>
 
