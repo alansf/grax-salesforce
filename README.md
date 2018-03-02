@@ -16,11 +16,6 @@ With a few clicks you can deploy GRAX for Salesforce, synchronize your enterpris
        src="https://deploy-to-sfdx.com/dist/assets/images/DeployToSFDX.svg">
 </a>
 
-1. Log into your Salesforce Instance
-
-	1. <a href="https://login.salesforce.com/">Production</a>
-	1. <a href="https://test.salesforce.com/">Sandbox</a>
-
 1. Configure GRAX - Done.
 
 	1. <a href="https://login.salesforce.com/startURL=%2Fone%2Fone.app/one/one.app#/n/GRAX_DEPLOY">Configure Production</a>
