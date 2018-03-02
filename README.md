@@ -74,15 +74,6 @@ Open use Force IDE 2 or deploy to scratch org using commands below.
     ```bash
     sfdx force:source:push
     ```    
-
-
-### Salesforce Scratch Org Deployment
-
-You can automatically deploy the SDK to a new scratch environment using the _Deploy to SFDX_ button.
-
-[![Deploy](https://deploy-to-sfdx.com/dist/assets/images/DeployToSFDX.svg)](https://deploy-to-sfdx.com/)
-
-https://githubsfdeploy.herokuapp.com/app/githubdeploy
     
 ### Having Isues? 
 Below are a few helpful commands to analyze your SFDX environment to look for issues.
