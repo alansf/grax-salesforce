@@ -18,6 +18,9 @@ With a few clicks you can deploy GRAX for Salesforce, synchronize your enterpris
 
 1. Log into your Salesforce Instance
 
+	1. <a href="https://login.salesforce.com/">Production</a>
+	1. <a href="https://test.salesforce.com/">Sandbox</a>
+
 1. Configure GRAX - Done.
 
 
