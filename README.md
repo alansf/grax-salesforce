@@ -7,21 +7,21 @@ The GRAX Salesforce SDK uses the [GRAX Cloud](https://www.grax.io/) services to 
 ---------------------------------------------------------------------------------------------------------
 ## Installation
 
-There are two supported installation methods: 
-automatically using [Salesforce DX](https://developer.salesforce.com/tools/sfdxcli), manually using [Salesforce DX](https://developer.salesforce.com/tools/sfdxcli). By default, all classes in the SDK will be deployed to your Salesforce org. If you would like to deploy the GRAX Salesforce SDK follow the manual instructions to push to your environment.
+With a few clicks you can deploy GRAX for Salesforce, synchronize your enterprise graph, and begin to utilize flow.
 
-* <b>Automatic Deployment</b> - Use this to deploy to a Salesforce Scratch environment.
-* <b>Manual Deployment</b> - Use this to deploy to any Salesforce environment.
----------------------------------------------------------------------------------------------------------
-
-## Automated Deployment
+1. Deploy GRAXForSFDC to your Salesforce Instance
 
 <a href="https://githubsfdeploy.herokuapp.com?owner=HardingPoint&repo=GRAXForSFDC">
   <img alt="Deploy to Salesforce"
        src="https://deploy-to-sfdx.com/dist/assets/images/DeployToSFDX.svg">
 </a>
 
-## Manual Deployment
+1. Log into your Salesforce Instance
+
+1. Configure GRAX - Done.
+
+
+## Manual Installation
 
 ### Getting Started
 
@@ -75,9 +75,7 @@ Open use Force IDE 2 or deploy to scratch org using commands below.
     ```    
 
 
-### Salesforce DX Automatic deployment
-
-CAUTION : Preferred you use Salesforce IDE. 
+### Salesforce Scratch Org Deployment
 
 You can automatically deploy the SDK to a new scratch environment using the _Deploy to SFDX_ button.
 
