@@ -30,14 +30,14 @@
  					</apex:pageBlockSectionItem>
  				
  				 	<apex:pageBlockSectionItem>
- 						<b>Select Application</b>
+ 						<b>Create</b>
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
  						<apex:commandButton id="deploy" value="Create Heroku Application" action="{!DeployGraxApp}" styleClass="graxButton"  disabled="{!appselectdisabled || disableeverything}"/>
  					</apex:pageBlockSectionItem>
  					
  					<apex:pageBlockSectionItem>
- 						<b>Choose Application</b>
+ 						<b>Select</b>
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
  						 <apex:selectList id="objectlist" value="{!graxapp}" multiselect="false" size="1" disabled="{!appselectdisabled || disableeverything}">

@@ -37,13 +37,13 @@ public with sharing class GRAXDeploy {
     		
     		appselectdisabled = true;
     		graxapps = new List<SelectOption>(); 
-    		graxapps.add(new SelectOption('','-- Select Heroku Application --'));
+    		graxapps.add(new SelectOption('','-- Choose Heroku Application --'));
     		graxconfig = GetConfig();	
     		graxapps = ParseJSON();
     		isconfigured = false;
 		
 		if (GRAXSettings.IsConfigured()==false)
-			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Please Authorize, Create, and Select GRAX Heroku Application'));
+			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Please Select Application.'));
 		
 		LockSettings(GRAXSettings.IsConfigured());
     }
