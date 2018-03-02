@@ -18,6 +18,7 @@
     </style>
  
  	<apex:pageBlock id="block1">
+ 		<apex:pageMessages escape="false"/>
  		<apex:pageBlockSection title="GRAX Configuration">
  			<apex:pageBlockSectionItem>
  				<apex:pageBlockSection columns="2"> 		

@@ -59,6 +59,7 @@ public with sharing class GRAXDeploy {
 			settings.graxConfig.GRAX_API_Url__c = graxsetting_apiurl;
 			settings.graxConfig.Heroku_App_Name__c = graxsetting_graxapp;
 			settings.UpdateSettings();
+			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Saved ' + settings.graxConfig.Heroku_App_Name__c + ' App Settings.'));
     		}
 		return null;
     }
