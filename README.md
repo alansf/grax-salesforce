@@ -10,8 +10,10 @@ The GRAX Salesforce SDK uses the [GRAX Cloud](https://www.grax.io/) services to 
 With a few clicks you can deploy GRAX for Salesforce, synchronize your enterprise graph, and begin to utilize flow.
 
 1. <a href="https://developer.salesforce.com/signup">Create a Salesforce Developer Org</a>
+	
+	If you have one already you can skip to the next step.
 
-1. Deploy GRAXForSFDC to your Salesforce Instance
+1. <a href="https://deploytosalesforce.herokuapp.com?owner=HardingPoint&repo=GRAXForSFDC">Deploy GRAXForSFDC to your Salesforce Instance</a>
 
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://deploytosalesforce.herokuapp.com?owner=HardingPoint&repo=GRAXForSFDC">
 	  <img alt="Deploy to Salesforce"
