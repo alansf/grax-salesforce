@@ -14,10 +14,14 @@ automatically using [Salesforce DX](https://developer.salesforce.com/tools/sfdxc
 * <b>Manual Deployment</b> - Use this to deploy to any Salesforce environment.
 ---------------------------------------------------------------------------------------------------------
 
+## Automated Deployment
+
 <a href="https://githubsfdeploy.herokuapp.com?owner=HardingPoint&repo=GRAXForSFDC">
   <img alt="Deploy to Salesforce"
-       src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/src/main/webapp/resources/img/deploy.png">
+       src="https://deploy-to-sfdx.com/dist/assets/images/DeployToSFDX.svg">
 </a>
+
+## Manual Deployment
 
 ### Getting Started
 
