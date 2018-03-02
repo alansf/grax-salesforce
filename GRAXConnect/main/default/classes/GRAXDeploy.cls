@@ -5,6 +5,7 @@ public with sharing class GRAXDeploy {
 	public string graxconfig {get;set;}
 	public boolean isconfigured {get;set;}
 	public boolean appselectdisabled {get;set;}
+	public boolean disableeverything {get;set;}
 	public boolean appselected {
 		get {
 			if (graxsetting_apitoken!='' && graxsetting_gatewaytoken!='' && graxsetting_graphdburl!='' && graxsetting_licensetoken!='')
@@ -27,6 +28,7 @@ public with sharing class GRAXDeploy {
 	
     public GRAXDeploy() {
     		appselectdisabled = true;
+    		disableeverything = false;
     		graxapps = new List<SelectOption>(); 
     		graxapps.add(new SelectOption('','-- Select Heroku Application --'));
     		graxconfig = GetConfig();	
@@ -49,6 +51,7 @@ public with sharing class GRAXDeploy {
     }
    		 
     public pagereference UpdateCustomSettings(){
+    		disableeverything = true;
     		if (graxsetting_apitoken!='' && graxsetting_gatewaytoken!='' && graxsetting_licensetoken!='' && graxsetting_graphdburl!=''){
     			GRAXSettings settings = new GRAXSettings();
 			settings.graxConfig.ApiToken__c = graxsetting_apitoken;
@@ -61,6 +64,7 @@ public with sharing class GRAXDeploy {
 			settings.UpdateSettings();
 			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Saved ' + settings.graxConfig.Heroku_App_Name__c + ' GRAX Settings.'));
     		}
+    		disableeverything = false;
 		return null;
     }
     
@@ -111,6 +115,7 @@ public with sharing class GRAXDeploy {
     
     public String queryAppConfig(String appName){
     		graxappJSON = '';
+    		disableeverything = true;
     		if (appName!='' && appName != LastAppName){
     			try{
 	    			Http h = new Http();
@@ -136,6 +141,7 @@ public with sharing class GRAXDeploy {
 			     //code to run whether there is an exception or not
 			}
     		}
+    		disableeverything = false;
     		return graxappJSON;
     }
     

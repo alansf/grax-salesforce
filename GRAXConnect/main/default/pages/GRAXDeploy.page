@@ -26,7 +26,7 @@
  						<b>Authorize</b>
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
- 						<apex:commandButton id="authorizeheroku" value="Authorize GRAX for Heroku" action="{!AuthorizeHeroku}" styleClass="graxButton" />
+ 						<apex:commandButton id="authorizeheroku" value="Authorize GRAX for Heroku" action="{!AuthorizeHeroku}" styleClass="graxButton"  disabled="{!disableeverything}"/>
  					</apex:pageBlockSectionItem>
  				
  						
@@ -34,7 +34,7 @@
  						<b>Select Application</b>
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
- 						<apex:commandButton id="deploy" value="Create Heroku Application" action="{!DeployGraxApp}" styleClass="graxButton"  disabled="{!appselectdisabled}"/>
+ 						<apex:commandButton id="deploy" value="Create Heroku Application" action="{!DeployGraxApp}" styleClass="graxButton"  disabled="{!appselectdisabled || disableeverything}"/>
  					</apex:pageBlockSectionItem>
  					
  					
@@ -44,7 +44,7 @@
  						<b>Choose Application</b>
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
- 						 <apex:selectList id="objectlist" value="{!graxapp}" multiselect="false" size="1" disabled="{!appselectdisabled}">
+ 						 <apex:selectList id="objectlist" value="{!graxapp}" multiselect="false" size="1" disabled="{!appselectdisabled || disableeverything}">
 						 	<apex:selectOptions value="{!graxapps}"/>
 						 	<apex:actionSupport reRender="form" event="onchange"/>
 						 </apex:selectList>
@@ -54,7 +54,7 @@
  						<b>Save</b>
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
-						<apex:commandButton id="updatesettings" value="Save GRAX Settings" action="{!UpdateCustomSettings}" styleClass="graxButton" disabled="{!appselectdisabled}"/>
+						<apex:commandButton id="updatesettings" value="Save GRAX Settings" action="{!UpdateCustomSettings}" styleClass="graxButton" disabled="{!appselectdisabled || disableeverything}"/>
  					</apex:pageBlockSectionItem>
  					
  				</apex:pageBlockSection>
