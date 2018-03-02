@@ -5,6 +5,7 @@ public with sharing class GRAXDeploy {
 	public string graxconfig {get;set;}
 	public boolean isconfigured {get;set;}
 	public boolean appselectdisabled {get;set;}
+	public boolean disableeverything {get;set;}
 	public boolean appselected {
 		get {
 			if (graxsetting_apitoken!='' && graxsetting_gatewaytoken!='' && graxsetting_graphdburl!='' && graxsetting_licensetoken!='')
@@ -14,6 +15,10 @@ public with sharing class GRAXDeploy {
 		}
 		set;
 	}
+	
+	public string actiontext {get;set;}
+	public string actionbuttontext {get;set;}
+	
 	public string graxapp {get;set;}
 	public string graxappJSON {get;set;}
 	public string graxsetting_graxapp {get;set;}
@@ -26,40 +31,69 @@ public with sharing class GRAXDeploy {
 	public List<SelectOption> graxapps {get;set;} 
 	
     public GRAXDeploy() {
+    		
+    		actiontext = 'Save';
+    		actionbuttontext = 'Save GRAX Settings';
+    		
     		appselectdisabled = true;
     		graxapps = new List<SelectOption>(); 
-    		graxapps.add(new SelectOption('','-- Select Heroku Application --'));
+    		graxapps.add(new SelectOption('','-- Choose Heroku Application --'));
     		graxconfig = GetConfig();	
     		graxapps = ParseJSON();
     		isconfigured = false;
-    		
-    		GRAXSettings settings = new GRAXSettings();
-    		graxsetting_apitoken = settings.graxConfig.ApiToken__c;
-		graxsetting_gatewaytoken = settings.graxConfig.GatewayToken__c;
-		graxsetting_licensetoken = settings.graxConfig.LicenseToken__c;
-		graxsetting_graphdburl = settings.graxConfig.graphdburl__c;
-		graxsetting_flowurl = settings.graxConfig.GRAX_Flow_URL__c;
-		graxsetting_apiurl = settings.graxConfig.GRAX_API_Url__c;
-		graxsetting_graxapp = settings.graxConfig.Heroku_App_Name__c;
+		
+		if (GRAXSettings.IsConfigured()==false)
+			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Please Select Application.'));
+		
+		LockSettings(GRAXSettings.IsConfigured());
     }
     
     public pagereference AuthorizeHeroku(){
 		pagereference p = new pagereference(GetUrl('/platforms/heroku/oauth/authorize'));
 		return p;
     }
+   	
+   	public void LockSettings(Boolean LockFlag){
+   		if (LockFlag){
+   			actiontext = 'GRAX Settings';
+   			actionbuttontext = 'Unlock';
+   			disableeverything = true;
+   			GRAXSettings settings = new GRAXSettings();
+	    		graxsetting_apitoken = settings.graxConfig.ApiToken__c;
+			graxsetting_gatewaytoken = settings.graxConfig.GatewayToken__c;
+			graxsetting_licensetoken = settings.graxConfig.LicenseToken__c;
+			graxsetting_graphdburl = settings.graxConfig.graphdburl__c;
+			graxsetting_flowurl = settings.graxConfig.GRAX_Flow_URL__c;
+			graxsetting_apiurl = settings.graxConfig.GRAX_API_Url__c;
+			graxsetting_graxapp = settings.graxConfig.Heroku_App_Name__c;
+			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'GRAX Settings Locked'));
+   		}else{
+   			actiontext = 'GRAX Settings';
+   			actionbuttontext = 'Save';
+   			disableeverything = false;
+   			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'GRAX Settings Unlocked'));
+   		}
+   	}
    		 
     public pagereference UpdateCustomSettings(){
-    		if (graxsetting_apitoken!='' && graxsetting_gatewaytoken!='' && graxsetting_licensetoken!='' && graxsetting_graphdburl!=''){
-    			GRAXSettings settings = new GRAXSettings();
-			settings.graxConfig.ApiToken__c = graxsetting_apitoken;
-			settings.graxConfig.GatewayToken__c = graxsetting_gatewaytoken;
-			settings.graxConfig.LicenseToken__c =graxsetting_licensetoken;
-			settings.graxConfig.graphdburl__c = graxsetting_graphdburl;
-			settings.graxConfig.GRAX_Flow_URL__c = graxsetting_flowurl;
-			settings.graxConfig.GRAX_API_Url__c = graxsetting_apiurl;
-			settings.graxConfig.Heroku_App_Name__c = graxsetting_graxapp;
-			settings.UpdateSettings();
+    		if (actionbuttontext=='Save'){
+    			if (graxsetting_apitoken!='' && graxsetting_gatewaytoken!='' && graxsetting_licensetoken!='' && graxsetting_graphdburl!=''){
+	    			GRAXSettings settings = new GRAXSettings();
+				settings.graxConfig.ApiToken__c = graxsetting_apitoken;
+				settings.graxConfig.GatewayToken__c = graxsetting_gatewaytoken;
+				settings.graxConfig.LicenseToken__c =graxsetting_licensetoken;
+				settings.graxConfig.graphdburl__c = graxsetting_graphdburl;
+				settings.graxConfig.GRAX_Flow_URL__c = graxsetting_flowurl;
+				settings.graxConfig.GRAX_API_Url__c = graxsetting_apiurl;
+				settings.graxConfig.Heroku_App_Name__c = graxsetting_graxapp;
+				settings.UpdateSettings();
+				ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Saved GRAX Settings.'));
+	    		}
+	    		LockSettings(true);
     		}
+    		else
+    			LockSettings(false);
+    		
 		return null;
     }
     
@@ -110,7 +144,7 @@ public with sharing class GRAXDeploy {
     
     public String queryAppConfig(String appName){
     		graxappJSON = '';
-    		if (appName!='' && appName != LastAppName){
+    		if (appName!='' && appName != LastAppName && appName!=null){
     			try{
 	    			Http h = new Http();
 			    HttpRequest req = new HttpRequest();
@@ -188,7 +222,6 @@ public with sharing class GRAXDeploy {
 		     //code to run whether there is an exception or not
 		}
     		
-        
         graxapps.sort();
         return graxapps;
    	}
