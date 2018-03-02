@@ -18,8 +18,8 @@ With a few clicks you can deploy GRAX for Salesforce, synchronize your enterpris
 
 1. Configure GRAX - Done.
 
-	1. <a href="https://login.salesforce.com/startURL=%2Fone%2Fone.app/one/one.app#/n/GRAX_DEPLOY">Configure Production or Developer Instance</a>
-	1. <a href="https://test.salesforce.com/startURL=%2Fone%2Fone.app/one/one.app#/n/GRAX_DEPLOY">Configure Sandbox</a>
+	1. <a href="https://login.salesforce.com/one/one.app#/n/GRAX_DEPLOY">Configure Production or Developer Instance</a>
+	1. <a href="https://test.salesforce.com/one/one.app#/n/GRAX_DEPLOY">Configure Sandbox</a>
 
 
 ## Manual Installation
