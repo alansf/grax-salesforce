@@ -42,6 +42,9 @@ public with sharing class GRAXDeploy {
     		graxapps = ParseJSON();
     		isconfigured = false;
 		
+		if (GRAXSettings.IsConfigured()==false)
+			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.CONFIRM, 'Please Authorize, Create, and Select GRAX Heroku Application'));
+		
 		LockSettings(GRAXSettings.IsConfigured());
     }
     
