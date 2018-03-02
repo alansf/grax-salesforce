@@ -1,5 +1,9 @@
 public with sharing class GRAXFlow {
     public GRAXFlow() {
+
+	    	if (GRAXSettings.IsConfigured()==false)
+	    		ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error, 'Please complete <a href="/one/one.app#/n/GRAX_DEPLOY">GRAX Configuration</a>.'));
+    
     }
     
     public string getPropURLToDisplay() { 
