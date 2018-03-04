@@ -11,7 +11,6 @@
  * Github:	https://github.com/HardingPoint/GRAXForSFDC
  * License:	https://github.com/HardingPoint/GRAXForSFDC/blob/master/LICENSE
  * --------------------------------------------------------------------------*/
- * ---------------------------------------------------------------------*/
 
 global class GRAXBatch implements
     Database.Batchable<sObject>, Database.AllowsCallouts, Database.Stateful {
