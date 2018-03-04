@@ -2,7 +2,7 @@
 
 # GRAX Salesforce SDK
 
-The GRAX Salesforce SDK uses the [GRAX Cloud](https://www.grax.io/) services to help you solve complex problems by applying graph theory to your Salesforce environment(s).
+The [GRAX](https://www.grax.io/) Salesforce SDK uses you Salesforce instance(s) to build and synchronize your enterprise graph. The power of your enterprise graph is the extensibility, flexibility, and fluidity to continually extend micro events to measure causality. Everything from multi channel marketing events, buying pattern awareness/alerts, to recognizing risks in customer service patterns. It all starts with building your base graph from Salesforce and extending. 1 click install below.  
 
 ---------------------------------------------------------------------------------------------------------
 ## Installation
