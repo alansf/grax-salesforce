@@ -7,6 +7,10 @@
 ---------------------------------------------------------------------------------------------------------
 ## Installation
 
+For detailed installation instructions with pictures & videos please visit [our website](https://www.grax.io/try-now)
+
+For any questions, please contact us at support@grax.io
+
 With a few clicks you can deploy GRAX for Salesforce, synchronize your enterprise graph, and begin to utilize flow.
 
 1. <a href="https://developer.salesforce.com/signup">Create a Salesforce Developer Org</a>
