@@ -23,6 +23,11 @@ With a few clicks you can deploy GRAX for Salesforce, synchronize your enterpris
 	  <img alt="Deploy to Salesforce"
 	       src="https://deploy-to-sfdx.com/dist/assets/images/DeployToSFDX.svg">
 	</a>
+	
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://deploytosalesforce.herokuapp.com?owner=HardingPoint&repo=GRAXForSFDC">
+	  <img alt="Deploy to Salesforce"
+	       src="https://deploytosalesforce.herokuapp.com/resources/img/deploy-to-salesforce.png">
+	</a>
 
 1. Configure GRAX
 
