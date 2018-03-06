@@ -8,16 +8,24 @@
   <types>
     <name>ApexClass</name>
     <members>GRAXApi</members>
+    <members>GRAXApiUT</members>
     <members>GRAXBatch</members>
+    <members>GRAXBatchUT</members>
     <members>GRAXCloud</members>
     <members>GRAXCloudUT</members>
     <members>GRAXConfiguration</members>
+    <members>GRAXConfigurationUT</members>
     <members>GRAXConnect</members>
+    <members>GRAXConnectUT</members>
     <members>GRAXDeploy</members>
+    <members>GRAXDeployUT</members>
     <members>GRAXException</members>
     <members>GRAXExceptionUT</members>
     <members>GRAXFlow</members>
+    <members>GRAXFlowUT</members>
     <members>GRAXSettings</members>
+    <members>GRAXSettingsUT</members>
+    <members>GRAXUnitTest</members>
   </types>
   <types>
     <name>ContentAsset</name>

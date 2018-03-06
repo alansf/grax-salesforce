@@ -129,21 +129,28 @@ public with sharing class GRAXDeploy {
     public String GetConfig(){
 	    Http h = new Http();
 	    HttpRequest req = new HttpRequest();
-	    req.setEndpoint(GetUrl('/platforms/heroku/getconfig'));
-	    req.setMethod('GET');
-	    HttpResponse res = h.send(req);
-	    return res.getBody();
+	    	req.setEndpoint(GetUrl('/platforms/heroku/getconfig'));
+	    	req.setMethod('GET');
+	    	if(!Test.isRunningTest()){
+	    		HttpResponse res = h.send(req);
+	    		return res.getBody();
+	    } else {
+	    		return graxconfig;
+	    }
     }
     
     private String GetUrl(string path){
     		String Url = gxs.ApiURL + path + '?';
-    		Url += 'orgid=' + EncodingUtil.urlEncode(UserInfo.getOrganizationId(),'UTF-8');
-    		Url += '&userid=' + EncodingUtil.urlEncode(UserInfo.getUserId(),'UTF-8');
-    		Url += '&host=' + EncodingUtil.urlEncode(ApexPages.currentPage().getHeaders().get('Host'),'UTF-8');
-    		Url += '&companyname=' + EncodingUtil.urlEncode(UserInfo.getOrganizationName(),'UTF-8');
-    		Url += '&firstname=' + EncodingUtil.urlEncode(UserInfo.getFirstName(),'UTF-8');
-    		Url += '&lastname=' + EncodingUtil.urlEncode(UserInfo.getLastName(),'UTF-8');
-    		Url += '&email=' + EncodingUtil.urlEncode(UserInfo.getUserEmail(),'UTF-8');
+    		
+    		if (!Test.isRunningTest()){
+	    		Url += 'orgid=' + EncodingUtil.urlEncode(UserInfo.getOrganizationId(),'UTF-8');
+	    		Url += '&userid=' + EncodingUtil.urlEncode(UserInfo.getUserId(),'UTF-8');
+	    		Url += '&host=' + EncodingUtil.urlEncode(ApexPages.currentPage().getHeaders().get('Host'),'UTF-8');
+	    		Url += '&companyname=' + EncodingUtil.urlEncode(UserInfo.getOrganizationName(),'UTF-8');
+	    		Url += '&firstname=' + EncodingUtil.urlEncode(UserInfo.getFirstName(),'UTF-8');
+	    		Url += '&lastname=' + EncodingUtil.urlEncode(UserInfo.getLastName(),'UTF-8');
+	    		Url += '&email=' + EncodingUtil.urlEncode(UserInfo.getUserEmail(),'UTF-8');
+    		}
     		return Url;
     }
 
@@ -162,12 +169,14 @@ public with sharing class GRAXDeploy {
     			try{
 	    			Http h = new Http();
 			    HttpRequest req = new HttpRequest();
-			    req.setEndpoint(GetUrl('/platforms/heroku/getappconfig') + '&appname=' + appName);
 			    req.setMethod('GET');
-			    HttpResponse res = h.send(req);
-			    graxappJSON = res.getBody();
+			    if(!Test.isRunningTest()){
+			    		req.setEndpoint(GetUrl('/platforms/heroku/getappconfig') + '&appname=' + appName);
+			    		HttpResponse res = h.send(req);
+			    		graxappJSON = res.getBody();
+			    	}
+			    		
 			    LastAppName = appName;
-			    
 			    graxsetting_graxapp = appName;
 			    graxsetting_apitoken = GetAppConfig('ENGAGEMENTGRAPH_APITOKEN');
 			    graxsetting_gatewaytoken = GetAppConfig('ENGAGEMENTGRAPH_GATEWAYTOKEN');
