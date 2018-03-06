@@ -145,11 +145,21 @@ public with sharing class GRAXDeploy {
     		if (!Test.isRunningTest()){
 	    		Url += 'orgid=' + EncodingUtil.urlEncode(UserInfo.getOrganizationId(),'UTF-8');
 	    		Url += '&userid=' + EncodingUtil.urlEncode(UserInfo.getUserId(),'UTF-8');
-	    		Url += '&host=' + EncodingUtil.urlEncode(ApexPages.currentPage().getHeaders().get('Host'),'UTF-8');
-	    		Url += '&companyname=' + EncodingUtil.urlEncode(UserInfo.getOrganizationName(),'UTF-8');
-	    		Url += '&firstname=' + EncodingUtil.urlEncode(UserInfo.getFirstName(),'UTF-8');
-	    		Url += '&lastname=' + EncodingUtil.urlEncode(UserInfo.getLastName(),'UTF-8');
-	    		Url += '&email=' + EncodingUtil.urlEncode(UserInfo.getUserEmail(),'UTF-8');
+	    		
+	    		if (ApexPages.currentPage().getHeaders().get('Host')!=null)
+	    			Url += '&host=' + EncodingUtil.urlEncode(ApexPages.currentPage().getHeaders().get('Host'),'UTF-8');
+	    		
+	    		if (UserInfo.getOrganizationName()!=null)
+	    			Url += '&companyname=' + EncodingUtil.urlEncode(UserInfo.getOrganizationName(),'UTF-8');
+	    			
+	    		if (UserInfo.getFirstName()!=null)
+	    			Url += '&firstname=' + EncodingUtil.urlEncode(UserInfo.getFirstName(),'UTF-8');
+	    			
+	    		if (UserInfo.getLastName()!=null)	
+	    			Url += '&lastname=' + EncodingUtil.urlEncode(UserInfo.getLastName(),'UTF-8');
+	    			
+	    		if (UserInfo.getUserEmail()!=null)	
+	    			Url += '&email=' + EncodingUtil.urlEncode(UserInfo.getUserEmail(),'UTF-8');
     		}
     		return Url;
     }

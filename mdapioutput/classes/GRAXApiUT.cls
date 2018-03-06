@@ -26,6 +26,7 @@ public with sharing class GRAXApiUT {
       	GRAXApi.mock('Case');
       	GRAXApi.mock('Opportunity');
       	GRAXApi.mock('Contact');
+      	GRAXApi.mock('Lead');
     }
     
     @isTest
