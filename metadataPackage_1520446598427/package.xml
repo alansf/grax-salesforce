@@ -56,6 +56,7 @@
     <members>GRAXSettings__c</members>
     <members>Grax_Linked_Organizations__c</members>
     <members>Grax_Object_Mapping__c</members>
+    <members>Grax_General_Settings__c</members>
     <members>HardingPoint__c</members>
   </types>
   <types>
@@ -91,6 +92,10 @@
     <members>GRAXConnect</members>
     <members>GRAXDeploy</members>
     <members>GRAXFlow</members>
+  </types>
+  <types>
+    <name>Profile</name>
+    <members>Admin</members>
   </types>
   <types>
     <name>RemoteSiteSetting</name>
