@@ -3,6 +3,7 @@
     <fullName>All_GRAX_Queries</fullName>
     <columns>NAME</columns>
     <columns>ObjectName__c</columns>
+    <columns>Total_Records_Processed__c</columns>
     <columns>Selected_Fields__c</columns>
     <columns>LAST_UPDATE</columns>
     <filterScope>Everything</filterScope>

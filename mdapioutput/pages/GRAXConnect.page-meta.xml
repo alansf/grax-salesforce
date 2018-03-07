@@ -3,6 +3,5 @@
     <apiVersion>41.0</apiVersion>
     <availableInTouch>false</availableInTouch>
     <confirmationTokenRequired>false</confirmationTokenRequired>
-    <description>OAuth Authentication with Heroku</description>
-    <label>HerokuAuthenticate</label>
+    <label>GRAXConnect</label>
 </ApexPage>
