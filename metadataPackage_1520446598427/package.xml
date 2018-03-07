@@ -94,10 +94,6 @@
     <members>GRAXFlow</members>
   </types>
   <types>
-    <name>Profile</name>
-    <members>Admin</members>
-  </types>
-  <types>
     <name>RemoteSiteSetting</name>
     <members>GRAX_connect</members>
     <members>GRAX_dev</members>
