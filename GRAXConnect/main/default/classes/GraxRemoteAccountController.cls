@@ -16,9 +16,10 @@ public with sharing class GraxRemoteAccountController {
 	}
 
 	@AuraEnabled
-	public static Grax_General_Settings__c getMainSettings() {
+	public static GRAXSettings__c getMainSettings() {
 
-		return Grax_General_Settings__c.getOrgDefaults();
+		// return Grax_General_Settings__c.getOrgDefaults();
+		return GRAXSettings__c.getOrgDefaults();
 	}
 
 	@AuraEnabled
