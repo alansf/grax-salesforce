@@ -41,6 +41,8 @@ public with sharing class GRAXDeploy {
 	public string graxsetting_graphdburl {get;set;}
 	public string graxsetting_flowurl {get;set;}
 	public string graxsetting_apiurl {get;set;}
+	public string graxsetting_s3accesskey {get;set;}
+	public string graxsetting_s3secret {get;set;}
 	public string graxsetting_licensetoken {get;set;}
 	public List<SelectOption> graxapps {get;set;} 
 	
@@ -80,6 +82,8 @@ public with sharing class GRAXDeploy {
 			graxsetting_flowurl = settings.graxConfig.GRAX_Flow_URL__c;
 			graxsetting_apiurl = settings.graxConfig.GRAX_API_Url__c;
 			graxsetting_graxapp = settings.graxConfig.Heroku_App_Name__c;
+			graxsetting_s3secret = settings.graxConfig.s3secretaccesskey__c;
+			graxsetting_s3accesskey = settings.graxConfig.s3accesskeyid__c;
 			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'GRAX Settings Locked'));
    		}else{
    			actiontext = 'GRAX Settings';
