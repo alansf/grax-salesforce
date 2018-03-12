@@ -50,6 +50,8 @@
   </types>
   <types>
     <name>CustomField</name>
+    <members>GRAXQuery__c.Do_Not_Store_Data__c</members>
+    <members>GRAXQuery__c.Enable_Audit_Log__c</members>
     <members>GRAXQuery__c.Filter__c</members>
     <members>GRAXQuery__c.GRAX_Configured__c</members>
     <members>GRAXQuery__c.Hourly_Synch_Period__c</members>
@@ -68,6 +70,10 @@
     <members>GRAXSettings__c.QueryLimit__c</members>
     <members>GRAXSettings__c.QueryOrderBy__c</members>
     <members>GRAXSettings__c.graphdburl__c</members>
+    <members>GRAXSettings__c.s3accesskeyid__c</members>
+    <members>GRAXSettings__c.s3bucket__c</members>
+    <members>GRAXSettings__c.s3region__c</members>
+    <members>GRAXSettings__c.s3secretaccesskey__c</members>
   </types>
   <types>
     <name>ListView</name>

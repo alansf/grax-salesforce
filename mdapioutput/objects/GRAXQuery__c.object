@@ -65,6 +65,26 @@
     <sharingModel>ReadWrite</sharingModel>
     <visibility>Public</visibility>
     <fields>
+        <fullName>Do_Not_Store_Data__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Only check this if you do NOT want to store data. If you have compliant data you want relationships but not data stored.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Only check this if you do NOT want to store data. If you have compliant data you want relationships but not data stored.</inlineHelpText>
+        <label>Do Not Store Data</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Enable_Audit_Log__c</fullName>
+        <defaultValue>false</defaultValue>
+        <externalId>false</externalId>
+        <label>Enable Audit Log</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
         <fullName>Filter__c</fullName>
         <externalId>false</externalId>
         <label>Filter</label>

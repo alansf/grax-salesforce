@@ -46,6 +46,14 @@
                 <behavior>Edit</behavior>
                 <field>GRAX_Configured__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Enable_Audit_Log__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Do_Not_Store_Data__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
