@@ -43,6 +43,11 @@ public with sharing class GRAXDeploy {
 	public string graxsetting_apiurl {get;set;}
 	public string graxsetting_s3accesskey {get;set;}
 	public string graxsetting_s3secret {get;set;}
+	
+	public string graxsetting_s3bucket {get;set;}
+	public string graxsetting_s3region {get;set;}
+	
+	
 	public string graxsetting_licensetoken {get;set;}
 	public List<SelectOption> graxapps {get;set;} 
 	
@@ -84,6 +89,10 @@ public with sharing class GRAXDeploy {
 			graxsetting_graxapp = settings.graxConfig.Heroku_App_Name__c;
 			graxsetting_s3secret = settings.graxConfig.s3secretaccesskey__c;
 			graxsetting_s3accesskey = settings.graxConfig.s3accesskeyid__c;
+			
+			graxsetting_s3bucket = settings.graxConfig.s3bucket__c;
+			graxsetting_s3region = settings.graxConfig.s3region__c;
+			
 			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'GRAX Settings Locked'));
    		}else{
    			actiontext = 'GRAX Settings';
@@ -104,6 +113,12 @@ public with sharing class GRAXDeploy {
 				settings.graxConfig.GRAX_Flow_URL__c = graxsetting_flowurl;
 				settings.graxConfig.GRAX_API_Url__c = graxsetting_apiurl;
 				settings.graxConfig.Heroku_App_Name__c = graxsetting_graxapp;
+				
+				settings.graxConfig.s3accesskeyid__c = graxsetting_s3accesskey;
+				settings.graxConfig.s3secretaccesskey__c = graxsetting_s3secret;
+				settings.graxConfig.s3bucket__c = graxsetting_s3bucket;
+				settings.graxConfig.s3region__c = graxsetting_s3region;
+				
 				settings.UpdateSettings();
 				ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Saved GRAX Settings.'));
 	    		}
