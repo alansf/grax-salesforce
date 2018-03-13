@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>GRAX_Flow_URL__c</fullName>
+    <defaultValue>"https://db-fyy9k3vu59gn11jzpimp.graphenedb.com:24780"</defaultValue>
     <externalId>false</externalId>
     <label>GRAX Flow URL</label>
     <required>false</required>
