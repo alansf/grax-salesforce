@@ -35,6 +35,8 @@ public with sharing class GRAXDeploy {
 	
 	public string graxapp {get;set;}
 	public string graxappJSON {get;set;}
+	
+	// Should remove this and bind directly to settings object (Duh!)
 	public string graxsetting_graxapp {get;set;}
 	public string graxsetting_apitoken {get;set;}
 	public string graxsetting_gatewaytoken  {get;set;}
@@ -43,12 +45,10 @@ public with sharing class GRAXDeploy {
 	public string graxsetting_apiurl {get;set;}
 	public string graxsetting_s3accesskey {get;set;}
 	public string graxsetting_s3secret {get;set;}
-	
 	public string graxsetting_s3bucket {get;set;}
 	public string graxsetting_s3region {get;set;}
-	
-	
 	public string graxsetting_licensetoken {get;set;}
+	
 	public List<SelectOption> graxapps {get;set;} 
 	
     public GRAXDeploy() {

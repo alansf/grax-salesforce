@@ -31,6 +31,7 @@ public class GRAXConfiguration {
 	    public boolean historyprocessed {get;set;}
 	    
 	    public boolean isconfigured {get;set;}
+	    public boolean auditenabled {get;set;}
 	      
 	    public GRAXConfiguration () {    
 	    		isconfigured = GRAXSettings.IsConfigured();
@@ -169,6 +170,7 @@ public class GRAXConfiguration {
 		    			defaultprocessordering = gxs.GRAXQuery.Order_By__c;
 		    			defaultfields = gxs.GRAXQuery.Selected_Fields__c;
 		    			graxconfig = gxs.GRAXQuery.graxconfig__c;
+		    			auditenabled = gxs.GRAXQuery.Enable_Audit_Log__c;
 		    			string currentfields = ','+ gxs.GRAXQuery.Selected_Fields__c + ',';
 		    			
 		    			
@@ -183,6 +185,7 @@ public class GRAXConfiguration {
 		    			disablesynch = true;
 		    			defaultprocessordering = 'LastModifiedDate DESC';
 		    			defaultfilter = '';
+		    			auditenabled = false;
 		    			// defaultfilter = 'CALENDAR_YEAR(LastModifiedDate) > 2016';
 		    			SynchSelectedFields();
 		    		}
@@ -252,6 +255,7 @@ public class GRAXConfiguration {
 	    		newQuery.Order_By__c=defaultprocessordering;
 	    		newQuery.Filter__c=defaultfilter;
 	    		newQuery.graxconfig__c = graxconfig;
+	    		newQuery.Enable_Audit_Log__c = auditenabled;
 	    		newQuery.GRAX_Configured__c=Datetime.now();
 	    		upsert newQuery ObjectName__c;
 	    		sychedObjectsSaved = getSynchedObjects();

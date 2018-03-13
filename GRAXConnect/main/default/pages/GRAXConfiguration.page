@@ -49,7 +49,9 @@
 	             </apex:pageBlockSectionItem>
              	 <apex:pageBlockSectionItem>
              	 	 <apex:outputPanel id="querydata">
-             	 	  <apex:pageBlockSection title="GRAX Query Data" columns="1" collapsible="false" showHeader="false">
+             	 	  <apex:pageBlockSection title="GRAX Query Data" columns="2" collapsible="false" showHeader="false">
+             	 	  	  <b>Enable Audit Trail</b>
+             	 	  	  <apex:inputCheckbox value="{!auditenabled}"/>
              	 	  	  <b>Select</b>
 	             	 	  <apex:inputTextarea id="defaultFields" value="{!defaultfields}" cols="100" rows="5" disabled="true"/>
 	             	 	  <b>From {!objToQuery} Where</b>
