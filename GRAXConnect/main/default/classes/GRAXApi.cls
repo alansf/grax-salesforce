@@ -37,6 +37,7 @@ public class GRAXApi extends GRAXCloud {
 			String newObjects = '[]';
 	        String oldObjects = '[]';
 	        String Operation = '';
+	        String FilterFields = '';
 	        
 	        Schema.SObjectType sObjectType;
 	        if (triggerNew != null){
@@ -58,9 +59,16 @@ public class GRAXApi extends GRAXCloud {
 	            newObjects = JSON.serialize(triggerNew);
 	        }else if (triggerNew != null && (graxconfig == null || graxconfig == '') ){
 	        		gxcSettings.debug('GRAXCloud.jsonContent',' Called from Trigger');
-	        		List<Id> Ids = GetIds(triggerNew);
-	        		String Query = 'Select ' + gxcSettings.GRAXQuery.Selected_Fields__c + ' FROM ' + ObjectType + ' Where Id in :Ids';
-	        		newObjects = JSON.serialize(Database.query(Query));
+	        		if (gxcSettings.GRAXQuery.Enable_Audit_Log__c == true){
+	        			// Pass full payload if storing audit log
+	        			FilterFields = gxcSettings.GRAXQuery.Selected_Fields__c;
+	        			newObjects = JSON.serialize(triggerNew);
+	        		}else{
+	        			// Pass filtered fields 
+	        			List<Id> Ids = GetIds(triggerNew);
+	        			String Query = 'Select ' + gxcSettings.GRAXQuery.Selected_Fields__c + ' FROM ' + ObjectType + ' Where Id in :Ids';
+	        			newObjects = JSON.serialize(Database.query(Query));
+	        		}
 	        }
 	        
 	        if (graxconfig=='')
@@ -73,11 +81,24 @@ public class GRAXApi extends GRAXCloud {
 			String graxconfigsetting = '';
 	        if (graxconfig!=null && graxconfig!='')
 	            graxconfigsetting = '"graxconfig": ' + graxconfig + ',';
-			
+
+	        String s3settings = '';    
+	        // Eventually should support object to region mapping
+	        if (gxcSettings.GRAXQuery.Enable_Audit_Log__c == true && triggerNew != null && 
+	        		gxcSettings.graxConfig.s3accesskeyid__c!='' && gxcSettings.graxConfig.s3secretaccesskey__c!='' ){
+	        		s3settings = '"s3audit":"true",' + 
+	        					 '"s3accesskeyid":"' + gxcSettings.graxConfig.s3accesskeyid__c + '",' + 
+	        					 '"s3secretaccesskey":"' + gxcSettings.graxConfig.s3secretaccesskey__c + '",' + 
+	        					 '"s3bucket":"' + gxcSettings.graxConfig.s3bucket__c + '",' + 
+	        					 '"s3region":"' + gxcSettings.graxConfig.s3region__c + '",' + 
+	        					 '"filterfields":"' + FilterFields + '",';
+	        }
+	        
 	        String content = '{' + 
 	        						'"orgId": "'+ UserInfo.getOrganizationId() + '",' +
 	        						'"userId": ' + JSON.serialize(UserInfo.getUserId()) + ',' + 
 	        						'"graphdburl": "' + gxcSettings.graphdburl + '",' + 
+	        						s3settings +
 	        						graxconfigsetting + 
 	        						'"new": ' + newObjects + ',' + 
 	        						'"old": ' + oldObjects + 

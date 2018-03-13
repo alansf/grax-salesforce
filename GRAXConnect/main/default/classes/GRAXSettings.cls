@@ -100,7 +100,7 @@ public virtual class GRAXSettings {
     public static Map<String,GRAXQuery__c> getSynchedObjects()
 	{
 	    		Map<String,GRAXQuery__c> GRAXObjects = new Map<String,GRAXQuery__c>();
-	    		List<GRAXQuery__c> queries = [Select Id,Name,Filter__c,GRAX_Configured__c,graxconfig__c,Hourly_Synch_Period__c,Last_Synch__c,ObjectName__c,Order_By__c,Selected_Fields__c,Total_Records_Processed__c  From GRAXQuery__c];
+	    		List<GRAXQuery__c> queries = [Select Id,Name,Filter__c,GRAX_Configured__c,graxconfig__c,Hourly_Synch_Period__c,Last_Synch__c,ObjectName__c,Order_By__c,Selected_Fields__c,Total_Records_Processed__c,Enable_Audit_Log__c  From GRAXQuery__c];
 	    		for (GRAXQuery__c query : queries){
 	    			GRAXObjects.put(query.ObjectName__c,query);
 	    		}
