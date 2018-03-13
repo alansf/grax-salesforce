@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>GRAX : Query</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>GRAX : Queries</value>
+    </caseValues>
+    <startsWith>Consonant</startsWith>
+    <fields>
+        <label><!-- ObjectName --></label>
+        <name>ObjectName__c</name>
+    </fields>
+    <fields>
+        <label><!-- Selected Fields --></label>
+        <name>Selected_Fields__c</name>
+    </fields>
+</CustomObjectTranslation>
