@@ -170,6 +170,10 @@
         <enabled>true</enabled>
     </pageAccesses>
     <tabVisibilities>
+        <tab>GRAX_DEPLOY</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
+    <tabVisibilities>
         <tab>GRAXQuery__c</tab>
         <visibility>DefaultOn</visibility>
     </tabVisibilities>

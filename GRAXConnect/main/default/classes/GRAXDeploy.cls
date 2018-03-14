@@ -20,6 +20,8 @@ public with sharing class GRAXDeploy {
 	public boolean isconfigured {get;set;}
 	public boolean appselectdisabled {get;set;}
 	public boolean disableeverything {get;set;}
+	
+	public boolean disableaudit {get;set;}
 	public boolean appselected {
 		get {
 			if (graxsetting_apitoken!='' && graxsetting_gatewaytoken!='' && graxsetting_graphdburl!='' && graxsetting_licensetoken!='')
