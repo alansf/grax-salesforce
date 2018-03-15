@@ -45,7 +45,9 @@ public class GRAXConfiguration {
 	    }
 	    
 	    public string getPropURLToDisplay() { 
-	        string salesforceURL = 'https://graphconnect.hardingpoint.com?sfdcobject=' + objToQuery + '&sfdcdomain=https://' + URL.getSalesforceBaseUrl().getHost() + '/'; 
+	        // string salesforceURL = 'https://graphconnect.hardingpoint.com?sfdcobject=' + objToQuery + '&sfdcdomain=https://' + URL.getSalesforceBaseUrl().getHost() + '/'; 
+	        string salesforceURL = 'https://graphconnect-test.herokuapp.com/?sfdcobject=' + objToQuery + '&sfdcdomain=https://' + URL.getSalesforceBaseUrl().getHost() + '/'; 
+	        
 	        return salesforceURL;
 	    }
 	    
