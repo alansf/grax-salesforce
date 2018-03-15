@@ -52,7 +52,6 @@
   </types>
   <types>
     <name>FlexiPage</name>
-    <members>Account_Record_Page</members>
     <members>GRAX_UtilityBar</members>
   </types>
   <types>
