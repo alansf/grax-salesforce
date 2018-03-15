@@ -32,7 +32,7 @@
  						<b>Create</b>
  					</apex:pageBlockSectionItem>
  					<apex:pageBlockSectionItem>
- 						<apex:commandButton id="deploy" value="Create Heroku Application" action="{!DeployGraxApp}" styleClass="graxButton"  disabled="{!appselectdisabled || disableeverything}"/>
+ 						<apex:commandButton id="deploy" value="Create Heroku Application" action="{!DeployGraxApp}" styleClass="graxButton"  disabled="{!disableeverything}"/>
  					</apex:pageBlockSectionItem>
  					
  					<apex:pageBlockSectionItem>
