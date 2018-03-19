@@ -1,0 +1,319 @@
+<apex:page controller="GRAXSetupCtrl" showChat="false" showHeader="false" standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" type="text/javascript"></script>
+  <!-- Import the Design System style sheet -->
+  <apex:slds />
+</head>
+<body>
+  <div class="slds-scope">
+
+    <div class="slds-tabs_default">
+        <ul class="slds-tabs_default__nav" role="tablist">
+            <li class="slds-tabs_default__item slds-is-active" title="Configuration" role="presentation">
+                <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected="true" aria-controls="tab-configuration" id="tab-configuration__item">
+                    Configuration
+                </a>
+            </li>
+            <li class="slds-tabs_default__item" title="Connect" role="presentation">
+                <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-connect" id="tab-connect__item">
+                    Connect
+                </a>
+            </li>
+            <li class="slds-tabs_default__item" title="Flow" role="presentation">
+                <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-flow" id="tab-flow__item">
+                    Flow
+                </a>
+            </li>
+            <li class="slds-tabs_default__item" title="Help" role="presentation">
+                <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-help" id="tab-help__item">
+                    Help
+                </a>
+            </li>
+        </ul>
+
+        <div id="tab-configuration" class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-configuration__item">
+            <apex:form id="form">
+                <h3 class="slds-text-heading_small">Authorize Heroku</h3>
+                <div class="slds-grid slds-gutters slds-grid_vertical-align-center">
+                    <p class="slds-col slds-size_2-of-3">
+                        The GRAX cloud is powered by a Heroku application hosted on your Heroku environment.
+                        <br />
+                        First you will need to connect the Salesforce GRAX application with Heroku.
+                    </p>
+                    <apex:outputPanel styleClass="slds-col slds-size_1-of-3" layout="block" rendered="{!!disableeverything}">
+                            <apex:commandButton id="authorizeheroku" value="Authorize" action="{!AuthorizeHeroku}" styleClass="slds-button slds-button_brand"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel styleClass="slds-col slds-size_1-of-3" layout="block" rendered="{!disableeverything}">
+                        <apex:commandLink action="{!AuthorizeHeroku}" styleClass="slds-button slds-button_neutral">
+                            <svg class="slds-button__icon slds-button__icon_left" aria-hidden="true">
+                                <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#check')}" />
+                            </svg>
+                            Connected
+                        </apex:commandLink>
+                    </apex:outputPanel>
+                </div>
+
+                <h3 class="slds-text-heading_small slds-p-top_large">Select your Heroku Application</h3>
+                <div class="slds-p-top_small">
+                    <div class="slds-grid slds-grid_vertical-align-center">
+                        <div class="slds-col slds-grow-none slds-m-right_small">
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-select_container">
+                                        <apex:selectList id="objectlist" styleClass="slds-select" value="{!graxapp}" multiselect="false" disabled="{!appselectdisabled || disableeverything}">
+                                            <apex:selectOptions value="{!graxapps}"/>
+                                            <apex:actionSupport reRender="form" event="onchange"/>
+                                        </apex:selectList>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-col slds-grow-none">
+                            <apex:commandButton id="deploy" value="Deploy Heroku" action="{!DeployGraxApp}" styleClass="slds-button slds-button_brand" disabled="{!appselectdisabled || disableeverything}"/>
+                        </div>
+                    </div>
+
+                    <div class="slds-grid slds-p-top_small">
+                        <p class="slds-col slds-size_2-of-3">
+                            Unless you already created a GRAX application in another Salesforce instance,
+                            create a new GRAX application here. Once complete with Heroku application wizard,
+                            select your new application here.
+                        </p>
+                    </div>
+                </div>
+
+                <ul class="slds-accordion slds-p-top_large">
+                    <li class="slds-accordion__list-item">
+                        <section class="slds-accordion__section">
+                            <div class="slds-accordion__summary">
+                                <h3 class="slds-text-heading_small slds-accordion__summary-heading">
+                                    <button aria-controls="accordion-advanced" aria-expanded="false" class="slds-button slds-button_reset slds-accordion__summary-action">
+                                        <svg class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
+                                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}" />
+                                        </svg>
+                                        <span class="slds-truncate" title="Advanced">Advanced</span>
+                                    </button>
+                                </h3>
+                            </div>
+                            <div aria-hidden="true" class="slds-accordion__content" id="accordion-advanced">
+                                <ul class="slds-accordion" id="graxsettingsblock">
+                                    <li class="slds-accordion__list-item">
+                                        <section class="slds-accordion__section">
+                                            <div class="slds-accordion__summary">
+                                                <h3 class="slds-text-heading_small slds-accordion__summary-heading">
+                                                    <button aria-controls="accordion-grax-settings" aria-expanded="false" class="slds-button slds-button_reset slds-accordion__summary-action">
+                                                        <svg class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
+                                                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}" />
+                                                        </svg>
+                                                        <span class="slds-truncate" title="GRAX Settings">GRAX Settings</span>
+                                                    </button>
+                                                </h3>
+                                            </div>
+
+                                            <div aria-hidden="true" class="slds-accordion__content" id="accordion-grax-settings">
+                                                <div class="slds-form-element">
+                                                    <apex:outputLabel for="appname" value="Heroku App" styleClass="slds-form-element__label"/>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputText id="appname" value="{!graxsetting_graxapp}" size="150" styleClass="slds-input"/>
+                                                    </div>
+                                                </div>
+                
+                                                <div class="slds-form-element">
+                                                    <apex:outputLabel for="apitoken" value="API" styleClass="slds-form-element__label"/>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputText id="apitoken" value="{!graxsetting_apitoken}" size="150" styleClass="slds-input"/>
+                                                    </div>
+                                                </div>
+                
+                                                <div class="slds-form-element">
+                                                    <apex:outputLabel for="gatewaytoken" value="Gateway" styleClass="slds-form-element__label"/>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputText id="gatewaytoken" value="{!graxsetting_gatewaytoken}" size="150" styleClass="slds-input"/>
+                                                    </div>
+                                                </div>
+                
+                                                <div class="slds-form-element">
+                                                    <apex:outputLabel for="licensetoken" value="License" styleClass="slds-form-element__label"/>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputText id="licensetoken" value="{!graxsetting_licensetoken}" size="150" styleClass="slds-input"/>
+                                                    </div>
+                                                </div>
+                
+                                                <div class="slds-form-element">
+                                                    <apex:outputLabel for="graphdburl" value="URL" styleClass="slds-form-element__label"/>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputText id="graphdburl" value="{!graxsetting_graphdburl}" size="150" styleClass="slds-input"/>
+                                                    </div>
+                                                </div>
+                
+                                                <div class="slds-form-element">
+                                                    <apex:outputLabel for="flowurl" value="Flow" styleClass="slds-form-element__label"/>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputText id="flowurl" value="{!graxsetting_flowurl}" size="150" styleClass="slds-input"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="slds-form-element">
+                                                    <apex:outputLabel for="apiurl" value="API Url" styleClass="slds-form-element__label"/>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputText id="apiurl" value="{!graxsetting_apiurl}" size="150" styleClass="slds-input"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </li>
+                                </ul>
+
+                                <ul class="slds-accordion" id="graxauditsettingsblock">
+                                    <li class="slds-accordion__list-item">
+                                        <section class="slds-accordion__section">
+                                            <div class="slds-accordion__summary">
+                                                <h3 class="slds-text-heading_small slds-accordion__summary-heading">
+                                                    <button aria-controls="accordion-grax-audit-settings" aria-expanded="false" class="slds-button slds-button_reset slds-accordion__summary-action">
+                                                        <svg class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
+                                                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}" />
+                                                        </svg>
+                                                        <span class="slds-truncate" title="GRAX Audit Settings">GRAX Audit Settings</span>
+                                                    </button>
+                                                </h3>
+                                            </div>
+
+                                            <div aria-hidden="true" class="slds-accordion__content" id="accordion-grax-audit-settings">
+                                                <div class="slds-form-element">
+                                                    <apex:outputLabel for="s3accesskey" value="S3 Access Key" styleClass="slds-form-element__label"/>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputText id="s3accesskey" value="{!graxsetting_s3accesskey}" size="150" styleClass="slds-input" disabled="{!disableeverything}"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="slds-form-element">
+                                                    <apex:outputLabel for="s3secret" value="S3 Secret" styleClass="slds-form-element__label"/>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputText id="s3secret" value="{!graxsetting_s3secret}" size="150" styleClass="slds-input" disabled="{!disableeverything}"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="slds-form-element">
+                                                    <apex:outputLabel for="s3bucket" value="S3 Bucket" styleClass="slds-form-element__label"/>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputText id="s3bucket" value="{!graxsetting_s3bucket}" size="150" styleClass="slds-input" disabled="{!disableeverything}"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="slds-form-element">
+                                                    <apex:outputLabel for="s3region" value="S3 Region" styleClass="slds-form-element__label"/>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputText id="s3region" value="{!graxsetting_s3region}" size="150" styleClass="slds-input" disabled="{!disableeverything}"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </li>
+                                </ul>
+
+                                <ul class="slds-accordion" id="debugging">
+                                    <li class="slds-accordion__list-item">
+                                        <section class="slds-accordion__section">
+                                            <div class="slds-accordion__summary">
+                                                <h3 class="slds-text-heading_small slds-accordion__summary-heading">
+                                                    <button aria-controls="accordion-debugging" aria-expanded="false" class="slds-button slds-button_reset slds-accordion__summary-action">
+                                                        <svg class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
+                                                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}" />
+                                                        </svg>
+                                                        <span class="slds-truncate" title="GRAX Debugging">GRAX Debugging</span>
+                                                    </button>
+                                                </h3>
+                                            </div>
+
+                                            <div aria-hidden="true" class="slds-accordion__content" id="accordion-debugging">
+                                                <div class="slds-form-element">
+                                                    <apex:outputLabel for="graxconfig" value="GRAX Configuration" styleClass="slds-form-element__label"/>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputTextarea id="graxconfig" value="{!graxconfig}" cols="100" rows="5" styleClass="slds-input" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="slds-form-element">
+                                                    <apex:outputLabel for="graxappconfig" value="GRAX App Configuration" styleClass="slds-form-element__label"/>
+                                                    <div class="slds-form-element__control">
+                                                        <apex:inputTextarea id="graxappconfig" value="{!GRAXAppConfig}" cols="100" rows="5" styleClass="slds-input" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </li>
+                                </ul>
+                            </div>
+                        </section>
+                    </li>
+                </ul>
+
+                <div class="slds-clearfix slds-p-around_large">
+                    <div class="slds-clearfix">
+                        <div class="slds-float_right">
+                            <apex:commandButton id="updatesettings" value="{!actionbuttontext}" action="{!UpdateCustomSettings}" styleClass="slds-button slds-button_neutral" disabled="{!appselectdisabled || disableeverything}"/>
+                        </div>
+                    </div>
+                </div>
+            </apex:form>
+        </div>
+        <div id="tab-connect" class="slds-tabs_default__content slds-hide" role="tabpanel" aria-labelledby="tab-connect__item">
+            Connect Content
+        </div>
+        <div id="tab-flow" class="slds-tabs_default__content slds-hide" role="tabpanel" aria-labelledby="tab-flow__item">
+            Flow Content
+        </div>
+        <div id="tab-help" class="slds-tabs_default__content slds-hide" role="tabpanel" aria-labelledby="tab-help__item">
+            Help Content
+        </div>
+    </div>
+
+  </div>
+  <!-- / REQUIRED SLDS WRAPPER -->
+
+  <script>
+    $(function() {
+        // TABS
+        var $tabs = $('[role="tablist"] [role="presentation"] [role="tab"]');
+        $tabs.on('click', function(e) {
+            var $currentTab = $(this);
+            var $previousTab = $tabs.filter('[aria-selected="true"]');
+
+            $('[role="tabpanel"]#' + $previousTab.attr('aria-controls'))
+                .removeClass('slds-show')
+                .addClass('slds-hide');
+            $('[role="tabpanel"]#' + $currentTab.attr('aria-controls'))
+                .removeClass('slds-hide')
+                .addClass('slds-show');
+
+            $previousTab.attr('aria-selected', 'false')
+                .closest('[role="presentation"]')
+                    .removeClass('slds-is-active');
+            $currentTab.attr('aria-selected', 'true')
+                .closest('[role="presentation"]')
+                    .addClass('slds-is-active');
+        });
+
+        // ACCORDIONS
+        var _ariaAttrToggle = function(i, attr) {
+            return !(attr == 'true');
+        };
+        $('[aria-expanded]').on('click', function(e) {
+            var $currentAccordion = $(this);
+            $currentAccordion.attr('aria-expanded', _ariaAttrToggle);
+            $('#' + $currentAccordion.attr('aria-controls')).attr('aria-hidden', _ariaAttrToggle);
+
+            $currentAccordion.closest('.slds-accordion__section').toggleClass('slds-is-open');
+
+            e.preventDefault();
+        });
+    });
+  </script>
+</body>
+</html>
+</apex:page>
