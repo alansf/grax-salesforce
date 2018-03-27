@@ -17,6 +17,7 @@ public with sharing class GRAXSetupCtrl {
 	String LastAppName = '';
 	GRAXSettings gxs = new GRAXSettings();
 	public string graxconfig {get;set;}
+    public boolean isauthorized {get;set;}
 	public boolean isconfigured {get;set;}
 	public boolean appselectdisabled {get;set;}
 	public boolean disableeverything {get;set;}
@@ -53,6 +54,8 @@ public with sharing class GRAXSetupCtrl {
 	
 	public List<SelectOption> graxapps {get;set;}
 
+    public string graxstep {get;set;}
+
     public GRAXSetupCtrl() {
         // DEPLOY
         actiontext = 'Save';
@@ -61,7 +64,8 @@ public with sharing class GRAXSetupCtrl {
         appselectdisabled = true;
         graxapps = new List<SelectOption>(); 
         graxapps.add(new SelectOption('','-- Choose Heroku Application --'));
-        graxconfig = GetConfig();	
+        graxconfig = GetConfig();
+        isauthorized = graxconfig!=null && graxconfig!='';
         graxapps = ParseJSON();
         isconfigured = false;
 		
@@ -108,6 +112,8 @@ public with sharing class GRAXSetupCtrl {
 			
 			graxsetting_s3bucket = settings.graxConfig.s3bucket__c;
 			graxsetting_s3region = settings.graxConfig.s3region__c;
+
+            graxapp = graxsetting_graxapp;
 			
 			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'GRAX Settings Locked'));
    		}else{
@@ -145,6 +151,13 @@ public with sharing class GRAXSetupCtrl {
     		
 		return null;
     }
+
+    public pagereference CancelCustomSettings() {
+        pagereference pageRef = new pagereference(ApexPages.currentPage().getUrl());
+        pageRef.setRedirect(true);
+
+        return pageRef;
+    }
     
     public pagereference LoginToHeroku(){
 		pagereference p = new pagereference('https://id.heroku.com/login');
@@ -158,6 +171,11 @@ public with sharing class GRAXSetupCtrl {
     
     public pagereference DeployGraxApp(){
 		pagereference p = new pagereference('https://heroku.com/deploy?template=https://github.com/HardingPoint/GRAX/blob/master');
+		return p;
+    }
+
+    public pagereference DeploySelectedApp(){
+		pagereference p = new pagereference('https://dashboard.heroku.com/apps/' + graxapp + '/deploy/heroku-git');
 		return p;
     }
     
@@ -260,7 +278,7 @@ public with sharing class GRAXSetupCtrl {
     		String FieldValue = '';
     		String GraxAppName = '';
     		try{
-	    		if (graxconfig!=null && graxconfig!=''){
+	    		if (isauthorized){
 	        		JSONParser parser = JSON.createParser(graxconfig);
 	        		while (parser.nextToken() != null) {
 	        			if (parser.getCurrentToken() == JSONToken.FIELD_NAME)
