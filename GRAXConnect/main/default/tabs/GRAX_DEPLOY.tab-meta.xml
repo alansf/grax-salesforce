@@ -3,5 +3,5 @@
     <label>GRAX : Configuration</label>
     <mobileReady>false</mobileReady>
     <motif>Custom64: Compass</motif>
-    <page>GRAXDeploy</page>
+    <page>GRAXSetup</page>
 </CustomTab>

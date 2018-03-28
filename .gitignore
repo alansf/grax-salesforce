@@ -6,5 +6,6 @@
 .settings/
 node_modules/
 .idea/
+.vscode/
 
 
