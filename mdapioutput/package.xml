@@ -25,6 +25,7 @@
     <members>GRAXFlowUT</members>
     <members>GRAXSettings</members>
     <members>GRAXSettingsUT</members>
+    <members>GRAXSetupCtrl</members>
     <members>GRAXUnitTest</members>
   </types>
   <types>
@@ -87,6 +88,7 @@
     <members>GRAXConnect</members>
     <members>GRAXDeploy</members>
     <members>GRAXFlow</members>
+    <members>GRAXSetup</members>
   </types>
   <types>
     <name>Profile</name>
