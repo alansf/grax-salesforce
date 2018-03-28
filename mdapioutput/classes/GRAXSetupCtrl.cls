@@ -182,13 +182,19 @@ public with sharing class GRAXSetupCtrl {
     public String GetConfig(){
 	    Http h = new Http();
 	    HttpRequest req = new HttpRequest();
-	    	req.setEndpoint(GetUrl('/platforms/heroku/getconfig'));
-	    	req.setMethod('GET');
-	    	if(!Test.isRunningTest()){
-	    		HttpResponse res = h.send(req);
-	    		return res.getBody();
+        req.setEndpoint(GetUrl('/platforms/heroku/getconfig'));
+        req.setMethod('GET');
+
+        if(!Test.isRunningTest()){
+            HttpResponse res = h.send(req);
+
+            if(res != null && String.valueOf(res.getStatusCode()).startsWith('2')) {
+                return res.getBody();
+            }
+
+            return null;
 	    } else {
-	    		return graxconfig;
+            return graxconfig;
 	    }
     }
     
