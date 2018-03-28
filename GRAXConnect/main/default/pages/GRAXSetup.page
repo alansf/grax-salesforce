@@ -292,12 +292,12 @@
 
                 <div class="slds-clearfix slds-p-vertical_large">
                     <div class="slds-clearfix">
-                        <div class="slds-float_right">
+                        <apex:outputPanel styleClass="slds-float_right" rendered="{!isauthorized}">
                             <apex:commandButton id="updatesettings" value="Unlock" action="{!UpdateCustomSettings}" styleClass="slds-button slds-button_neutral unlock_button" disabled="{!!disableeverything}"/>
                             <apex:commandButton id="cancel" value="Cancel" action="{!CancelCustomSettings}" styleClass="slds-button slds-button_neutral cancel_button" disabled="{!disableeverything}"/>
                             <apex:commandButton id="save" value="Save" action="{!UpdateCustomSettings}" styleClass="slds-button slds-button_neutral" disabled="{!disableeverything}"/>
                             <apex:commandButton id="saveandnext" value="Save & Next" action="{!UpdateCustomSettings}" reRender="form-configuration, objectlist, deploy, updatesettings, cancel, save, saveandnext" styleClass="slds-button slds-button_brand configsaveandnext" disabled="{!disableeverything}"/>
-                        </div>
+                        </apex:outputPanel>
                     </div>
                 </div>
             </apex:form>
