@@ -13,18 +13,32 @@
     .cancel_button:disabled {
         display: none;
     }
-    #authorize_help {
+    #authorize_help,
+    #selectapp_help,
+    #audit_help {
         position: absolute;
-        top: 40px;
-        left: 140px;
+        margin-top: 1rem;
     }
-    #selectapp_help {
-        position: absolute;
-        top: 64px;
-        left: 240px;
+    #field_properties_scrollable {
+        height: 20.1rem;
+        height: 50vh;
     }
     .nopointerevents {
         pointer-events: none;
+    }
+    select.objectlist > option:disabled {
+        display: none;
+        visibility: hidden;
+    }
+
+    .slds-nubbin_top-right {
+        margin-left: 1rem;
+    }
+    .slds-nubbin_top-left {
+        margin-left: -1rem;
+    }
+    .slds-popover__body {
+        white-space: normal;
     }
   </style>
 </head>
@@ -67,13 +81,6 @@
                             <span class="slds-assistive-text">Help</span>
                         </button>
                     </h3>
-                    <div class="slds-popover slds-popover_tooltip slds-nubbin_top-left slds-rise-from-ground slds-hide" role="tooltip" id="authorize_help" aria-hidden="true">
-                        <div class="slds-popover__body">
-                            The GRAX cloud is powered by a Heroku application hosted on your Heroku environment.
-                            <br />
-                            First you will need to connect the Salesforce GRAX application with Heroku.
-                        </div>
-                    </div>
                     <div aria-hidden="false" class="slds-section__content">
                         <apex:outputPanel layout="block" rendered="{!!isauthorized}">
                             <apex:commandButton id="authorizeheroku" value="Authorize" action="{!AuthorizeHeroku}" styleClass="slds-button slds-button_brand"/>
@@ -99,15 +106,6 @@
                             <span class="slds-assistive-text">Help</span>
                         </button>
                     </h3>
-                    <div class="slds-popover slds-popover_tooltip slds-nubbin_top-left slds-rise-from-ground slds-hide" role="tooltip" id="selectapp_help" aria-hidden="true">
-                        <div class="slds-popover__body">
-                            Unless you already created a GRAX application in another Salesforce instance,
-                            create a new GRAX application
-                            <apex:outputPanel layout="inline" styleClass="slds-text-color_weak" rendered="{!disableeverything}"> here</apex:outputPanel>
-                            <apex:commandLink action="{!DeployGraxApp}" rendered="{!!disableeverything}">here</apex:commandLink>. Once complete with Heroku application wizard,
-                            select your new application here.
-                        </div>
-                    </div>
                     <div aria-hidden="false" class="slds-section__content">
                         <div class="slds-grid slds-grid_vertical-align-center">
                             <div class="slds-col slds-grow-none slds-m-right_small">
@@ -294,16 +292,171 @@
                     <div class="slds-clearfix">
                         <apex:outputPanel styleClass="slds-float_right" rendered="{!isauthorized}">
                             <apex:commandButton id="updatesettings" value="Unlock" action="{!UpdateCustomSettings}" styleClass="slds-button slds-button_neutral unlock_button" disabled="{!!disableeverything}"/>
-                            <apex:commandButton id="cancel" value="Cancel" action="{!CancelCustomSettings}" styleClass="slds-button slds-button_neutral cancel_button" disabled="{!disableeverything}"/>
+                            <apex:commandButton id="cancel" value="Cancel" action="{!CancelReload}" styleClass="slds-button slds-button_neutral cancel_button" disabled="{!disableeverything}"/>
                             <apex:commandButton id="save" value="Save" action="{!UpdateCustomSettings}" styleClass="slds-button slds-button_neutral" disabled="{!disableeverything}"/>
                             <apex:commandButton id="saveandnext" value="Save & Next" action="{!UpdateCustomSettings}" reRender="form-configuration, objectlist, deploy, updatesettings, cancel, save, saveandnext" styleClass="slds-button slds-button_brand configsaveandnext" disabled="{!disableeverything}"/>
                         </apex:outputPanel>
                     </div>
                 </div>
+
+                <div class="slds-popover slds-popover_tooltip slds-nubbin_top-left slds-rise-from-ground slds-hide" role="tooltip" id="authorize_help" aria-hidden="true">
+                    <div class="slds-popover__body">
+                        The GRAX cloud is powered by a Heroku application hosted on your Heroku environment.
+                        <br />
+                        First you will need to connect the Salesforce GRAX application with Heroku.
+                    </div>
+                </div>
+
+                <div class="slds-popover slds-popover_tooltip slds-nubbin_top-left slds-rise-from-ground slds-hide" role="tooltip" id="selectapp_help" aria-hidden="true">
+                    <div class="slds-popover__body">
+                        Unless you already created a GRAX application in another Salesforce instance,
+                        create a new GRAX application
+                        <apex:outputPanel layout="inline" styleClass="slds-text-color_weak" rendered="{!disableeverything}"> here</apex:outputPanel>
+                        <apex:commandLink action="{!DeployGraxApp}" rendered="{!!disableeverything}">here</apex:commandLink>. Once complete with Heroku application wizard,
+                        select your new application here.
+                    </div>
+                </div>
             </apex:form>
         </div>
         <div id="tab-connect" class="slds-tabs_scoped__content slds-hide" role="tabpanel" aria-labelledby="tab-connect__item">
+            <apex:form id="form-connect">
+                <div class="slds-section slds-is-open">
+                    <h3 class="slds-section__title slds-theme_shade">
+                        <span class="slds-truncate slds-p-horizontal_small" title="Select SalesForce object">Select SalesForce object</span>
+                    </h3>
+                    <div aria-hidden="false" class="slds-section__content">
+                        <div class="slds-grid slds-grid_vertical-align-center">
+                            <div class="slds-col slds-grow-none slds-m-right_small">
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-select_container">
+                                            <apex:selectList id="objectlist" value="{!objToQuery}" multiselect="false" size="1" styleClass="slds-select objectlist" disabled="{!NOT(isconfigured)}">
+                                                <apex:selectOptions value="{!items}"/>
+                                                <apex:actionSupport reRender="auditenabled, field_properties, defaultFields, defaultFilter, defaultProcessingOrder, graxconfig, deploytrigger, savequery, processhistory" event="onchange"/>
+                                            </apex:selectList>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-section slds-is-open slds-p-top_large">
+                    <h3 class="slds-section__title slds-theme_shade">
+                        <span class="slds-truncate slds-p-horizontal_small" title="Selected fields for GRAX">GRAX - Selected Fields</span>
+                    </h3>
+                    <div aria-hidden="false" class="slds-section__content">
+                        <apex:outputPanel layout="inline" styleClass="slds-checkbox">
+                            <apex:inputCheckbox value="{!auditenabled}" id="auditenabled" styleClass="auditenabledcheckbox" />
+                            <apex:outputLabel styleClass="slds-checkbox__label" for="auditenabled">
+                                <span class="slds-checkbox_faux"></span>
+                                <span class="slds-form-element__label">Enable Audit Trail</span>
+                            </apex:outputLabel>
+                        </apex:outputPanel>
+
+                        <div class="slds-scrollable_y slds-m-top_small" id="field_properties_scrollable">
+                            <apex:dataTable value="{!fieldProperties}" var="f" id="field_properties" styleClass="slds-table slds-table_bordered slds-table_cell-buffer">        
+                                <apex:column>
+                                    <apex:facet name="header">Field Name</apex:facet>
+                                    <apex:outputText value="{!f.fieldname}"/>
+                                </apex:column>
             
+                                <apex:column>
+                                    <apex:facet name="header">Field Type</apex:facet>
+                                    <apex:outputText value="{!f.fieldtype}"/>
+                                </apex:column>
+            
+                                <apex:column>
+                                    <apex:facet name="header">Referenced To</apex:facet>
+                                    <apex:outputText value="{!f.referenceto}"/>
+                                </apex:column>
+            
+                                <apex:column>
+                                    <apex:facet name="header">Message</apex:facet>
+                                    <apex:outputText value="{!f.message}"/>
+                                </apex:column>
+
+                                <apex:column>
+                                    <apex:facet name="header">
+                                        <apex:outputPanel layout="inline">
+                                            <span class="slds-p-right_small" title="Display changed values in SF.">Display changed values in SF.</span>
+                                            <button class="slds-button slds-button_icon slds-button slds-button_icon" aria-describedby="audit_help" title="Help">
+                                                <svg class="slds-button__icon" aria-hidden="true">
+                                                    <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#info')}" />
+                                                </svg>
+                                                <span class="slds-assistive-text">Help</span>
+                                            </button>
+                                        </apex:outputPanel>
+                                    </apex:facet>
+                                    <apex:outputPanel layout="inline" styleClass="slds-checkbox">
+                                        <apex:inputCheckbox value="{!f.fieldselected}" id="checkedone" disabled="{!f.disabled || !auditenabled}" />
+                                        <apex:outputLabel styleClass="slds-checkbox__label" for="checkedone">
+                                            <span class="slds-checkbox_faux"></span>
+                                        </apex:outputLabel>
+                                    </apex:outputPanel>
+                                </apex:column>
+                            </apex:dataTable>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-section slds-p-top_large">
+                    <h3 class="slds-section__title">
+                        <button aria-controls="connect-advanced" aria-expanded="false" class="slds-button slds-section__title-action">
+                            <svg class="slds-section__title-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
+                                <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}" />
+                            </svg>
+                            <span class="slds-truncate" title="Advanced">Advanced</span>
+                        </button>
+                    </h3>
+                    <div aria-hidden="true" class="slds-section__content" id="connect-advanced">
+                        <div class="slds-form-element">
+                            <apex:outputLabel for="defaultFields" value="Select" styleClass="slds-form-element__label"/>
+                            <div class="slds-form-element__control">
+                                <apex:inputTextarea id="defaultFields" value="{!defaultfields}" cols="100" rows="5" styleClass="slds-input" disabled="true"/>
+                            </div>
+                        </div>
+
+                        <div class="slds-form-element">
+                            <apex:outputLabel for="defaultFilter" value="From {!objToQuery} Where" styleClass="slds-form-element__label"/>
+                            <div class="slds-form-element__control">
+                                <apex:inputTextarea id="defaultFilter" value="{!defaultfilter}" cols="100" rows="5" styleClass="slds-input" disabled="{!NOT(isconfigured)}"/>
+                            </div>
+                        </div>
+
+                        <div class="slds-form-element">
+                            <apex:outputLabel for="defaultProcessingOrder" value="Order By" styleClass="slds-form-element__label"/>
+                            <div class="slds-form-element__control">
+                                <apex:inputTextarea id="defaultProcessingOrder" value="{!defaultprocessordering}" cols="100" rows="5" styleClass="slds-input" disabled="{!NOT(isconfigured)}"/>
+                            </div>
+                        </div>
+
+                        <div class="slds-form-element">
+                            <apex:outputLabel for="graxconfig" value="GRAX JSON Configuration" styleClass="slds-form-element__label"/>
+                            <div class="slds-form-element__control">
+                                <apex:inputTextarea id="graxconfig" value="{!graxconfig}" cols="100" rows="5" styleClass="slds-input" disabled="true"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-clearfix slds-p-vertical_large">
+                    <div class="slds-clearfix">
+                        <apex:outputPanel styleClass="slds-float_right" rendered="{!isauthorized}">
+                            <apex:commandButton id="deploytrigger" value="Deploy Trigger" action="{!DeployTrigger}" styleClass="slds-button slds-button_destructive" disabled="{!disablesynch}"/>
+                            <apex:commandButton id="savequery" value="Save" action="{!SaveSelection}" styleClass="slds-button slds-button_neutral" disabled="{!disablesave}"/>
+                            <apex:commandButton id="processhistory" value="Save & Process History" action="{!Synchronize}" reRender="form-configuration, objectlist, deploy, updatesettings, cancel, save, saveandnext" styleClass="slds-button slds-button_brand configsaveandnext" disabled="{!disablesynch}"/>
+                        </apex:outputPanel>
+                    </div>
+                </div>
+
+                <div class="slds-popover slds-popover_tooltip slds-nubbin_top-right slds-rise-from-ground slds-hide" role="tooltip" id="audit_help" aria-hidden="true">
+                    <div class="slds-popover__body">
+                        Due to HIPPA Regulations, please note that these field values will be stored and displayed in Salesforce.
+                    </div>
+                </div>
+            </apex:form>
         </div>
         <div id="tab-flow" class="slds-tabs_scoped__content slds-hide" role="tabpanel" aria-labelledby="tab-flow__item">
             Flow Content
@@ -363,8 +516,19 @@
         // TOOLTIPS HELP
         $('[role="tooltip"][id]').each(function() {
             var $tooltip = $(this);
+            var _isRight = $tooltip.is('.slds-nubbin_top-right');
 
-            $('[aria-describedby="' + $tooltip.attr('id') + '"]').on('focusin focusout', function() {
+            $('[aria-describedby="' + $tooltip.attr('id') + '"]').on('focusin focusout', function(e) {
+                if(e.type == 'focusin') {
+                    var $this = $(this);
+
+                    $tooltip.css({
+                        'top': Math.round($this.offset().top + $this.outerHeight(true)),
+                        'left': Math.round(
+                            $this.offset().left + (_isRight ? $this.outerWidth(true) : 0) - (_isRight ? $tooltip.outerWidth() : 0))
+                    });
+                }
+
                 $tooltip.attr('aria-hidden', _ariaAttrToggle).toggleClass('slds-hide');
             }).on('click', _preventDefault);
         });
@@ -379,6 +543,11 @@
         // EVENTS
         $('.configsaveandnext').on('click', function() {
             goToTab('connect');
+        });
+
+        // CONNECT TAB
+        $('.auditenabledcheckbox').on('change', function(e) {
+            $('.auditenabled').toggleClass('slds-hide', this.checked);
         });
     });
   </script>

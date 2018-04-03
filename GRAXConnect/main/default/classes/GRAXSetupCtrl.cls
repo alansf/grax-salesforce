@@ -83,6 +83,7 @@ public with sharing class GRAXSetupCtrl {
             sychedObjectsSaved = getSynchedObjects();
             RelatedToList = new Map<String,String>();
         }
+        objToQuery = '';
 
         // FLOW
         if (GRAXSettings.IsConfigured()==false)
@@ -150,13 +151,6 @@ public with sharing class GRAXSetupCtrl {
     			LockSettings(false);
     		
 		return null;
-    }
-
-    public pagereference CancelCustomSettings() {
-        pagereference pageRef = new pagereference(ApexPages.currentPage().getUrl());
-        pageRef.setRedirect(true);
-
-        return pageRef;
     }
     
     public pagereference LoginToHeroku(){
@@ -381,7 +375,7 @@ public with sharing class GRAXSetupCtrl {
         String objectname;
         List<SelectOption> options = new List<SelectOption>();
         Map<String, SObjectType> sObjects = Schema.getGlobalDescribe();
-            options.add(new SelectOption('' ,'<---- SELECT SALESFORCE OBJECT ---->' ));
+            options.add(new SelectOption('' ,'-- SELECT SALESFORCE OBJECT --', true));
         for (String apiName : sObjects.keySet())
         {
             Map<String, Schema.RecordTypeInfo> types = sObjects.get(apiName).getDescribe().getRecordTypeInfosByName();
@@ -575,5 +569,13 @@ public with sharing class GRAXSetupCtrl {
     public pagereference connect(){
         pagereference p=new pagereference(getPropURLToDisplay_Flow());
         return p;
+    }
+
+    // COMMON
+    public pagereference CancelReload() {
+        pagereference pageRef = new pagereference(ApexPages.currentPage().getUrl());
+        pageRef.setRedirect(true);
+
+        return pageRef;
     }
 }
