@@ -19,6 +19,8 @@ public virtual class GRAXSettings {
 	public String LicenseToken = '';
 	public String GatewayToken = '';
 	public String ApiToken = '';
+	public String PostgresURL = '';
+	
 	public GRAXSettings__c graxConfig;
 	
 	// Default to the testing URL
@@ -61,6 +63,7 @@ public virtual class GRAXSettings {
 			graphdburl = graxConfig.graphdburl__c;
 			LicenseToken = graxConfig.LicenseToken__c;
 			GatewayToken = graxConfig.GatewayToken__c;
+			PostgresURL = graxConfig.Postgres_URL__c;
 			ApiToken = graxConfig.ApiToken__c;
 			
 			if (graxConfig.GRAX_API_Url__c != '' && graxConfig.GRAX_API_Url__c != null)
