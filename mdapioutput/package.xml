@@ -69,6 +69,7 @@
     <members>GRAXSettings__c.GatewayToken__c</members>
     <members>GRAXSettings__c.Heroku_App_Name__c</members>
     <members>GRAXSettings__c.LicenseToken__c</members>
+    <members>GRAXSettings__c.Postgres_URL__c</members>
     <members>GRAXSettings__c.QueryLimit__c</members>
     <members>GRAXSettings__c.QueryOrderBy__c</members>
     <members>GRAXSettings__c.graphdburl__c</members>

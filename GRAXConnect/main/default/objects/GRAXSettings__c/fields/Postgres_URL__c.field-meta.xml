@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Postgres_URL__c</fullName>
+    <description>Postgres URL used for Audit Trail</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Postgres URL used for Audit Trail</inlineHelpText>
+    <label>LicenseToken</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
