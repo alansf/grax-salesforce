@@ -74,7 +74,7 @@
         <description>Postgres URL used for Audit Trail</description>
         <externalId>false</externalId>
         <inlineHelpText>Postgres URL used for Audit Trail</inlineHelpText>
-        <label>LicenseToken</label>
+        <label>PostgresURL</label>
         <length>255</length>
         <required>false</required>
         <trackTrending>false</trackTrending>
