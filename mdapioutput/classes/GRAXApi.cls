@@ -98,6 +98,7 @@ public class GRAXApi extends GRAXCloud {
 	        						'"orgId": "'+ UserInfo.getOrganizationId() + '",' +
 	        						'"userId": ' + JSON.serialize(UserInfo.getUserId()) + ',' + 
 	        						'"graphdburl": "' + gxcSettings.graphdburl + '",' + 
+	        						'"postgresurl": "' + gxcSettings.PostgresURL + '",' + 
 	        						s3settings +
 	        						graxconfigsetting + 
 	        						'"new": ' + newObjects + ',' + 

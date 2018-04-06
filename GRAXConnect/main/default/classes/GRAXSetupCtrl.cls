@@ -178,11 +178,7 @@ public with sharing class GRAXSetupCtrl {
     }
 
     public pagereference DeploySelectedApp(){
-    		if (graxapp!='' && graxapp!=null)
-			pagereference p = new pagereference('https://dashboard.heroku.com/apps/' + graxapp + '/deploy/heroku-git');
-		else
-			pagereference p = new pagereference('https://heroku.com/deploy?template=https://github.com/HardingPoint/GRAXEnterprise/blob/master');
-			
+		pagereference p = new pagereference('https://heroku.com/deploy?template=https://github.com/HardingPoint/GRAXEnterprise/blob/master');	
 		return p;
     }
     

@@ -189,6 +189,13 @@
                                                 <apex:inputText id="graphdburl" value="{!graxsetting_graphdburl}" size="150" styleClass="slds-input" disabled="true"/>
                                             </div>
                                         </div>
+                                        
+									   <div class="slds-form-element">
+                                            <apex:outputLabel for="postgresurl" value="Postgres URL" styleClass="slds-form-element__label"/>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputText id="postgresurl" value="{!graxsetting_postgresurl}" size="150" styleClass="slds-input" disabled="true"/>
+                                            </div>
+                                        </div>
         
                                         <div class="slds-form-element">
                                             <apex:outputLabel for="flowurl" value="Flow" styleClass="slds-form-element__label"/>

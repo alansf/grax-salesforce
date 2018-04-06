@@ -51,6 +51,7 @@ public with sharing class GRAXSetupCtrl {
 	public string graxsetting_s3bucket {get;set;}
 	public string graxsetting_s3region {get;set;}
 	public string graxsetting_licensetoken {get;set;}
+	public string graxsetting_postgresurl {get;set;}
 	
 	public List<SelectOption> graxapps {get;set;}
 
@@ -109,6 +110,7 @@ public with sharing class GRAXSetupCtrl {
 			graxsetting_graxapp = settings.graxConfig.Heroku_App_Name__c;
 			graxsetting_s3secret = settings.graxConfig.s3secretaccesskey__c;
 			graxsetting_s3accesskey = settings.graxConfig.s3accesskeyid__c;
+			graxsetting_postgresurl = settings.graxConfig.Postgres_URL__c;
 			
 			graxsetting_s3bucket = settings.graxConfig.s3bucket__c;
 			graxsetting_s3region = settings.graxConfig.s3region__c;
@@ -140,6 +142,7 @@ public with sharing class GRAXSetupCtrl {
 				settings.graxConfig.s3secretaccesskey__c = graxsetting_s3secret;
 				settings.graxConfig.s3bucket__c = graxsetting_s3bucket;
 				settings.graxConfig.s3region__c = graxsetting_s3region;
+				settings.graxConfig.Postgres_URL__c = graxsetting_postgresurl;
 				
 				settings.UpdateSettings();
 				ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Saved GRAX Settings.'));
@@ -175,7 +178,7 @@ public with sharing class GRAXSetupCtrl {
     }
 
     public pagereference DeploySelectedApp(){
-		pagereference p = new pagereference('https://dashboard.heroku.com/apps/' + graxapp + '/deploy/heroku-git');
+		pagereference p = new pagereference('https://heroku.com/deploy?template=https://github.com/HardingPoint/GRAXEnterprise/blob/master');	
 		return p;
     }
     
@@ -251,6 +254,8 @@ public with sharing class GRAXSetupCtrl {
 			    graxsetting_gatewaytoken = GetAppConfig('ENGAGEMENTGRAPH_GATEWAYTOKEN');
 			    graxsetting_graphdburl = GetAppConfig('GRAPHCONNECT_URL');
 			    graxsetting_licensetoken = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
+			    graxsetting_postgresurl = GetAppConfig('DATABASE_URL');
+			    
 			    graxsetting_flowurl = 'https://' + appName + '.herokuapp.com';
 			    graxsetting_apiurl = ''; // Let it default to code base
 			    

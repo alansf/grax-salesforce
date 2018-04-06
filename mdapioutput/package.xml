@@ -9,6 +9,7 @@
     <name>ApexClass</name>
     <members>GRAXApi</members>
     <members>GRAXApiUT</members>
+    <members>GRAXAuditTrail</members>
     <members>GRAXBatch</members>
     <members>GRAXBatchUT</members>
     <members>GRAXCloud</members>
