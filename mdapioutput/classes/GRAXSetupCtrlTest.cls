@@ -1,5 +1,5 @@
 @isTest
-public with sharing class GRAXSetupUT {
+public with sharing class GRAXSetupCtrlTest {
     
     @isTest
     static void DeployConstructorTest() {
@@ -62,7 +62,7 @@ public with sharing class GRAXSetupUT {
     @isTest
     static void ConfigurationConstructorTest() {
         GRAXSettings gxs = GRAXUnitTest.getSettings();
-		GRAXConfiguration config = GRAXSetupUT.Initialize();
+		GRAXConfiguration config = GRAXSetupCtrlTest.Initialize();
     }
 
     @isTest
@@ -95,6 +95,18 @@ public with sharing class GRAXSetupUT {
         config.SaveSelection();
         
         return config;
+    }
+
+	// FLOW
+
+	@isTest
+    static void FlowConstructorTest() {
+		GRAXSettings gxs = GRAXUnitTest.getSettings();
+     	PageReference pageRef = Page.GRAXFlow;
+		Test.setCurrentPage(pageRef); 
+     	GRAXFlow flow = new GRAXFlow();
+     	flow.getPropURLToDisplay();
+     	flow.connect();
     }
 
 }

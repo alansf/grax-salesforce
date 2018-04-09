@@ -54,8 +54,6 @@ public with sharing class GRAXSetupCtrl {
 	
 	public List<SelectOption> graxapps {get;set;}
 
-    public string graxstep {get;set;}
-
     public GRAXSetupCtrl() {
         // DEPLOY
         actiontext = 'Save';
@@ -65,8 +63,8 @@ public with sharing class GRAXSetupCtrl {
         graxapps = new List<SelectOption>(); 
         graxapps.add(new SelectOption('','-- Choose Heroku Application --'));
         graxconfig = GetConfig();
-        isauthorized = graxconfig!=null && graxconfig!='';
         graxapps = ParseJSON();
+        isauthorized = String.isNotBlank(graxconfig) && graxapps.size() > 1;
         isconfigured = false;
 		
 		if (GRAXSettings.IsConfigured()==false)
@@ -83,6 +81,7 @@ public with sharing class GRAXSetupCtrl {
             sychedObjectsSaved = getSynchedObjects();
             RelatedToList = new Map<String,String>();
         }
+        objToQuery = '';
 
         // FLOW
         if (GRAXSettings.IsConfigured()==false)
@@ -151,13 +150,6 @@ public with sharing class GRAXSetupCtrl {
     		
 		return null;
     }
-
-    public pagereference CancelCustomSettings() {
-        pagereference pageRef = new pagereference(ApexPages.currentPage().getUrl());
-        pageRef.setRedirect(true);
-
-        return pageRef;
-    }
     
     public pagereference LoginToHeroku(){
 		pagereference p = new pagereference('https://id.heroku.com/login');
@@ -170,6 +162,7 @@ public with sharing class GRAXSetupCtrl {
     }
     
     public pagereference DeployGraxApp(){
+        // pagereference p = new pagereference('https://heroku.com/deploy?template=https://github.com/HardingPoint/GRAXEnterprise/blob/master');
 		pagereference p = new pagereference('https://heroku.com/deploy?template=https://github.com/HardingPoint/GRAX/blob/master');
 		return p;
     }
@@ -284,7 +277,7 @@ public with sharing class GRAXSetupCtrl {
     		String FieldValue = '';
     		String GraxAppName = '';
     		try{
-	    		if (isauthorized){
+	    		if (String.isNotBlank(graxconfig)){
 	        		JSONParser parser = JSON.createParser(graxconfig);
 	        		while (parser.nextToken() != null) {
 	        			if (parser.getCurrentToken() == JSONToken.FIELD_NAME)
@@ -381,7 +374,7 @@ public with sharing class GRAXSetupCtrl {
         String objectname;
         List<SelectOption> options = new List<SelectOption>();
         Map<String, SObjectType> sObjects = Schema.getGlobalDescribe();
-            options.add(new SelectOption('' ,'<---- SELECT SALESFORCE OBJECT ---->' ));
+            options.add(new SelectOption('' ,'-- SELECT SALESFORCE OBJECT --', true));
         for (String apiName : sObjects.keySet())
         {
             Map<String, Schema.RecordTypeInfo> types = sObjects.get(apiName).getDescribe().getRecordTypeInfosByName();
@@ -413,6 +406,8 @@ public with sharing class GRAXSetupCtrl {
         
         public boolean fieldselected{get;set;}
         public boolean disabled{get;set;} 		// Disable if Object not Synched
+
+        public boolean fieldauditenabled{get;set;}
         
         public FieldProperties() {}  
         
@@ -420,6 +415,7 @@ public with sharing class GRAXSetupCtrl {
             this.sObjtoquery = objname;
             this.fieldname = fieldname;
             this.fieldselected = false;
+            this.fieldauditenabled = false;
             getAttributes(objname, fieldname, sychedObjectsSaved);
         }
     
@@ -552,6 +548,8 @@ public with sharing class GRAXSetupCtrl {
         upsert newQuery ObjectName__c;
         sychedObjectsSaved = getSynchedObjects();
         disablesynch = false;
+
+        objToQuery = '';
         return null;   
     }
     
@@ -575,5 +573,13 @@ public with sharing class GRAXSetupCtrl {
     public pagereference connect(){
         pagereference p=new pagereference(getPropURLToDisplay_Flow());
         return p;
+    }
+
+    // COMMON
+    public pagereference CancelReload() {
+        pagereference pageRef = new pagereference(ApexPages.currentPage().getUrl());
+        pageRef.setRedirect(true);
+
+        return pageRef;
     }
 }

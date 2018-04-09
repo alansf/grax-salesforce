@@ -10,7 +10,8 @@
 
   <style type="text/css">
     .unlock_button:disabled,
-    .cancel_button:disabled {
+    .cancel_button:disabled,
+    .authorizeotherheroku:disabled {
         display: none;
     }
     #authorize_help,
@@ -29,6 +30,12 @@
     select.objectlist > option:disabled {
         display: none;
         visibility: hidden;
+    }
+
+    #flowIframe {
+        width: 100%;
+        height: 600px;
+        height: 90vh;
     }
 
     .slds-nubbin_top-right {
@@ -75,9 +82,7 @@
                     <h3 class="slds-section__title slds-theme_shade">
                         <span class="slds-truncate slds-p-horizontal_small" title="Authorize Heroku">Authorize Heroku</span>
                         <button class="slds-button slds-button_icon slds-button slds-button_icon" aria-describedby="authorize_help" title="Help">
-                            <svg class="slds-button__icon" aria-hidden="true">
-                                <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#info')}" />
-                            </svg>
+                            <i class="slds-button__icon" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#info')}"></i>
                             <span class="slds-assistive-text">Help</span>
                         </button>
                     </h3>
@@ -86,12 +91,18 @@
                             <apex:commandButton id="authorizeheroku" value="Authorize" action="{!AuthorizeHeroku}" styleClass="slds-button slds-button_brand"/>
                         </apex:outputPanel>
                         <apex:outputPanel layout="block" rendered="{!isauthorized}">
-                            <span class="slds-button slds-button_neutral nopointerevents">
-                                <svg class="slds-button__icon slds-button__icon_left" aria-hidden="true">
-                                    <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#check')}" />
-                                </svg>
-                                Connected
-                            </span>
+                            <div class="slds-grid slds-grid_vertical-align-center">
+                                <div class="slds-col slds-grow-none slds-m-right_small">
+                                    <span class="slds-button slds-button_neutral nopointerevents">
+                                        <i class="slds-button__icon" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#check')}"></i>
+                                        Connected
+                                    </span>
+                                </div>
+                                
+                                <div class="slds-col slds-grow-none">
+                                     <apex:commandButton id="authorizeotherheroku" value="Authorize a different Heroku Account" action="{!AuthorizeHeroku}" styleClass="slds-button slds-button_brand authorizeotherheroku" disabled="{!disableeverything}"/>
+                                </div>
+                            </div>
                         </apex:outputPanel>
                     </div>
                 </div>
@@ -100,9 +111,7 @@
                     <h3 class="slds-section__title slds-theme_shade">
                         <span class="slds-truncate slds-p-horizontal_small" title="Select your Heroku Application">Select your Heroku Application</span>
                         <button class="slds-button slds-button_icon slds-button slds-button_icon" aria-describedby="selectapp_help" title="Help">
-                            <svg class="slds-button__icon" aria-hidden="true">
-                                <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#info')}" />
-                            </svg>
+                            <i class="slds-button__icon" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#info')}"></i>
                             <span class="slds-assistive-text">Help</span>
                         </button>
                     </h3>
@@ -122,7 +131,7 @@
                             </div>
                             
                             <div class="slds-col slds-grow-none">
-                                <apex:commandButton id="deploy" value="Deploy Heroku" action="{!DeploySelectedApp}" styleClass="slds-button slds-button_brand" disabled="{!ISBLANK(graxapp) || appselectdisabled || disableeverything}"/>
+                                <apex:commandButton id="deploy" value="Deploy Heroku" action="{!DeployGraxApp}" styleClass="slds-button slds-button_brand" disabled="{!disableeverything}"/>
                             </div>
                         </div>
                     </div>
@@ -131,9 +140,7 @@
                 <div class="slds-section slds-p-top_large">
                     <h3 class="slds-section__title">
                         <button aria-controls="section-advanced" aria-expanded="false" class="slds-button slds-section__title-action">
-                            <svg class="slds-section__title-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
-                                <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}" />
-                            </svg>
+                            <i class="slds-section__title-action-icon slds-button__icon slds-button__icon_left" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}"></i>
                             <span class="slds-truncate" title="Advanced">Advanced Settings</span>
                         </button>
                     </h3>
@@ -144,9 +151,7 @@
                                     <div class="slds-accordion__summary">
                                         <h3 class="slds-text-heading_small slds-accordion__summary-heading">
                                             <button aria-controls="accordion-grax-settings" aria-expanded="false" class="slds-button slds-button_reset slds-accordion__summary-action">
-                                                <svg class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
-                                                    <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}" />
-                                                </svg>
+                                                <i class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}"></i>
                                                 <span class="slds-truncate" title="GRAX Settings">GRAX Settings</span>
                                             </button>
                                         </h3>
@@ -212,9 +217,7 @@
                                     <div class="slds-accordion__summary">
                                         <h3 class="slds-text-heading_small slds-accordion__summary-heading">
                                             <button aria-controls="accordion-grax-audit-settings" aria-expanded="false" class="slds-button slds-button_reset slds-accordion__summary-action">
-                                                <svg class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
-                                                    <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}" />
-                                                </svg>
+                                                <i class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}"></i>
                                                 <span class="slds-truncate" title="GRAX Audit Settings">GRAX Audit Settings</span>
                                             </button>
                                         </h3>
@@ -259,9 +262,7 @@
                                     <div class="slds-accordion__summary">
                                         <h3 class="slds-text-heading_small slds-accordion__summary-heading">
                                             <button aria-controls="accordion-debugging" aria-expanded="false" class="slds-button slds-button_reset slds-accordion__summary-action">
-                                                <svg class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
-                                                    <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}" />
-                                                </svg>
+                                                <i class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}"></i>
                                                 <span class="slds-truncate" title="GRAX Debugging">GRAX Debugging</span>
                                             </button>
                                         </h3>
@@ -332,7 +333,7 @@
                                         <div class="slds-select_container">
                                             <apex:selectList id="objectlist" value="{!objToQuery}" multiselect="false" size="1" styleClass="slds-select objectlist" disabled="{!NOT(isconfigured)}">
                                                 <apex:selectOptions value="{!items}"/>
-                                                <apex:actionSupport reRender="auditenabled, field_properties, defaultFields, defaultFilter, defaultProcessingOrder, graxconfig, deploytrigger, savequery, processhistory" event="onchange"/>
+                                                <apex:actionSupport reRender="auditenabled, field_properties, defaultFields, defaultFilter, defaultProcessingOrder, graxconfig, deploytrigger, savequery, processhistory" event="onchange" oncomplete="reRendered();"/>
                                             </apex:selectList>
                                         </div>
                                     </div>
@@ -358,6 +359,16 @@
                         <div class="slds-scrollable_y slds-m-top_small" id="field_properties_scrollable">
                             <apex:dataTable value="{!fieldProperties}" var="f" id="field_properties" styleClass="slds-table slds-table_bordered slds-table_cell-buffer">        
                                 <apex:column>
+                                    <apex:facet name="header"></apex:facet>
+                                    <apex:outputPanel layout="inline" styleClass="slds-checkbox">
+                                        <apex:inputCheckbox value="{!f.fieldselected}" id="checkedone" disabled="{!f.disabled}" />
+                                        <apex:outputLabel styleClass="slds-checkbox__label" for="checkedone">
+                                            <span class="slds-checkbox_faux"></span>
+                                        </apex:outputLabel>
+                                    </apex:outputPanel>
+                                </apex:column>
+            
+                                <apex:column>
                                     <apex:facet name="header">Field Name</apex:facet>
                                     <apex:outputText value="{!f.fieldname}"/>
                                 </apex:column>
@@ -379,19 +390,15 @@
 
                                 <apex:column>
                                     <apex:facet name="header">
-                                        <apex:outputPanel layout="inline">
-                                            <span class="slds-p-right_small" title="Display changed values in SF.">Display changed values in SF.</span>
-                                            <button class="slds-button slds-button_icon slds-button slds-button_icon" aria-describedby="audit_help" title="Help">
-                                                <svg class="slds-button__icon" aria-hidden="true">
-                                                    <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#info')}" />
-                                                </svg>
-                                                <span class="slds-assistive-text">Help</span>
-                                            </button>
-                                        </apex:outputPanel>
+                                        <span class="slds-p-right_small" title="Display changed values in SF.">Display changed values in SF.</span>
+                                        <button class="slds-button slds-button_icon slds-button slds-button_icon" aria-describedby="audit_help" title="Help">
+                                            <i class="slds-button__icon" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#info')}"></i>
+                                            <span class="slds-assistive-text">Help</span>
+                                        </button>
                                     </apex:facet>
                                     <apex:outputPanel layout="inline" styleClass="slds-checkbox">
-                                        <apex:inputCheckbox value="{!f.fieldselected}" id="checkedone" disabled="{!f.disabled || !auditenabled}" />
-                                        <apex:outputLabel styleClass="slds-checkbox__label" for="checkedone">
+                                        <apex:inputCheckbox value="{!f.fieldauditenabled}" id="fieldauditenabled" styleClass="fieldauditenabled" disabled="{!f.disabled || !auditenabled}" />
+                                        <apex:outputLabel styleClass="slds-checkbox__label" for="fieldauditenabled">
                                             <span class="slds-checkbox_faux"></span>
                                         </apex:outputLabel>
                                     </apex:outputPanel>
@@ -404,9 +411,7 @@
                 <div class="slds-section slds-p-top_large">
                     <h3 class="slds-section__title">
                         <button aria-controls="connect-advanced" aria-expanded="false" class="slds-button slds-section__title-action">
-                            <svg class="slds-section__title-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
-                                <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}" />
-                            </svg>
+                            <i class="slds-section__title-action-icon slds-button__icon slds-button__icon_left" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}"></i>
                             <span class="slds-truncate" title="Advanced">Advanced</span>
                         </button>
                     </h3>
@@ -444,9 +449,8 @@
                 <div class="slds-clearfix slds-p-vertical_large">
                     <div class="slds-clearfix">
                         <apex:outputPanel styleClass="slds-float_right" rendered="{!isauthorized}">
-                            <apex:commandButton id="deploytrigger" value="Deploy Trigger" action="{!DeployTrigger}" styleClass="slds-button slds-button_destructive" disabled="{!disablesynch}"/>
-                            <apex:commandButton id="savequery" value="Save" action="{!SaveSelection}" styleClass="slds-button slds-button_neutral" disabled="{!disablesave}"/>
-                            <apex:commandButton id="processhistory" value="Save & Process History" action="{!Synchronize}" reRender="form-configuration, objectlist, deploy, updatesettings, cancel, save, saveandnext" styleClass="slds-button slds-button_brand configsaveandnext" disabled="{!disablesynch}"/>
+                            <apex:commandButton id="savequery" value="Save" action="{!SaveSelection}" reRender="deploytrigger" oncomplete="connectSave();reRendered();" styleClass="slds-button slds-button_neutral" disabled="{!disablesave}"/>
+                            <apex:commandButton id="processhistory" value="Save & Process History" action="{!Synchronize}" reRender="deploytrigger" oncomplete="connectSave();reRendered();" styleClass="slds-button slds-button_brand configsaveandnext" disabled="{!disablesynch}"/>
                         </apex:outputPanel>
                     </div>
                 </div>
@@ -456,13 +460,51 @@
                         Due to HIPPA Regulations, please note that these field values will be stored and displayed in Salesforce.
                     </div>
                 </div>
+
+                <section id="tiggerDeployModal" role="dialog" tabindex="-1" aria-labelledby="modal-deploy-trigger" aria-modal="true" aria-describedby="modal-deploy-trigger-content" class="slds-modal">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button data-toggle="modal" data-target="#tiggerDeployModal" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                <i class="slds-button__icon slds-button__icon_large" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></i>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+
+                            <h2 id="modal-deploy-trigger" class="slds-text-heading_medium slds-hyphenate">Deploy Trigger</h2>
+                        </header>
+
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-deploy-trigger-content">
+                            <p class="slds-text-heading_small">Do you want to deploy the trigger?</p>
+                            <p>This is necessary only the first time</p>
+                        </div>
+
+                        <footer class="slds-modal__footer">
+                            <span class="slds-checkbox">
+                                <input id="deploy-modal-checkbox" type="checkbox" />
+                                <label class="slds-checkbox__label" for="deploy-modal-checkbox">
+                                    <span class="slds-checkbox_faux"></span>
+                                    <span class="slds-form-element__label">Don&#39;t show this message again.</span>
+                                </label>
+                            </span>
+
+                            <span class="slds-button slds-button_neutral" data-toggle="modal" data-target="#tiggerDeployModal">Skip</span>
+                            <apex:commandButton id="deploytrigger" value="Deploy Trigger" action="{!DeployTrigger}" styleClass="slds-button slds-button_destructive"/>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop"></div>
             </apex:form>
         </div>
+
         <div id="tab-flow" class="slds-tabs_scoped__content slds-hide" role="tabpanel" aria-labelledby="tab-flow__item">
-            Flow Content
+            <iframe id="flowIframe" name="flowIframe" data-src="{!PropURLToDisplay_Flow}" frameBorder="0"></iframe>
         </div>
+
         <div id="tab-help" class="slds-tabs_scoped__content slds-hide" role="tabpanel" aria-labelledby="tab-help__item">
-            Help Content
+            <p>
+                For questions using or configuring the GRAX Application, please email "support@hardingpoint.com".
+                <br/><br/>
+                Thank you.
+            </p>
         </div>
     </div>
 
@@ -471,6 +513,7 @@
 
   <script>
     $(function() {
+        // HELPERS
         var _ariaAttrToggle = function(i, attr) {
             return !(attr == 'true');
         };
@@ -479,11 +522,46 @@
             e.preventDefault();
         };
 
-        // TABS
-        var $tabs = $('[role="tablist"] [role="presentation"] [role="tab"]');
-        $tabs.on('click', function(e) {
+        var setCookie = function(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            var expires = "expires="+ d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        }
+
+        var getCookie = function(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for(var i = 0; i <ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        // FUNCTIONS
+        var goToTab = function(name) {
+            $('#tab-' + name + '__item').focus().trigger('click');
+        };
+
+
+        // Init
+        $('#deploy-modal-checkbox').prop('checked', getCookie('skipDeployTriggerMessage') != '');
+
+
+        // START EVENT HANDLERS
+        $(document)
+        
+        // Tabs
+        .on('click', '[role="tablist"] [role="presentation"] [role="tab"]', function(e) {
             var $currentTab = $(this);
-            var $previousTab = $tabs.filter('[aria-selected="true"]');
+            var $previousTab = $currentTab.closest('[role="tablist"]').find('[aria-selected="true"]');
 
             $('[role="tabpanel"]#' + $previousTab.attr('aria-controls'))
                 .removeClass('slds-show')
@@ -498,11 +576,10 @@
             $currentTab.attr('aria-selected', 'true')
                 .closest('[role="presentation"]')
                     .addClass('slds-is-active');
-        });
+        })
 
-        // ACCORDIONS, SECTIONS
-        
-        $('[aria-expanded]').on('click', function(e) {
+         // Accordions, Sections
+        .on('click', '[aria-expanded]', function(e) {
             var $currentAccordion = $(this);
             $currentAccordion.attr('aria-expanded', _ariaAttrToggle);
             $('#' + $currentAccordion.attr('aria-controls')).attr('aria-hidden', _ariaAttrToggle);
@@ -510,45 +587,104 @@
             $currentAccordion.closest('.slds-accordion__section, .slds-section').toggleClass('slds-is-open');
 
             e.preventDefault();
-        });
+        })
+        
+        // Tooltips help
+        .on('reRendered', function(e) {
+            $('[role="tooltip"][id]').each(function() {
+                var $tooltip = $(this);
+                var _isRight = $tooltip.is('.slds-nubbin_top-right');
 
+                $('[aria-describedby="' + $tooltip.attr('id') + '"]').on('focusin focusout', function(e) {
+                    if(e.type == 'focusin') {
+                        var $this = $(this);
 
-        // TOOLTIPS HELP
-        $('[role="tooltip"][id]').each(function() {
-            var $tooltip = $(this);
-            var _isRight = $tooltip.is('.slds-nubbin_top-right');
+                        $tooltip.css({
+                            'top': Math.round($this.offset().top + $this.outerHeight(true)),
+                            'left': Math.round(
+                                $this.offset().left + (_isRight ? $this.outerWidth(true) : 0) - (_isRight ? $tooltip.outerWidth() : 0))
+                        });
+                    }
 
-            $('[aria-describedby="' + $tooltip.attr('id') + '"]').on('focusin focusout', function(e) {
-                if(e.type == 'focusin') {
-                    var $this = $(this);
+                    $tooltip.attr('aria-hidden', _ariaAttrToggle).toggleClass('slds-hide');
+                }).on('click', _preventDefault);
+            });
+        }).on('mousedown mouseup click', '.slds-popover__body', _preventDefault)
 
-                    $tooltip.css({
-                        'top': Math.round($this.offset().top + $this.outerHeight(true)),
-                        'left': Math.round(
-                            $this.offset().left + (_isRight ? $this.outerWidth(true) : 0) - (_isRight ? $tooltip.outerWidth() : 0))
-                    });
-                }
+        // Modals
+        .on('modaltoggle', '[aria-modal="true"]', function(e) {
+           $(this).toggleClass('slds-fade-in-open')
+                .next('.slds-backdrop')
+                    .toggleClass('slds-backdrop_open');
+        })
 
-                $tooltip.attr('aria-hidden', _ariaAttrToggle).toggleClass('slds-hide');
-            }).on('click', _preventDefault);
-        });
+        .on('click', '[data-toggle="modal"]', function(e) {
+            $($(this).data('target')).trigger('modaltoggle');
 
-        $('.slds-popover__body').on('mousedown mouseup click', _preventDefault);
+            _preventDefault(e);
+        })
+        
+        // ACTIONS
 
-        // FUNCTIONS
-        var goToTab = function(name) {
-            $('#tab-' + name + '__item').focus().trigger('click');
-        }
-
-        // EVENTS
-        $('.configsaveandnext').on('click', function() {
+        // Save and next.
+        .on('click', '.configsaveandnext', function() {
             goToTab('connect');
-        });
+        })
 
-        // CONNECT TAB
-        $('.auditenabledcheckbox').on('change', function(e) {
-            $('.auditenabled').toggleClass('slds-hide', this.checked);
-        });
+        // Audit toggler
+        .on('change', 'input.auditenabledcheckbox', function(e) {
+            $('input.fieldauditenabled').prop('disabled', !e.target.checked);
+        })
+
+        // Flow tab activation (load/reload)
+        .on('click', '#tab-flow__item', function(e) {
+            $('#flowIframe').attr('src', function() {
+                return $(this).data('src');
+            });
+        })
+
+        // Toggle Deploy Trigger cookie
+        .on('change', '#deploy-modal-checkbox', function(e) {
+            setCookie('skipDeployTriggerMessage', e.target.checked ? 'true' : '', 30);
+        })
+        
+        ; // END EVENT HANDLERS
+
+        // UTILS
+        var svgns = 'http://www.w3.org/2000/svg';
+        var xlinkns = 'http://www.w3.org/1999/xlink';
+        var renderSvgIcons = function() {
+            $('[data-icon]').each(function() {
+                var $this = $(this);
+
+                var _svg = document.createElementNS(svgns, 'svg');
+                _svg.setAttribute('class', $this.attr('class'));
+                _svg.setAttribute('aria-hidden', 'true');
+
+                var _use = document.createElementNS(svgns, 'use');
+                _use.setAttributeNS(xlinkns, 'xlink:href', $this.attr('data-icon'));
+
+                _svg.appendChild(_use);
+
+                $this.replaceWith(_svg);
+            });
+        };
+
+        window.reRendered = function() {
+            renderSvgIcons();
+
+            $(document).trigger('reRendered');
+        };
+        
+        window.connectSave = function() {
+            if($('input.auditenabledcheckbox').prop('checked') && getCookie('skipDeployTriggerMessage') == '') {
+                $('#tiggerDeployModal').trigger('modaltoggle');
+            }
+
+            $('.objectlist').trigger('change');
+        };
+
+        window.reRendered();
     });
   </script>
 </body>
