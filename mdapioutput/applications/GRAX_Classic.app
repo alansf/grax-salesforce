@@ -3,8 +3,6 @@
     <defaultLandingTab>GRAX_Intro</defaultLandingTab>
     <label>GRAX</label>
     <tab>GRAX_Intro</tab>
-    <tab>GRAX_DEPLOY</tab>
-    <tab>GRAX_Configuration</tab>
-    <tab>GRAX_Flow</tab>
     <tab>GRAXQuery__c</tab>
+    <tab>GRAX_DEPLOY</tab>
 </CustomApplication>

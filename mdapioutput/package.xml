@@ -27,6 +27,7 @@
     <members>GRAXSettings</members>
     <members>GRAXSettingsUT</members>
     <members>GRAXSetupCtrl</members>
+    <members>GRAXSetupCtrlTest</members>
     <members>GRAXUnitTest</members>
   </types>
   <types>
@@ -107,9 +108,7 @@
   <types>
     <name>CustomTab</name>
     <members>GRAXQuery__c</members>
-    <members>GRAX_Configuration</members>
     <members>GRAX_DEPLOY</members>
-    <members>GRAX_Flow</members>
     <members>GRAX_Intro</members>
   </types>
   <version>41.0</version>
