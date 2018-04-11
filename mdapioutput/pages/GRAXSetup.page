@@ -100,7 +100,7 @@
                                 </div>
                                 
                                 <div class="slds-col slds-grow-none">
-                                     <apex:commandButton id="authorizeotherheroku" value="Authorize a different Heroku Account" action="{!AuthorizeHeroku}" styleClass="slds-button slds-button_brand authorizeotherheroku" disabled="{!disableeverything}"/>
+                                     <apex:commandButton id="authorizeotherheroku" value="Authorize a different Heroku Account" action="{!AuthorizeHeroku}" styleClass="slds-button slds-button_brand authorizeotherheroku _blank" disabled="{!disableeverything}"/>
                                 </div>
                             </div>
                         </apex:outputPanel>
@@ -131,7 +131,7 @@
                             </div>
                             
                             <div class="slds-col slds-grow-none">
-                                <apex:commandButton id="deploy" value="Deploy Heroku" action="{!DeployGraxApp}" styleClass="slds-button slds-button_brand" disabled="{!disableeverything}"/>
+                                <apex:commandButton id="deploy" value="Create New Heroku App" action="{!DeployGraxApp}" styleClass="slds-button slds-button_brand _blank" disabled="{!disableeverything}"/>
                             </div>
                         </div>
                     </div>
@@ -449,6 +449,7 @@
                 <div class="slds-clearfix slds-p-vertical_large">
                     <div class="slds-clearfix">
                         <apex:outputPanel styleClass="slds-float_right" rendered="{!isauthorized}">
+                            <button id="cancel_connect" class="slds-button slds-button_neutral" disabled="disabled">Cancel</button>
                             <apex:commandButton id="savequery" value="Save" action="{!SaveSelection}" reRender="deploytrigger" oncomplete="connectSave();reRendered();" styleClass="slds-button slds-button_neutral" disabled="{!disablesave}"/>
                             <apex:commandButton id="processhistory" value="Save & Process History" action="{!Synchronize}" reRender="deploytrigger" oncomplete="connectSave();reRendered();" styleClass="slds-button slds-button_brand configsaveandnext" disabled="{!disablesynch}"/>
                         </apex:outputPanel>
@@ -487,7 +488,7 @@
                             </span>
 
                             <span class="slds-button slds-button_neutral" data-toggle="modal" data-target="#tiggerDeployModal">Skip</span>
-                            <apex:commandButton id="deploytrigger" value="Deploy Trigger" action="{!DeployTrigger}" styleClass="slds-button slds-button_destructive"/>
+                            <apex:commandButton id="deploytrigger" value="Deploy Trigger" action="{!DeployTrigger}" styleClass="slds-button slds-button_destructive _blank"/>
                         </footer>
                     </div>
                 </section>
@@ -500,8 +501,8 @@
         </div>
 
         <div id="tab-help" class="slds-tabs_scoped__content slds-hide" role="tabpanel" aria-labelledby="tab-help__item">
-            <p class="slds-text-heading_large">
-                For questions using or configuring the GRAX Application, please email "support@hardingpoint.com".
+            <p>
+                For questions using or configuring the GRAX Application, please email <a href="mailto:support@hardingpoint.com">support@hardingpoint.com</a>.
                 <br/><br/>
                 Thank you.
             </p>
@@ -645,7 +646,31 @@
 
         // Toggle Deploy Trigger cookie
         .on('change', '#deploy-modal-checkbox', function(e) {
-            setCookie('skipDeployTriggerMessage', e.target.checked ? 'true' : '', 30);
+            var objectListValue = $('.objectlist').val();
+            var objectsInCookie = getCookie('skipDeployTriggerMessage').split(',');
+
+            var objectListIndex = objectsInCookie.indexOf(objectListValue);
+
+            if(objectListIndex != -1) {
+                objectsInCookie.splice(objectListIndex, 1);
+            } else {
+                objectsInCookie.push(objectListValue);
+            }
+
+
+            setCookie('skipDeployTriggerMessage', objectsInCookie.join(','), 365);
+        })
+
+        // Connect cancel button
+        .on('change', '.objectlist', function(e) {
+            $('#cancel_connect').attr('disabled', !e.target.value);
+        })
+        .on('click', '#cancel_connect', function(e) {
+            if(!e.target.disabled) {
+                $('.objectlist').val(null).trigger('change');
+            }
+
+            _preventDefault(e);
         })
         
         ; // END EVENT HANDLERS
@@ -673,15 +698,21 @@
         window.reRendered = function() {
             renderSvgIcons();
 
+            $('a._blank').attr('target', '_blank');
+            $('button._blank, input._blank').attr('formtarget', '_blank');
+
             $(document).trigger('reRendered');
         };
         
         window.connectSave = function() {
-            if($('input.auditenabledcheckbox').prop('checked') && getCookie('skipDeployTriggerMessage') == '') {
+            var $objectlist = $('.objectlist');
+
+            if(getCookie('skipDeployTriggerMessage').split(',').indexOf($objectlist.val()) == -1) {
+                $('#deploy-modal-checkbox').prop('checked', false);
                 $('#tiggerDeployModal').trigger('modaltoggle');
             }
 
-            $('.objectlist').trigger('change');
+            $objectlist.trigger('change');
         };
 
         window.reRendered();

@@ -76,7 +76,7 @@ public with sharing class GRAXSetupCtrl {
         isconfigured = GRAXSettings.IsConfigured();
         disablesave = true;
         if (isconfigured==false)
-            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error, 'Please complete <a href="/one/one.app#/n/GRAX_DEPLOY">GRAX Configuration</a>.'));
+            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error, 'Please complete <a href="/one/one.app#/n/GRAX_SETUP">GRAX Configuration</a>.'));
         else{
             sychedObjectsSaved = getSynchedObjects();
             RelatedToList = new Map<String,String>();
@@ -85,7 +85,7 @@ public with sharing class GRAXSetupCtrl {
 
         // FLOW
         if (GRAXSettings.IsConfigured()==false)
-            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error, 'Please complete <a href="/one/one.app#/n/GRAX_DEPLOY">GRAX Configuration</a>.'));
+            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error, 'Please complete <a href="/one/one.app#/n/GRAX_SETUP">GRAX Configuration</a>.'));
     }
     
     public pagereference AuthorizeHeroku(){
