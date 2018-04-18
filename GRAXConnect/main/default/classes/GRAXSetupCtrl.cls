@@ -22,7 +22,6 @@ public with sharing class GRAXSetupCtrl {
 	public boolean appselectdisabled {get;set;}
 	public boolean disableeverything {get;set;}
 	
-	public boolean disableaudit {get;set;}
 	public boolean appselected {
 		get {
 			if (graxsetting_apitoken!='' && graxsetting_gatewaytoken!='' && graxsetting_graphdburl!='' && graxsetting_licensetoken!='')
@@ -53,12 +52,17 @@ public with sharing class GRAXSetupCtrl {
 	public string graxsetting_licensetoken {get;set;}
 	public string graxsetting_postgresurl {get;set;}
 	
+	public boolean graxsetting_fieldauditenabled {get;set;}
+	public boolean graxsetting_fileauditenabled {get;set;}
+	
 	public List<SelectOption> graxapps {get;set;}
 
     public GRAXSetupCtrl() {
         // DEPLOY
         actiontext = 'Save';
         actionbuttontext = 'Save GRAX Settings';
+        graxsetting_fieldauditenabled = false;
+        graxsetting_fileauditenabled = false;
         
         appselectdisabled = true;
         graxapps = new List<SelectOption>(); 
@@ -124,6 +128,17 @@ public with sharing class GRAXSetupCtrl {
    			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'GRAX Settings Unlocked'));
    		}
    	}
+    
+    public pagereference UpdateAuditTrail(){
+    		GRAXSettings settings = new GRAXSettings();
+		settings.graxConfig.s3accesskeyid__c = graxsetting_s3accesskey;
+		settings.graxConfig.s3secretaccesskey__c = graxsetting_s3secret;
+		settings.graxConfig.s3bucket__c = graxsetting_s3bucket;
+		settings.graxConfig.s3region__c = graxsetting_s3region;
+		settings.graxConfig.Postgres_URL__c = graxsetting_postgresurl;
+		settings.UpdateSettings();
+		return null;
+    } 		 
    		 
     public pagereference UpdateCustomSettings(){
     		if (actionbuttontext=='Save'){
@@ -137,12 +152,6 @@ public with sharing class GRAXSetupCtrl {
 				settings.graxConfig.GRAX_API_Url__c = graxsetting_apiurl;
 				settings.graxConfig.Heroku_App_Name__c = graxsetting_graxapp;
 				
-				settings.graxConfig.s3accesskeyid__c = graxsetting_s3accesskey;
-				settings.graxConfig.s3secretaccesskey__c = graxsetting_s3secret;
-				settings.graxConfig.s3bucket__c = graxsetting_s3bucket;
-				settings.graxConfig.s3region__c = graxsetting_s3region;
-				settings.graxConfig.Postgres_URL__c = graxsetting_postgresurl;
-				
 				settings.UpdateSettings();
 				ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Saved GRAX Settings.'));
 	    		}
@@ -151,6 +160,16 @@ public with sharing class GRAXSetupCtrl {
     		else
     			LockSettings(false);
     		
+		return null;
+    }
+    
+    public pagereference CreateParitions(){
+		
+		return null;
+    }
+    
+    public pagereference DropParitions(){
+		
 		return null;
     }
     
@@ -373,7 +392,6 @@ public with sharing class GRAXSetupCtrl {
         return FieldProperties;
     }
 	    
-	   
 	public List<SelectOption> getItems() 
     {   
         String objectname;
@@ -395,7 +413,6 @@ public with sharing class GRAXSetupCtrl {
                 options.add(new SelectOption(objectname ,objectname ));
             }
         }
-        
         options.sort();
         
         return options;
@@ -554,14 +571,19 @@ public with sharing class GRAXSetupCtrl {
         sychedObjectsSaved = getSynchedObjects();
         disablesynch = false;
 
-        objToQuery = '';
+        // objToQuery = '';
         return null;   
     }
     
     Public Pagereference Synchronize(){ 
-        SaveSelection();
-        GRAXBatch.ProcessHistory(objToQuery);
-        historyprocessed = true;
+        if (objToQuery!=null && objToQuery!=''){
+	        SaveSelection();
+	        System.debug('[GRAX.io] Processing History \"' + objToQuery + '\"');
+        		GRAXBatch.ProcessHistory(objToQuery);
+        		historyprocessed = true;
+        }else{
+        		ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Please Select Object.'));
+        }
         return null;
     }
 

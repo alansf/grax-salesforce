@@ -135,9 +135,7 @@ public class GRAXApi extends GRAXCloud {
 
     public static SObject mock(String sobjectName) {
         SObjectType t = Schema.getGlobalDescribe().get(sobjectName);
-
         SObject o = t.newSobject();
-
         Map<String, Schema.SObjectField> m = t.getDescribe().fields.getMap();
 
         for (String fieldName : m.keySet()) {
