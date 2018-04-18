@@ -12,19 +12,29 @@ global class GRAXBatchToResendDataRecords implements Database.Batchable<sObject>
     }
 
     global void execute(Database.BatchableContext BC, List<GRAX_Data_Record__c> scope) {
+        List<GRAX_Data_Record__c> dataRecords2Up = new List<GRAX_Data_Record__c>();
+        
         for(GRAX_Data_Record__c dr : scope) {
             String content;
 
             // Gets the body of the request from the "Attachment" of the Data Record.
-            for(Attachment att : [SELECT Body FROM Attachment WHERE ParentId = :dr.Id LIMIT 1]) {
-                content = EncodingUtil.base64Encode(att.Body);
+            for(Attachment att : [SELECT Name, Body FROM Attachment WHERE ParentId = :dr.Id LIMIT 1]) {
+                if(att.Name.endsWithIgnoreCase('.txt')){
+                	content = att.Body.toString();
+                }else{
+                	content = EncodingUtil.base64Encode(att.Body);
+                }
                 break;
             }
 
             if(content <> null) {
-                GRAXSettings gxcSettings = new GRAXSettings(dr.Salesforce_Object__c);
-                GRAXCloud.calloutnowAndUpdateDataRecord(gxcSettings.ApiURL + '/applications/neo4j/configure', content, dr);
+                GRAXCloud.sendDataRecordToGRAX('', content, dr);
+                dataRecords2Up.add(dr);
             }
+        }
+        
+        if(dataRecords2Up.size() > 0){
+        	update dataRecords2Up;
         }
     }
 

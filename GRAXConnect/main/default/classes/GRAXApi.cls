@@ -130,7 +130,7 @@ public class GRAXApi extends GRAXCloud {
 				'"sfdcobjectname": "' + sobjectName + '",' +
 				'"graphdburl": "' + gxcSettings.graphdburl + '"' +
 			'}';
-		GRAXCloud.callout(url, payload, sobjectName);
+		GRAXCloud.calloutnow(url, payload);
 	}
 
     public static SObject mock(String sobjectName) {
