@@ -64,6 +64,11 @@
                     Connect
                 </a>
             </li>
+            <li class="slds-tabs_scoped__item" title="Audit Trail" role="presentation">
+                <a class="slds-tabs_scoped__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected="false" aria-controls="tab-audittrail" id="tab-audittrail__item">
+                    Audit Trail
+                </a>
+            </li>
             <li class="slds-tabs_scoped__item" title="Flow" role="presentation">
                 <a class="slds-tabs_scoped__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected="false" aria-controls="tab-flow" id="tab-flow__item">
                     Flow
@@ -193,12 +198,12 @@
                                             </div>
                                         </div>
                                         
-									   <div class="slds-form-element">
-                                            <apex:outputLabel for="postgresurl" value="Postgres URL" styleClass="slds-form-element__label"/>
-                                            <div class="slds-form-element__control">
-                                                <apex:inputText id="postgresurl" value="{!graxsetting_postgresurl}" size="150" styleClass="slds-input" disabled="true"/>
-                                            </div>
-                                        </div>
+                                        <div class="slds-form-element">
+                                    			<apex:outputLabel for="postgresurl" value="Postgres URL" styleClass="slds-form-element__label"/>
+                                   	    		<div class="slds-form-element__control">
+                                    				<apex:inputText id="postgresurl" value="{!graxsetting_postgresurl}" size="150" styleClass="slds-input" disabled="true"/>
+                                    			</div>
+                                    	   </div>         
         
                                         <div class="slds-form-element">
                                             <apex:outputLabel for="flowurl" value="Flow" styleClass="slds-form-element__label"/>
@@ -217,52 +222,7 @@
                                 </section>
                             </li>
                         </ul>
-
-                        <ul class="slds-accordion" id="graxauditsettingsblock">
-                            <li class="slds-accordion__list-item">
-                                <section class="slds-accordion__section">
-                                    <div class="slds-accordion__summary">
-                                        <h3 class="slds-text-heading_small slds-accordion__summary-heading">
-                                            <button aria-controls="accordion-grax-audit-settings" aria-expanded="false" class="slds-button slds-button_reset slds-accordion__summary-action">
-                                                <i class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}"></i>
-                                                <span class="slds-truncate" title="GRAX Audit Settings">GRAX Audit Settings</span>
-                                            </button>
-                                        </h3>
-                                    </div>
-
-                                    <div aria-hidden="true" class="slds-accordion__content" id="accordion-grax-audit-settings">
-                                        <div class="slds-form-element">
-                                            <apex:outputLabel for="s3accesskey" value="S3 Access Key" styleClass="slds-form-element__label"/>
-                                            <div class="slds-form-element__control">
-                                                <apex:inputText id="s3accesskey" value="{!graxsetting_s3accesskey}" size="150" styleClass="slds-input" disabled="{!disableeverything}"/>
-                                            </div>
-                                        </div>
-
-                                        <div class="slds-form-element">
-                                            <apex:outputLabel for="s3secret" value="S3 Secret" styleClass="slds-form-element__label"/>
-                                            <div class="slds-form-element__control">
-                                                <apex:inputText id="s3secret" value="{!graxsetting_s3secret}" size="150" styleClass="slds-input" disabled="{!disableeverything}"/>
-                                            </div>
-                                        </div>
-
-                                        <div class="slds-form-element">
-                                            <apex:outputLabel for="s3bucket" value="S3 Bucket" styleClass="slds-form-element__label"/>
-                                            <div class="slds-form-element__control">
-                                                <apex:inputText id="s3bucket" value="{!graxsetting_s3bucket}" size="150" styleClass="slds-input" disabled="{!disableeverything}"/>
-                                            </div>
-                                        </div>
-
-                                        <div class="slds-form-element">
-                                            <apex:outputLabel for="s3region" value="S3 Region" styleClass="slds-form-element__label"/>
-                                            <div class="slds-form-element__control">
-                                                <apex:inputText id="s3region" value="{!graxsetting_s3region}" size="150" styleClass="slds-input" disabled="{!disableeverything}"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>
-                            </li>
-                        </ul>
-
+      
                         <ul class="slds-accordion" id="debugging">
                             <li class="slds-accordion__list-item">
                                 <section class="slds-accordion__section">
@@ -340,7 +300,7 @@
                                         <div class="slds-select_container">
                                             <apex:selectList id="objectlist" value="{!objToQuery}" multiselect="false" size="1" styleClass="slds-select objectlist" disabled="{!NOT(isconfigured)}">
                                                 <apex:selectOptions value="{!items}"/>
-                                                <apex:actionSupport reRender="auditenabled, field_properties, defaultFields, defaultFilter, defaultProcessingOrder, graxconfig, deploytrigger, savequery, processhistory" event="onchange" oncomplete="reRendered();"/>
+                                                <apex:actionSupport reRender="form-connect, auditenabled, field_properties, defaultFields, defaultFilter, defaultProcessingOrder, graxconfig, deploytrigger, savequery, processhistory" event="onchange" oncomplete="reRendered();"/>
                                             </apex:selectList>
                                         </div>
                                     </div>
@@ -458,7 +418,7 @@
                         <apex:outputPanel styleClass="slds-float_right" rendered="{!isauthorized}">
                             <button id="cancel_connect" class="slds-button slds-button_neutral" disabled="disabled">Cancel</button>
                             <apex:commandButton id="savequery" value="Save" action="{!SaveSelection}" reRender="deploytrigger" oncomplete="connectSave();reRendered();" styleClass="slds-button slds-button_neutral" disabled="{!disablesave}"/>
-                            <apex:commandButton id="processhistory" value="Save & Process History" action="{!Synchronize}" reRender="deploytrigger" oncomplete="connectSave();reRendered();" styleClass="slds-button slds-button_brand configsaveandnext" disabled="{!disablesynch}"/>
+                            <apex:commandButton id="processhistory" value="Save & Process History - {!objToQuery}" action="{!Synchronize}" reRender="deploytrigger" oncomplete="connectSave();reRendered();" styleClass="slds-button slds-button_brand configsaveandnext" disabled="{!disablesynch}"/>
                         </apex:outputPanel>
                     </div>
                 </div>
@@ -501,6 +461,159 @@
                 </section>
                 <div class="slds-backdrop"></div>
             </apex:form>
+        </div>
+        
+        <div id="tab-audittrail" class="slds-tabs_scoped__content slds-hide" role="tabpanel" aria-labelledby="tab-audittrail__item">
+        		<apex:form id="form-audittrail">
+        			
+        			 <div class="slds-section slds-is-open slds-is-relative">
+                    <h3 class="slds-section__title slds-theme_shade">
+                        <span class="slds-truncate slds-p-horizontal_small" title="Authorize Heroku">Audit Trail Settings</span>
+                        <button class="slds-button slds-button_icon slds-button slds-button_icon" aria-describedby="authorize_help" title="Help">
+                            <i class="slds-button__icon" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#info')}"></i>
+                            <span class="slds-assistive-text">Help</span>
+                        </button>
+                    </h3>
+                    
+					<div aria-hidden="false" class="slds-section__content">
+            				<ul class="slds-accordion" id="graxauditsettingsblock">
+                            <li class="slds-accordion__list-item">
+                                <section class="slds-accordion__section slds-is-open">                                  
+                                       <div class="slds-accordion__summary">
+                                        <h3 class="slds-text-heading_small slds-accordion__summary-heading">
+                                            <button aria-controls="accordion-grax-audit-settings" aria-expanded="false" class="slds-button slds-button_reset slds-accordion__summary-action">
+                                                <i class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}"></i>
+                                                <span class="slds-truncate" title="GRAX Audit Settings">GRAX Field Tracking Settings</span>
+                                            </button>
+                                        </h3>
+                                       </div>
+
+                                       <div aria-hidden="false" class="slds-accordion__content" id="accordion-grax-audit-settings">
+                                       <div class="slds-form-element">
+                                       	<div class="slds-size_1-of-2">
+										  <div class="slds-form-element">
+										    <label class="slds-checkbox_toggle slds-grid">
+										      <span class="slds-form-element__label slds-m-bottom_none">Enable Field Tracking</span>
+										      <input type="checkbox" name="checkbox" aria-describedby="toggle-desc" value="on"/>
+										      <span id="toggle-desc" class="slds-checkbox_faux_container" aria-live="assertive">
+										        <span class="slds-checkbox_faux"></span>
+										        <span class="slds-checkbox_on">Enabled</span>
+										        <span class="slds-checkbox_off">Disabled</span>
+										      </span>
+										    </label>
+										  </div>
+										</div>
+                                       </div>
+                                       
+                                       <div class="slds-form-element">
+                                    		<apex:outputLabel for="postgresurl" value="Postgres URL" styleClass="slds-form-element__label"/>
+                                   	    <div class="slds-form-element__control">
+                                    			<apex:inputText id="postgresurl" value="{!graxsetting_postgresurl}" size="150" styleClass="slds-input"/>
+                                    		</div>
+                                    	   </div>
+                                    	   
+                                    	   <div class="slds-form-element">
+										  <label class="slds-form-element__label" for="select-01">Partition Size</label>
+										  <div class="slds-form-element__control">
+										    <div class="slds-select_container">
+										      <select class="slds-select" id="select-01">
+										        <option>100</option>
+										        <option>500</option>
+										        <option selected="true">1000</option>
+										        <option>10000</option>
+										      </select>
+										    </div>
+										  </div>
+										</div>
+										
+										<div class="slds-form-element">
+	                                    		<div class="slds-clearfix">
+						                        <apex:outputPanel styleClass="slds-float_left" rendered="{!isauthorized}">
+						                            <apex:commandButton id="dropfieldaudit" value="Drop Partitions" action="{!DropParitions}" styleClass="slds-button slds-button_neutral cancel_button" disabled="{!NOT(graxsetting_fieldauditenabled)}"/>
+						                            <apex:commandButton id="deployfieldaudit" value="Deploy Partitions" action="{!CreateParitions}" styleClass="slds-button slds-button_neutral"  disabled="{!graxsetting_fieldauditenabled}"/>
+						                        </apex:outputPanel>
+						                    	</div>
+					                    	</div>
+                                    </div>
+                                </section>
+                            </li>
+              			</ul>
+              		</div>
+                    
+                    <div aria-hidden="false" class="slds-section__content">
+            				<ul class="slds-accordion" id="graxauditsettingsblock">
+                            <li class="slds-accordion__list-item">
+                                <section class="slds-accordion__section slds-is-open">                                  
+                                       <div class="slds-accordion__summary">
+                                        <h3 class="slds-text-heading_small slds-accordion__summary-heading">
+                                            <button aria-controls="accordion-grax-audit-settings" aria-expanded="false" class="slds-button slds-button_reset slds-accordion__summary-action">
+                                                <i class="slds-accordion__summary-action-icon slds-button__icon slds-button__icon_left" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#switch')}"></i>
+                                                <span class="slds-truncate" title="GRAX Audit Settings">GRAX Object Tracking Settings</span>
+                                            </button>
+                                        </h3>
+                                       </div>
+
+                                       <div aria-hidden="false" class="slds-accordion__content" id="accordion-grax-audit-settings">
+                                       
+                                       <div class="slds-form-element">
+                                       	<div class="slds-size_1-of-2">
+										  <div class="slds-form-element">
+										    <label class="slds-checkbox_toggle slds-grid">
+										      <span class="slds-form-element__label slds-m-bottom_none">Enable Object Tracking</span>
+										      <input type="checkbox" name="checkbox" aria-describedby="toggle-desc" value="on" checked="true"/>
+										      <span id="toggle-desc" class="slds-checkbox_faux_container" aria-live="assertive">
+										        <span class="slds-checkbox_faux"></span>
+										        <span class="slds-checkbox_on">Enabled</span>
+										        <span class="slds-checkbox_off">Disabled</span>
+										      </span>
+										    </label>
+										  </div>
+										</div>
+                                       </div>
+                                      
+                                        <div class="slds-form-element">
+                                            <apex:outputLabel for="s3accesskey" value="S3 Access Key" styleClass="slds-form-element__label"/>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputText id="s3accesskey" value="{!graxsetting_s3accesskey}" size="150" styleClass="slds-input"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="slds-form-element">
+                                            <apex:outputLabel for="s3secret" value="S3 Secret" styleClass="slds-form-element__label"/>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputText id="s3secret" value="{!graxsetting_s3secret}" size="150" styleClass="slds-input"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="slds-form-element">
+                                            <apex:outputLabel for="s3bucket" value="S3 Bucket" styleClass="slds-form-element__label"/>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputText id="s3bucket" value="{!graxsetting_s3bucket}" size="150" styleClass="slds-input"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="slds-form-element">
+                                            <apex:outputLabel for="s3region" value="S3 Region" styleClass="slds-form-element__label"/>
+                                            <div class="slds-form-element__control">
+                                                <apex:inputText id="s3region" value="{!graxsetting_s3region}" size="150" styleClass="slds-input"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            </li>
+              			</ul>
+              		</div>
+              		
+              		<div class="slds-clearfix slds-p-vertical_large">
+                    		<div class="slds-clearfix">
+                        <apex:outputPanel styleClass="slds-float_right" rendered="{!isauthorized}">
+                            <apex:commandButton id="cancel_audittrail" value="Cancel" action="{!CancelReload}" styleClass="slds-button slds-button_neutral cancel_button"/>
+                            <apex:commandButton id="save_audittrail" value="Save" action="{!UpdateAuditTrail}" styleClass="slds-button slds-button_neutral"/>
+                        </apex:outputPanel>
+                    		</div>
+                		</div>
+              	</div>
+        		 </apex:form>
         </div>
 
         <div id="tab-flow" class="slds-tabs_scoped__content slds-hide" role="tabpanel" aria-labelledby="tab-flow__item">

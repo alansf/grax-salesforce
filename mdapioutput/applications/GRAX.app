@@ -10,8 +10,8 @@
     <label>GRAX</label>
     <navType>Standard</navType>
     <tab>GRAX_Intro</tab>
-    <tab>GRAXQuery__c</tab>
     <tab>GRAX_DEPLOY</tab>
+    <tab>GRAXQuery__c</tab>
     <uiType>Lightning</uiType>
     <utilityBar>GRAX_UtilityBar</utilityBar>
 </CustomApplication>

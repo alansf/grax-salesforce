@@ -20,8 +20,9 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
     //} 
     
     // Main method for calling out to GRAX cloud
-    public static void calloutnow(String url, String content) {
+    public static String calloutnow(String url, String content) {
         GRAXCloud gx = new GRAXCloud();
+        String retval = '';
         if (gx.ProperlyConfigured){
         		Http h = new Http();
         		HttpRequest req = new HttpRequest();
@@ -40,9 +41,13 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
         		req.setHeader('sfdcorgid', UserInfo.getOrganizationId());
 	        req.setBody(content);
 	        
-	        if(!Test.isRunningTest())
-	        		h.send(req);
+	        if(!Test.isRunningTest()){
+	        		HttpResponse res = h.send(req);
+	        		if(res != null && String.valueOf(res.getStatusCode()).startsWith('2')) 
+	        			retval = res.getBody();
+	        }
         }
+        return retval;
     }
     
     @future(callout=true)
