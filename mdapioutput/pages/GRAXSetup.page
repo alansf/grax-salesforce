@@ -494,7 +494,7 @@
 										  <div class="slds-form-element">
 										    <label class="slds-checkbox_toggle slds-grid">
 										      <span class="slds-form-element__label slds-m-bottom_none">Enable Field Tracking</span>
-										      <input type="checkbox" name="checkbox" aria-describedby="toggle-desc" value="on"/>
+										      <input type="checkbox" name="fieldtrackingcheckbox" aria-describedby="toggle-desc" value="on" checked="checked"/>
 										      <span id="toggle-desc" class="slds-checkbox_faux_container" aria-live="assertive">
 										        <span class="slds-checkbox_faux"></span>
 										        <span class="slds-checkbox_on">Enabled</span>
@@ -529,8 +529,8 @@
 										<div class="slds-form-element">
 	                                    		<div class="slds-clearfix">
 						                        <apex:outputPanel styleClass="slds-float_left" rendered="{!isauthorized}">
-						                            <apex:commandButton id="dropfieldaudit" value="Drop Partitions" action="{!DropParitions}" styleClass="slds-button slds-button_neutral cancel_button" disabled="{!NOT(graxsetting_fieldauditenabled)}"/>
-						                            <apex:commandButton id="deployfieldaudit" value="Deploy Partitions" action="{!CreateParitions}" styleClass="slds-button slds-button_neutral"  disabled="{!graxsetting_fieldauditenabled}"/>
+						                            <apex:commandButton id="dropfieldaudit" value="Drop Partitions" action="{!DropParitions}" styleClass="slds-button slds-button_neutral cancel_button" disabled="{!NOT(disablefielauditddeploy)}"/>
+						                            <apex:commandButton id="deployfieldaudit" value="Deploy Partitions" action="{!CreateParitions}" styleClass="slds-button slds-button_neutral"  disabled="{!disablefielauditddeploy}"/>
 						                        </apex:outputPanel>
 						                    	</div>
 					                    	</div>
@@ -560,7 +560,7 @@
 										  <div class="slds-form-element">
 										    <label class="slds-checkbox_toggle slds-grid">
 										      <span class="slds-form-element__label slds-m-bottom_none">Enable Object Tracking</span>
-										      <input type="checkbox" name="checkbox" aria-describedby="toggle-desc" value="on" checked="true"/>
+										      <input type="checkbox" name="objecttrackingcheckbox" aria-describedby="toggle-desc" value="on" checked="checked"/>
 										      <span id="toggle-desc" class="slds-checkbox_faux_container" aria-live="assertive">
 										        <span class="slds-checkbox_faux"></span>
 										        <span class="slds-checkbox_on">Enabled</span>
@@ -630,6 +630,7 @@
     </div>
 
   </div>
+  
   <!-- / REQUIRED SLDS WRAPPER -->
 
   <script>

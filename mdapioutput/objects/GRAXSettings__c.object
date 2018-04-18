@@ -18,6 +18,22 @@
         <unique>false</unique>
     </fields>
     <fields>
+        <fullName>EnableFieldTracking__c</fullName>
+        <defaultValue>true</defaultValue>
+        <externalId>false</externalId>
+        <label>Enable Field Tracking</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>EnableObjectTracking__c</fullName>
+        <defaultValue>true</defaultValue>
+        <externalId>false</externalId>
+        <label>Enable Object Tracking</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
         <fullName>GRAX_API_Url__c</fullName>
         <externalId>false</externalId>
         <label>GRAX API Url</label>

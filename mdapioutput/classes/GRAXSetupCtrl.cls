@@ -53,7 +53,9 @@ public with sharing class GRAXSetupCtrl {
 	public string graxsetting_postgresurl {get;set;}
 	
 	public boolean graxsetting_fieldauditenabled {get;set;}
-	public boolean graxsetting_fileauditenabled {get;set;}
+	public boolean graxsetting_objectauditenabled {get;set;}
+	
+	public boolean disablefielauditddeploy {get;set;}
 	
 	public List<SelectOption> graxapps {get;set;}
 
@@ -62,7 +64,9 @@ public with sharing class GRAXSetupCtrl {
         actiontext = 'Save';
         actionbuttontext = 'Save GRAX Settings';
         graxsetting_fieldauditenabled = false;
-        graxsetting_fileauditenabled = false;
+        graxsetting_objectauditenabled = false;
+        
+        disablefielauditddeploy = true;
         
         appselectdisabled = true;
         graxapps = new List<SelectOption>(); 
@@ -76,6 +80,8 @@ public with sharing class GRAXSetupCtrl {
 			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Please Select Application.'));
 		
 		LockSettings(GRAXSettings.IsConfigured());
+		
+		LoadAuditTrail();
 
         // CONFIGURATION
         isconfigured = GRAXSettings.IsConfigured();
@@ -114,12 +120,9 @@ public with sharing class GRAXSetupCtrl {
 			graxsetting_s3secret = settings.graxConfig.s3secretaccesskey__c;
 			graxsetting_s3accesskey = settings.graxConfig.s3accesskeyid__c;
 			graxsetting_postgresurl = settings.graxConfig.Postgres_URL__c;
-			
 			graxsetting_s3bucket = settings.graxConfig.s3bucket__c;
 			graxsetting_s3region = settings.graxConfig.s3region__c;
-
             graxapp = graxsetting_graxapp;
-			
 			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'GRAX Settings Locked'));
    		}else{
    			actiontext = 'GRAX Settings';
@@ -127,6 +130,17 @@ public with sharing class GRAXSetupCtrl {
    			disableeverything = false;
    			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'GRAX Settings Unlocked'));
    		}
+   	}
+   	
+   	public void LoadAuditTrail(){
+   		if (graxsetting_postgresurl!=''){
+				GRAXAuditTrail audittrail = new GRAXAuditTrail();
+        			String auditsettings = audittrail.GetAuditSettings(graxsetting_postgresurl);
+        			if (audittrail.numberoftables == 0)
+        				disablefielauditddeploy = false;
+        			else
+        				disablefielauditddeploy = true;
+		}
    	}
     
     public pagereference UpdateAuditTrail(){
@@ -136,7 +150,10 @@ public with sharing class GRAXSetupCtrl {
 		settings.graxConfig.s3bucket__c = graxsetting_s3bucket;
 		settings.graxConfig.s3region__c = graxsetting_s3region;
 		settings.graxConfig.Postgres_URL__c = graxsetting_postgresurl;
+		settings.graxConfig.EnableFieldTracking__c = graxsetting_fieldauditenabled;
+		settings.graxConfig.EnableObjectTracking__c = graxsetting_objectauditenabled;
 		settings.UpdateSettings();
+		LoadAuditTrail();
 		return null;
     } 		 
    		 
@@ -151,7 +168,7 @@ public with sharing class GRAXSetupCtrl {
 				settings.graxConfig.GRAX_Flow_URL__c = graxsetting_flowurl;
 				settings.graxConfig.GRAX_API_Url__c = graxsetting_apiurl;
 				settings.graxConfig.Heroku_App_Name__c = graxsetting_graxapp;
-				
+				settings.graxConfig.Postgres_URL__c = graxsetting_postgresurl;
 				settings.UpdateSettings();
 				ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Saved GRAX Settings.'));
 	    		}
@@ -164,12 +181,18 @@ public with sharing class GRAXSetupCtrl {
     }
     
     public pagereference CreateParitions(){
-		
+		if (graxsetting_postgresurl!=''){
+			GRAXAuditTrail audittrail = new GRAXAuditTrail();
+        		audittrail.CreateAuditSettings(graxsetting_postgresurl,1000);
+        	}
 		return null;
     }
     
     public pagereference DropParitions(){
-		
+		if (graxsetting_postgresurl!=''){
+			GRAXAuditTrail audittrail = new GRAXAuditTrail();
+        		audittrail.DropAuditParitions(graxsetting_postgresurl,1000);
+        	}
 		return null;
     }
     
@@ -267,7 +290,6 @@ public with sharing class GRAXSetupCtrl {
 			    graxsetting_graphdburl = GetAppConfig('GRAPHCONNECT_URL');
 			    graxsetting_licensetoken = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
 			    graxsetting_postgresurl = GetAppConfig('DATABASE_URL');
-			    
 			    graxsetting_flowurl = 'https://' + appName + '.herokuapp.com';
 			    graxsetting_apiurl = ''; // Let it default to code base
 			    

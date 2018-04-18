@@ -40,6 +40,7 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
         		req.setHeader('x-api-key', gx.GatewayToken);
         		req.setHeader('sfdcorgid', UserInfo.getOrganizationId());
 	        req.setBody(content);
+	        req.setTimeout(60000);
 	        
 	        if(!Test.isRunningTest()){
 	        		HttpResponse res = h.send(req);
