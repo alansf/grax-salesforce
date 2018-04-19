@@ -21,7 +21,7 @@ public virtual class GRAXSettings {
 	public String ApiToken = '';
 	public String PostgresURL = '';
 	
-	public GRAXSettings__c graxConfig;
+	public GRAXSettings__c graxConfig {get;set;}
 	
 	// Default to the testing URL
 	public String ApiURL = 'https://test.hardingpoint.com/v9.3/api';

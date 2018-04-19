@@ -166,56 +166,56 @@
                                         <div class="slds-form-element">
                                             <apex:outputLabel for="appname" value="Heroku App" styleClass="slds-form-element__label"/>
                                             <div class="slds-form-element__control">
-                                                <apex:inputText id="appname" value="{!graxsetting_graxapp}" size="150" styleClass="slds-input" disabled="true"/>
+                                                <apex:inputText id="appname" value="{!gxs.graxConfig.Heroku_App_Name__c}" size="150" styleClass="slds-input" disabled="true"/>
                                             </div>
                                         </div>
         
                                         <div class="slds-form-element">
                                             <apex:outputLabel for="apitoken" value="API" styleClass="slds-form-element__label"/>
                                             <div class="slds-form-element__control">
-                                                <apex:inputText id="apitoken" value="{!graxsetting_apitoken}" size="150" styleClass="slds-input" disabled="true"/>
+                                                <apex:inputText id="apitoken" value="{!gxs.graxConfig.ApiToken__c}" size="150" styleClass="slds-input" disabled="true"/>
                                             </div>
                                         </div>
         
                                         <div class="slds-form-element">
                                             <apex:outputLabel for="gatewaytoken" value="Gateway" styleClass="slds-form-element__label"/>
                                             <div class="slds-form-element__control">
-                                                <apex:inputText id="gatewaytoken" value="{!graxsetting_gatewaytoken}" size="150" styleClass="slds-input" disabled="true"/>
+                                                <apex:inputText id="gatewaytoken" value="{!gxs.graxConfig.GatewayToken__c}" size="150" styleClass="slds-input" disabled="true"/>
                                             </div>
                                         </div>
         
                                         <div class="slds-form-element">
                                             <apex:outputLabel for="licensetoken" value="License" styleClass="slds-form-element__label"/>
                                             <div class="slds-form-element__control">
-                                                <apex:inputText id="licensetoken" value="{!graxsetting_licensetoken}" size="150" styleClass="slds-input" disabled="true"/>
+                                                <apex:inputText id="licensetoken" value="{!gxs.graxConfig.LicenseToken__c}" size="150" styleClass="slds-input" disabled="true"/>
                                             </div>
                                         </div>
         
                                         <div class="slds-form-element">
                                             <apex:outputLabel for="graphdburl" value="URL" styleClass="slds-form-element__label"/>
                                             <div class="slds-form-element__control">
-                                                <apex:inputText id="graphdburl" value="{!graxsetting_graphdburl}" size="150" styleClass="slds-input" disabled="true"/>
+                                                <apex:inputText id="graphdburl" value="{!gxs.graxConfig.graphdburl__c}" size="150" styleClass="slds-input" disabled="true"/>
                                             </div>
                                         </div>
                                         
                                         <div class="slds-form-element">
                                     			<apex:outputLabel for="postgresurl" value="Postgres URL" styleClass="slds-form-element__label"/>
                                    	    		<div class="slds-form-element__control">
-                                    				<apex:inputText id="postgresurl" value="{!graxsetting_postgresurl}" size="150" styleClass="slds-input" disabled="true"/>
+                                    				<apex:inputText id="postgresurl" value="{!gxs.graxConfig.Postgres_URL__c}" size="150" styleClass="slds-input" disabled="true"/>
                                     			</div>
                                     	   </div>         
         
                                         <div class="slds-form-element">
                                             <apex:outputLabel for="flowurl" value="Flow" styleClass="slds-form-element__label"/>
                                             <div class="slds-form-element__control">
-                                                <apex:inputText id="flowurl" value="{!graxsetting_flowurl}" size="150" styleClass="slds-input" disabled="true"/>
+                                                <apex:inputText id="flowurl" value="{!gxs.graxConfig.GRAX_Flow_URL__c}" size="150" styleClass="slds-input" disabled="true"/>
                                             </div>
                                         </div>
 
                                         <div class="slds-form-element">
                                             <apex:outputLabel for="apiurl" value="API Url" styleClass="slds-form-element__label"/>
                                             <div class="slds-form-element__control">
-                                                <apex:inputText id="apiurl" value="{!graxsetting_apiurl}" size="150" styleClass="slds-input"/>
+                                                <apex:inputText id="apiurl" value="{!gxs.graxConfig.GRAX_API_Url__c}" size="150" styleClass="slds-input"/>
                                             </div>
                                         </div>
                                     </div>
@@ -508,7 +508,7 @@
                                        <div class="slds-form-element">
                                     		<apex:outputLabel for="postgresurl" value="Postgres URL" styleClass="slds-form-element__label"/>
                                    	         <div class="slds-form-element__control">
-                                    			<apex:inputText id="postgresurl" value="{!graxsetting_postgresurl}" size="150" styleClass="slds-input"/>
+                                    			<apex:inputText id="postgresurl" value="{!gxs.graxConfig.Postgres_URL__c}" size="150" styleClass="slds-input"/>
                                     		</div>
                                     	   </div>
                                     	   
@@ -575,28 +575,28 @@
                                         <div class="slds-form-element">
                                             <apex:outputLabel for="s3accesskey" value="S3 Access Key" styleClass="slds-form-element__label"/>
                                             <div class="slds-form-element__control">
-                                                <apex:inputText id="s3accesskey" value="{!graxsetting_s3accesskey}" size="150" styleClass="slds-input"/>
+                                                <apex:inputText id="s3accesskey" value="{!gxs.graxConfig.s3accesskeyid__c}" size="150" styleClass="slds-input"/>
                                             </div>
                                         </div>
 
                                         <div class="slds-form-element">
                                             <apex:outputLabel for="s3secret" value="S3 Secret" styleClass="slds-form-element__label"/>
                                             <div class="slds-form-element__control">
-                                                <apex:inputText id="s3secret" value="{!graxsetting_s3secret}" size="150" styleClass="slds-input"/>
+                                                <apex:inputText id="s3secret" value="{!gxs.graxConfig.s3secretaccesskey__c}" size="150" styleClass="slds-input"/>
                                             </div>
                                         </div>
 
                                         <div class="slds-form-element">
                                             <apex:outputLabel for="s3bucket" value="S3 Bucket" styleClass="slds-form-element__label"/>
                                             <div class="slds-form-element__control">
-                                                <apex:inputText id="s3bucket" value="{!graxsetting_s3bucket}" size="150" styleClass="slds-input"/>
+                                                <apex:inputText id="s3bucket" value="{!gxs.graxConfig.s3bucket__c}" size="150" styleClass="slds-input"/>
                                             </div>
                                         </div>
 
                                         <div class="slds-form-element">
                                             <apex:outputLabel for="s3region" value="S3 Region" styleClass="slds-form-element__label"/>
                                             <div class="slds-form-element__control">
-                                                <apex:inputText id="s3region" value="{!graxsetting_s3region}" size="150" styleClass="slds-input"/>
+                                                <apex:inputText id="s3region" value="{!gxs.graxConfig.s3region__c}" size="150" styleClass="slds-input"/>
                                             </div>
                                         </div>
                                     </div>
