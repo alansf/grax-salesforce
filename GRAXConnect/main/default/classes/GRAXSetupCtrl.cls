@@ -157,13 +157,12 @@ public with sharing class GRAXSetupCtrl {
     }
     
     public pagereference DeployGraxApp(){
-        // pagereference p = new pagereference('https://heroku.com/deploy?template=https://github.com/HardingPoint/GRAXEnterprise/blob/master');
-		pagereference p = new pagereference('https://heroku.com/deploy?template=https://github.com/HardingPoint/GRAX/blob/master');
+		pagereference p = new pagereference(gxs.GRAXDeployURL);
 		return p;
     }
 
     public pagereference DeploySelectedApp(){
-		pagereference p = new pagereference('https://heroku.com/deploy?template=https://github.com/HardingPoint/GRAXEnterprise/blob/master');	
+		pagereference p = new pagereference(gxs.GRAXDeployURL);	
 		return p;
     }
     
