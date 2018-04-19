@@ -15,6 +15,7 @@
 public with sharing class GRAXSetupCtrl {
     // DEPLOY
 	String LastAppName = '';
+	
 	GRAXSettings gxs = new GRAXSettings();
 	public string graxconfig {get;set;}
     public boolean isauthorized {get;set;}
