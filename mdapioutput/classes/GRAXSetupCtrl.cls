@@ -15,7 +15,9 @@
 public with sharing class GRAXSetupCtrl {
     // DEPLOY
 	String LastAppName = '';
-	GRAXSettings gxs = new GRAXSettings();
+	
+	public GRAXSettings gxs {get;set;}
+	
 	public string graxconfig {get;set;}
     public boolean isauthorized {get;set;}
 	public boolean isconfigured {get;set;}
@@ -24,7 +26,7 @@ public with sharing class GRAXSetupCtrl {
 	
 	public boolean appselected {
 		get {
-			if (graxsetting_apitoken!='' && graxsetting_gatewaytoken!='' && graxsetting_graphdburl!='' && graxsetting_licensetoken!='')
+			if (gxs.ProperlyConfigured == true)
 				return true;
 			else
 				return false;
@@ -34,37 +36,18 @@ public with sharing class GRAXSetupCtrl {
 	
 	public string actiontext {get;set;}
 	public string actionbuttontext {get;set;}
-	
 	public string graxapp {get;set;}
 	public string graxappJSON {get;set;}
-	
-	// Should remove this and bind directly to settings object (Duh!)
-	public string graxsetting_graxapp {get;set;}
-	public string graxsetting_apitoken {get;set;}
-	public string graxsetting_gatewaytoken  {get;set;}
-	public string graxsetting_graphdburl {get;set;}
-	public string graxsetting_flowurl {get;set;}
-	public string graxsetting_apiurl {get;set;}
-	public string graxsetting_s3accesskey {get;set;}
-	public string graxsetting_s3secret {get;set;}
-	public string graxsetting_s3bucket {get;set;}
-	public string graxsetting_s3region {get;set;}
-	public string graxsetting_licensetoken {get;set;}
-	public string graxsetting_postgresurl {get;set;}
-	
-	public boolean graxsetting_fieldauditenabled {get;set;}
-	public boolean graxsetting_objectauditenabled {get;set;}
-	
 	public boolean disablefielauditddeploy {get;set;}
-	
 	public List<SelectOption> graxapps {get;set;}
 
     public GRAXSetupCtrl() {
         // DEPLOY
+ 
+        gxs = new GRAXSettings();
+        
         actiontext = 'Save';
         actionbuttontext = 'Save GRAX Settings';
-        graxsetting_fieldauditenabled = false;
-        graxsetting_objectauditenabled = false;
         
         disablefielauditddeploy = true;
         
@@ -74,19 +57,16 @@ public with sharing class GRAXSetupCtrl {
         graxconfig = GetConfig();
         graxapps = ParseJSON();
         isauthorized = String.isNotBlank(graxconfig) && graxapps.size() > 1;
-        isconfigured = false;
-		
-		if (GRAXSettings.IsConfigured()==false)
+
+		if (gxs.ProperlyConfigured == false)
 			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Please Select Application.'));
 		
-		LockSettings(GRAXSettings.IsConfigured());
+		LockSettings(gxs.ProperlyConfigured);
 		
 		LoadAuditTrail();
 
-        // CONFIGURATION
-        isconfigured = GRAXSettings.IsConfigured();
         disablesave = true;
-        if (isconfigured==false)
+        if (gxs.ProperlyConfigured==false)
             ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error, 'Please complete <a href="/one/one.app#/n/GRAX_SETUP">GRAX Configuration</a>.'));
         else{
             sychedObjectsSaved = getSynchedObjects();
@@ -95,7 +75,7 @@ public with sharing class GRAXSetupCtrl {
         objToQuery = '';
 
         // FLOW
-        if (GRAXSettings.IsConfigured()==false)
+        if (gxs.ProperlyConfigured==false)
             ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error, 'Please complete <a href="/one/one.app#/n/GRAX_SETUP">GRAX Configuration</a>.'));
     }
     
@@ -109,20 +89,7 @@ public with sharing class GRAXSetupCtrl {
    			actiontext = 'GRAX Settings';
    			actionbuttontext = 'Unlock';
    			disableeverything = true;
-   			GRAXSettings settings = new GRAXSettings();
-	    		graxsetting_apitoken = settings.graxConfig.ApiToken__c;
-			graxsetting_gatewaytoken = settings.graxConfig.GatewayToken__c;
-			graxsetting_licensetoken = settings.graxConfig.LicenseToken__c;
-			graxsetting_graphdburl = settings.graxConfig.graphdburl__c;
-			graxsetting_flowurl = settings.graxConfig.GRAX_Flow_URL__c;
-			graxsetting_apiurl = settings.graxConfig.GRAX_API_Url__c;
-			graxsetting_graxapp = settings.graxConfig.Heroku_App_Name__c;
-			graxsetting_s3secret = settings.graxConfig.s3secretaccesskey__c;
-			graxsetting_s3accesskey = settings.graxConfig.s3accesskeyid__c;
-			graxsetting_postgresurl = settings.graxConfig.Postgres_URL__c;
-			graxsetting_s3bucket = settings.graxConfig.s3bucket__c;
-			graxsetting_s3region = settings.graxConfig.s3region__c;
-            graxapp = graxsetting_graxapp;
+            graxapp = gxs.graxConfig.Heroku_App_Name__c;
 			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'GRAX Settings Locked'));
    		}else{
    			actiontext = 'GRAX Settings';
@@ -133,9 +100,9 @@ public with sharing class GRAXSetupCtrl {
    	}
    	
    	public void LoadAuditTrail(){
-   		if (graxsetting_postgresurl!=''){
+   		if (gxs.graxConfig.Postgres_URL__c!=''){
 				GRAXAuditTrail audittrail = new GRAXAuditTrail();
-        			String auditsettings = audittrail.GetAuditSettings(graxsetting_postgresurl);
+        			String auditsettings = audittrail.GetAuditSettings(gxs.graxConfig.Postgres_URL__c);
         			if (audittrail.numberoftables == 0)
         				disablefielauditddeploy = false;
         			else
@@ -144,32 +111,15 @@ public with sharing class GRAXSetupCtrl {
    	}
     
     public pagereference UpdateAuditTrail(){
-    		GRAXSettings settings = new GRAXSettings();
-		settings.graxConfig.s3accesskeyid__c = graxsetting_s3accesskey;
-		settings.graxConfig.s3secretaccesskey__c = graxsetting_s3secret;
-		settings.graxConfig.s3bucket__c = graxsetting_s3bucket;
-		settings.graxConfig.s3region__c = graxsetting_s3region;
-		settings.graxConfig.Postgres_URL__c = graxsetting_postgresurl;
-		settings.graxConfig.EnableFieldTracking__c = graxsetting_fieldauditenabled;
-		settings.graxConfig.EnableObjectTracking__c = graxsetting_objectauditenabled;
-		settings.UpdateSettings();
+		gxs.UpdateSettings();
 		LoadAuditTrail();
 		return null;
     } 		 
    		 
     public pagereference UpdateCustomSettings(){
     		if (actionbuttontext=='Save'){
-    			if (graxsetting_apitoken!='' && graxsetting_gatewaytoken!='' && graxsetting_licensetoken!='' && graxsetting_graphdburl!=''){
-	    			GRAXSettings settings = new GRAXSettings();
-				settings.graxConfig.ApiToken__c = graxsetting_apitoken;
-				settings.graxConfig.GatewayToken__c = graxsetting_gatewaytoken;
-				settings.graxConfig.LicenseToken__c =graxsetting_licensetoken;
-				settings.graxConfig.graphdburl__c = graxsetting_graphdburl;
-				settings.graxConfig.GRAX_Flow_URL__c = graxsetting_flowurl;
-				settings.graxConfig.GRAX_API_Url__c = graxsetting_apiurl;
-				settings.graxConfig.Heroku_App_Name__c = graxsetting_graxapp;
-				settings.graxConfig.Postgres_URL__c = graxsetting_postgresurl;
-				settings.UpdateSettings();
+    			if (gxs.graxConfig.ApiToken__c!='' && gxs.graxConfig.GatewayToken__c!='' && gxs.graxConfig.LicenseToken__c!='' && gxs.graxConfig.graphdburl__c!=''){
+	    			gxs.UpdateSettings();
 				ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Saved GRAX Settings.'));
 	    		}
 	    		LockSettings(true);
@@ -181,17 +131,17 @@ public with sharing class GRAXSetupCtrl {
     }
     
     public pagereference CreateParitions(){
-		if (graxsetting_postgresurl!=''){
+		if (gxs.graxConfig.Postgres_URL__c!=''){
 			GRAXAuditTrail audittrail = new GRAXAuditTrail();
-        		audittrail.CreateAuditSettings(graxsetting_postgresurl,1000);
+        		audittrail.CreateAuditSettings(gxs.graxConfig.Postgres_URL__c,1000);
         	}
 		return null;
     }
     
     public pagereference DropParitions(){
-		if (graxsetting_postgresurl!=''){
+		if (gxs.graxConfig.Postgres_URL__c!=''){
 			GRAXAuditTrail audittrail = new GRAXAuditTrail();
-        		audittrail.DropAuditParitions(graxsetting_postgresurl,1000);
+        		audittrail.DropAuditParitions(gxs.graxConfig.Postgres_URL__c,1000);
         	}
 		return null;
     }
@@ -282,16 +232,15 @@ public with sharing class GRAXSetupCtrl {
 			    		HttpResponse res = h.send(req);
 			    		graxappJSON = res.getBody();
 			    	}
-			    		
 			    LastAppName = appName;
-			    graxsetting_graxapp = appName;
-			    graxsetting_apitoken = GetAppConfig('ENGAGEMENTGRAPH_APITOKEN');
-			    graxsetting_gatewaytoken = GetAppConfig('ENGAGEMENTGRAPH_GATEWAYTOKEN');
-			    graxsetting_graphdburl = GetAppConfig('GRAPHCONNECT_URL');
-			    graxsetting_licensetoken = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
-			    graxsetting_postgresurl = GetAppConfig('DATABASE_URL');
-			    graxsetting_flowurl = 'https://' + appName + '.herokuapp.com';
-			    graxsetting_apiurl = ''; // Let it default to code base
+			    gxs.graxConfig.Heroku_App_Name__c = appName;
+			    gxs.graxConfig.ApiToken__c = GetAppConfig('ENGAGEMENTGRAPH_APITOKEN');
+			    gxs.graxConfig.GatewayToken__c = GetAppConfig('ENGAGEMENTGRAPH_GATEWAYTOKEN');
+			    gxs.graxConfig.graphdburl__c = GetAppConfig('GRAPHCONNECT_URL');
+			    gxs.graxConfig.LicenseToken__c = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
+			    gxs.graxConfig.Postgres_URL__c = GetAppConfig('DATABASE_URL');
+			    gxs.graxConfig.GRAX_Flow_URL__c = 'https://' + appName + '.herokuapp.com';
+			    // gxs.graxConfig.GRAX_API_Url__c = ''; // Let it default to code base
 			    
 			} catch (Exception e) {
 			     //Generic exception handling code here
@@ -497,17 +446,15 @@ public with sharing class GRAXSetupCtrl {
         {
             integer counter = 0;
             disablesave = false;
-            GRAXSettings gxs = new GRAXSettings(ObjectName);
-            if (gxs.isObjectConfigured){
+            GRAXQuery__c graxq = gxs.getSynchedObject(ObjectName);
+            if (graxq != null){
                 disablesynch = false;
-                defaultfilter = gxs.GRAXQuery.Filter__c;
-                defaultprocessordering = gxs.GRAXQuery.Order_By__c;
-                defaultfields = gxs.GRAXQuery.Selected_Fields__c;
-                graxconfig = gxs.GRAXQuery.graxconfig__c;
-                auditenabled = gxs.GRAXQuery.Enable_Audit_Log__c;
-                string currentfields = ','+ gxs.GRAXQuery.Selected_Fields__c + ',';
-                
-                
+                defaultfilter = graxq.Filter__c;
+                defaultprocessordering = graxq.Order_By__c;
+                defaultfields = graxq.Selected_Fields__c;
+                graxconfig = graxq.graxconfig__c;
+                auditenabled = graxq.Enable_Audit_Log__c;
+                string currentfields = ','+ graxq.Selected_Fields__c + ',';
                 for(FieldProperties obj : FieldProperties){
                     if (currentfields.indexOf(',' + obj.fieldname + ',') >0 ){
                         FieldProperties[counter].fieldselected=true;
@@ -613,9 +560,8 @@ public with sharing class GRAXSetupCtrl {
     
     public string getPropURLToDisplay_Flow() { 
         String flowUrl = 'https://grax.io';
-        GRAXSettings__c graxsettings = GRAXSettings__c.getOrgDefaults();
-        if (graxsettings.GRAX_Flow_URL__c!=null)
-            flowUrl = graxsettings.GRAX_Flow_URL__c; 
+        if (gxs.graxConfig.GRAX_Flow_URL__c != null )
+            flowUrl = gxs.graxConfig.GRAX_Flow_URL__c; 
         return flowUrl;
     }
     
