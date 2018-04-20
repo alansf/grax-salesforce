@@ -50,8 +50,13 @@
   </style>
 </head>
 <body>
-  <div class="slds-scope">
+  <apex:form id="verifySchedulesform">
+    <apex:actionFunction action="{!verifySchedules}" name="verifySchedules" reRender="verifySchedulesform"></apex:actionFunction>    
+  </apex:form>
+  
+  <script>window.setTimeout(verifySchedules, 0);</script>
 
+  <div class="slds-scope">
     <div class="slds-tabs_scoped">
         <ul class="slds-tabs_scoped__nav" role="tablist" id="tabs">
             <li class="slds-tabs_scoped__item slds-is-active" title="Configuration" role="presentation">
