@@ -88,6 +88,50 @@ public with sharing class GRAXSetupCtrl {
         if (GRAXSettings.IsConfigured()==false)
             ApexPages.addmessage(new ApexPages.message(ApexPages.severity.Error, 'Please complete <a href="/one/one.app#/n/GRAX_SETUP">GRAX Configuration</a>.'));
     }
+
+    /*****************************************************************************************
+	Name              : verifySchedules
+	Description       : 
+	Revision History  :
+	Created/Modified by   Created/Modified Date     Requested by		Related Task/Issue     
+	----------------------------------------------------------------------------------------
+	1. Leandro Brunner       04/18/2018				David Mackey		https://app.asana.com/0/326600806074978/633149554508924/f
+	******************************************************************************************/
+    public static void verifySchedules() {
+        String schedulerToCleanDataRecords = 'schedulerToCleanDataRecords';
+        String schedulerToResendDataRecords = 'schedulerToResendDataRecords';
+
+        Set<String> crons = new Set<String>();
+
+        // Get CronTiggers if exist, and add Name to the Set.
+        for(CronTrigger ct : [
+            SELECT CronJobDetail.Name
+            FROM CronTrigger
+            WHERE CronJobDetail.Name IN :new List<String>{ schedulerToCleanDataRecords, schedulerToResendDataRecords + '0', schedulerToResendDataRecords + '1' }
+        ]) {
+            crons.add(ct.CronJobDetail.Name);
+        }
+
+        // Verify if the scheduler is not in the queue and adds it.
+        if(!crons.contains(schedulerToCleanDataRecords)) {
+            // Schedule job to run every day at 12 AM
+            String jobId = System.schedule(schedulerToCleanDataRecords, '0 0 1 ? * MON-SUN', new GRAXSchedulerToCleanDataRecords());
+        }
+
+        // Code to schedule this process every 30 mins
+        Integer minutesFactor = 30;
+        String cronExpression = '';
+
+        for(Integer i = 0; i < 2; i++){
+            String cronName = schedulerToResendDataRecords + String.valueOf(i);
+
+            // Verify if the scheduler is not in the queue and adds it.
+            if(!crons.contains(cronName)) {
+                cronExpression = '0 '+ String.valueOf(i * minutesFactor) + ' 0 * * ?'; 
+                String jobId = System.schedule(cronName, cronExpression, new GRAXSchedulerToResendDataRecords());
+            }
+        }
+    }
     
     public pagereference AuthorizeHeroku(){
 		pagereference p = new pagereference(GetUrl('/platforms/heroku/oauth/authorize'));

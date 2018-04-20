@@ -58,6 +58,13 @@ public with sharing class GRAXSetupCtrlTest {
      	deploy.GetConfig();
     }
 
+	@isTest
+	static void verifySchedulesTest() {
+		Test.startTest();
+		GRAXSetupCtrl.verifySchedules();
+		Test.stopTest();
+	}
+
     // CONFIGURATION
     @isTest
     static void ConfigurationConstructorTest() {

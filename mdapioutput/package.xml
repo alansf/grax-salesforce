@@ -11,6 +11,10 @@
     <members>GRAXApiUT</members>
     <members>GRAXAuditTrail</members>
     <members>GRAXBatch</members>
+    <members>GRAXBatchToCleanDataRecords</members>
+    <members>GRAXBatchToCleanDataRecordsTest</members>
+    <members>GRAXBatchToResendDataRecords</members>
+    <members>GRAXBatchToResendDataRecordsTest</members>
     <members>GRAXBatchUT</members>
     <members>GRAXCloud</members>
     <members>GRAXCloudUT</members>
@@ -24,6 +28,10 @@
     <members>GRAXExceptionUT</members>
     <members>GRAXFlow</members>
     <members>GRAXFlowUT</members>
+    <members>GRAXSchedulerToCleanDataRecords</members>
+    <members>GRAXSchedulerToCleanDataRecordsTest</members>
+    <members>GRAXSchedulerToResendDataRecords</members>
+    <members>GRAXSchedulerToResendDataRecordsTest</members>
     <members>GRAXSettings</members>
     <members>GRAXSettingsUT</members>
     <members>GRAXSetupCtrl</members>
