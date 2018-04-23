@@ -1,5 +1,5 @@
 public class GRAXAuditTrail extends GRAXCloud {
-	public String AuditConfig = '';
+	public GRAXCloud.CallOutResponse AuditConfig;
 	public String ConnectionString = '';
 	
 	public Integer numberoftables = 0;
@@ -14,12 +14,12 @@ public class GRAXAuditTrail extends GRAXCloud {
     		String url = gxcSettings.ApiURL + '/platforms/heroku/postgres/getpartitionsize';
     		AuditConfig = GRAXCloud.calloutnow(url,content);
     		ParseConfig();
-    		debug('GRAXAuditTrail.GetAuditSettings',AuditConfig);
-    		return AuditConfig;
+    		debug('GRAXAuditTrail.GetAuditSettings',AuditConfig.response);
+    		return AuditConfig.response;
     }
     
     public void ParseConfig(){
-    		if (AuditConfig!=''){
+    		if (AuditConfig.response!=''){
 	    		schema = GetAppConfig('schema');
 	    		query = GetAppConfig('query');
 	    		prefix = GetAppConfig('prefix');
@@ -29,8 +29,8 @@ public class GRAXAuditTrail extends GRAXCloud {
     
     private String GetAppConfig(String fieldName){
     		String ReturnValue = '';
-    		if (AuditConfig!='' && AuditConfig!=null){
-    			JSONParser parser = JSON.createParser(AuditConfig);
+    		if (AuditConfig.response!='' && AuditConfig.response!=null){
+    			JSONParser parser = JSON.createParser(AuditConfig.response);
     			while (parser.nextToken() != null) {
     				if (parser.getCurrentToken() == JSONToken.FIELD_NAME && parser.getText() == fieldName){
         				parser.nextToken();
@@ -49,8 +49,8 @@ public class GRAXAuditTrail extends GRAXCloud {
     		String url = gxcSettings.ApiURL + '/platforms/heroku/postgres/auditinstall';
     		AuditConfig = GRAXCloud.calloutnow(url,content);
     		ParseConfig();
-    		debug('GRAXAuditTrail.GetAuditSettings',AuditConfig);
-    		return AuditConfig;
+    		debug('GRAXAuditTrail.GetAuditSettings',AuditConfig.response);
+    		return AuditConfig.response;
     }
     
     public String DropAuditParitions(String ConnString,Integer NumberOfPartitions){
@@ -60,8 +60,8 @@ public class GRAXAuditTrail extends GRAXCloud {
     		String url = gxcSettings.ApiURL + '/platforms/heroku/postgres/audituninstall';
     		AuditConfig = GRAXCloud.calloutnow(url,content);
     		ParseConfig();
-    		debug('GRAXAuditTrail.DropAuditParitions',AuditConfig);
-    		return AuditConfig;
+    		debug('GRAXAuditTrail.DropAuditParitions',AuditConfig.response);
+    		return AuditConfig.response;
     }
     
 }
