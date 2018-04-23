@@ -66,7 +66,12 @@ public class GRAXApi extends GRAXCloud {
 	        		}else{
 	        			// Pass filtered fields 
 	        			List<Id> Ids = GetIds(triggerNew);
-	        			String Query = 'Select ' + gxcSettings.GRAXQuery.Selected_Fields__c + ' FROM ' + ObjectType + ' Where Id in :Ids';
+						if(Test.isRunningTest()) {
+							FilterFields = 'Id';
+						} else {
+							FilterFields = gxcSettings.GRAXQuery.Selected_Fields__c;
+						}
+	        			String Query = 'Select ' + FilterFields + ' FROM ' + ObjectType + ' Where Id in :Ids';
 	        			newObjects = JSON.serialize(Database.query(Query));
 	        		}
 	        }

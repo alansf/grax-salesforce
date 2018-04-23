@@ -19,7 +19,7 @@ public class GRAXAuditTrail extends GRAXCloud {
     }
     
     public void ParseConfig(){
-    		if (AuditConfig.response!=''){
+    		if (AuditConfig.success){
 	    		schema = GetAppConfig('schema');
 	    		query = GetAppConfig('query');
 	    		prefix = GetAppConfig('prefix');
@@ -29,7 +29,7 @@ public class GRAXAuditTrail extends GRAXCloud {
     
     private String GetAppConfig(String fieldName){
     		String ReturnValue = '';
-    		if (AuditConfig.response!='' && AuditConfig.response!=null){
+    		if (AuditConfig.success){
     			JSONParser parser = JSON.createParser(AuditConfig.response);
     			while (parser.nextToken() != null) {
     				if (parser.getCurrentToken() == JSONToken.FIELD_NAME && parser.getText() == fieldName){

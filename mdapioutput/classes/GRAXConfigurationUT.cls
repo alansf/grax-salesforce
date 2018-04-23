@@ -5,7 +5,14 @@ public with sharing class GRAXConfigurationUT {
 	@isTest
     static void ConstructorTest() {
     		GRAXSettings gxs = GRAXUnitTest.getSettings();
-		GRAXConfiguration config = GRAXConfigurationUT.Initialize();
+		GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{}', 'http://test.grax.io', null);
+        
+        Test.startTest();
+
+		Test.setMock(HttpCalloutMock.class, fakeResponse);
+        GRAXConfiguration config = GRAXConfigurationUT.Initialize();
+
+        Test.stopTest();
     }
     
     @isTest

@@ -18,7 +18,7 @@ private class GRAXBatchToCleanDataRecordsTest {
         GRAX_Data_Record__c dr2 = new GRAX_Data_Record__c();
 		dr2.Salesforce_Object__c = 'Test';
 		dr2.Status__c = 'Sent Successful';
-        dr2.Last_Sent_Date__c = Date.today().addDays(-2);
+        dr2.Last_Sent_Date__c = Date.today().addDays(-1);
 
         GRAX_Data_Record__c dr3 = new GRAX_Data_Record__c();
 		dr3.Salesforce_Object__c = 'Test';

@@ -39,10 +39,10 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
 			headers.put('authorizationToken', gx.ApiToken);
 			headers.put('x-api-key', gx.GatewayToken);
 			headers.put('sfdcorgid', UserInfo.getOrganizationId());
-			
-			// Call the method to execute the Callout
-			response = doHTTP(httpMethod, requestBody, apiURL, headers);
 		}
+
+		// Call the method to execute the Callout
+		response = doHTTP(httpMethod, requestBody, apiURL, headers);
 			
 		return response;
 	}

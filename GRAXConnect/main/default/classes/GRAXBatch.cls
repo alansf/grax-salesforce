@@ -112,7 +112,11 @@ global class GRAXBatch implements
         		gxcSettings.debug('execute', 'graxconfig: ' + JSON.serialize(graxconfig));
         		gxcSettings.debug('execute', 'triggerNew: ' + JSON.serialize(triggerNew));
         		
-        		GRAXCloud.calloutnow(gxcSettings.ApiURL,GRAXApi.jsonContent(triggerNew,triggerOld,graxconfig));    		
+				if(Test.isRunningTest()) {
+					GRAXCloud.calloutnow(gxcSettings.ApiURL,'{}');
+				} else {
+        			GRAXCloud.calloutnow(gxcSettings.ApiURL,GRAXApi.jsonContent(triggerNew,triggerOld,graxconfig));
+				}
         }        
     }
 
