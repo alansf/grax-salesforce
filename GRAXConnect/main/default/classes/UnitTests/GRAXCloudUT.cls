@@ -46,7 +46,7 @@ private class GRAXCloudUT{
         Test.startTest();
 
         Test.setMock(HttpCalloutMock.class, fakeResponse);
-        GRAXCloud.callout('http://test.grax.io', '{}', 'Test');
+        GRAXCloud.callout('http://test.grax.io', '{}', 'Test', '');
 
         Test.stopTest();
 
@@ -72,7 +72,7 @@ private class GRAXCloudUT{
         Test.startTest();
 
         Test.setMock(HttpCalloutMock.class, fakeResponse);
-        GRAXCloud.callout('http://test.grax.io', '{}', 'Test');
+        GRAXCloud.callout('http://test.grax.io', '{}', 'Test', '');
 
         Test.stopTest();
 
