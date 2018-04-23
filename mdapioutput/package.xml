@@ -89,7 +89,7 @@
     <members>GRAXSettings__c.s3bucket__c</members>
     <members>GRAXSettings__c.s3region__c</members>
     <members>GRAXSettings__c.s3secretaccesskey__c</members>
-    <members>GRAX_Data_Record__c.Error_Message_c__c</members>
+    <members>GRAX_Data_Record__c.Error_Message__c</members>
     <members>GRAX_Data_Record__c.Last_Sent_Date__c</members>
     <members>GRAX_Data_Record__c.Salesforce_ID__c</members>
     <members>GRAX_Data_Record__c.Salesforce_Object__c</members>
