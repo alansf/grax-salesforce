@@ -65,7 +65,7 @@
     <sharingModel>ReadWrite</sharingModel>
     <visibility>Public</visibility>
     <fields>
-        <fullName>Error_Message_c__c</fullName>
+        <fullName>Error_Message__c</fullName>
         <externalId>false</externalId>
         <label>Error Message</label>
         <length>32768</length>
