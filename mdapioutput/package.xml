@@ -36,6 +36,7 @@
     <members>GRAXSettingsUT</members>
     <members>GRAXSetupCtrl</members>
     <members>GRAXSetupCtrlTest</members>
+    <members>GRAXSupportCtrl</members>
     <members>GRAXUnitTest</members>
   </types>
   <types>
@@ -109,6 +110,7 @@
     <members>GRAXDeploy</members>
     <members>GRAXFlow</members>
     <members>GRAXSetup</members>
+    <members>GRAXSupport</members>
   </types>
   <types>
     <name>Profile</name>
@@ -127,6 +129,7 @@
     <members>GRAXQuery__c</members>
     <members>GRAX_DEPLOY</members>
     <members>GRAX_Intro</members>
+    <members>GRAX_Support</members>
   </types>
   <version>41.0</version>
 </Package>
