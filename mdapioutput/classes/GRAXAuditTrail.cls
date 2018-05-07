@@ -23,7 +23,10 @@ public class GRAXAuditTrail extends GRAXCloud {
 	    		schema = GetAppConfig('schema');
 	    		query = GetAppConfig('query');
 	    		prefix = GetAppConfig('prefix');
-	    		numberoftables = Integer.valueof(GetAppConfig('numberoftables'));
+	    		String val = GetAppConfig('numberoftables');
+	    		numberoftables = 0;
+	    		if (val != '' && val != null)
+	    			numberoftables = Integer.valueof(val);
     		}
     }
     
