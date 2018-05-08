@@ -9,6 +9,8 @@
   
   <!-- Import the Design System style sheet -->
   <apex:slds />
+ 
+  
   <style type="text/css">
     .unlock_button:disabled,
     .cancel_button:disabled,
@@ -48,6 +50,11 @@
     .slds-popover__body {
         white-space: normal;
     }
+    .headerRow .headerStyle{
+    		background-color:#B5D3E7;
+    		text-align: center;
+    		font-weight: bold;
+    	} 
   </style>
 </head>
 
@@ -67,16 +74,24 @@
             		<apex:pageBlock>   	
             			<apex:pageblockTable value="{!GRAXLogInfo.Logs}" var="mw" styleClass="slds-table slds-table--bordered slds-table--striped">
             			  <apex:column value="{!mw.logging_timestamp}">
-            			  	<apex:facet name="header">Time Stamp</apex:facet>                        
+            			  	<apex:facet name="header">
+            			  		<div class="headerStyle">Time Stamp</div>
+            			  	</apex:facet>                        
             			  </apex:column>
 					  <apex:column value="{!mw.source}">
-					  	<apex:facet name="header">Source</apex:facet>  
+					  	<apex:facet name="header">
+					  		<div class="headerStyle">Source</div>
+					  	</apex:facet>  
 					  </apex:column>
 					  <apex:column value="{!mw.error}">
-					  	<apex:facet name="header">Error</apex:facet>  
+					  	<apex:facet name="header">
+					  		<div class="headerStyle">Error</div> 
+					  	</apex:facet>  
 					  </apex:column>
 					  <apex:column value="{!mw.information}">
-					  	<apex:facet name="header">Information</apex:facet>  
+					  	<apex:facet name="header">
+					  		<div class="headerStyle">Information</div>
+					  	</apex:facet> 
 					  </apex:column>
 					</apex:pageBlockTable>
 				</apex:pageBlock>	
