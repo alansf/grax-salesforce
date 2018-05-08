@@ -28,6 +28,8 @@
     <members>GRAXExceptionUT</members>
     <members>GRAXFlow</members>
     <members>GRAXFlowUT</members>
+    <members>GRAXLogRecord</members>
+    <members>GRAXLogging</members>
     <members>GRAXSchedulerToCleanDataRecords</members>
     <members>GRAXSchedulerToCleanDataRecordsTest</members>
     <members>GRAXSchedulerToResendDataRecords</members>

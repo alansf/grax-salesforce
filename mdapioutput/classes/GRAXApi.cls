@@ -125,16 +125,6 @@ public class GRAXApi extends GRAXCloud {
 		else
 			return '';
     }
-    
-    public static List<Map<String, String>> getexceptions(){
-		GRAXSettings gxcSettings = new GRAXSettings();
-		String url = gxcSettings.ApiURL + '/log/exception/getlist';
-		String payload = '{}';
-		CallOutResponse calloutResp = GRAXCloud.calloutnow(url, payload);
-		Map<String, Object> meta = (Map<String, Object>) JSON.deserializeUntyped(calloutResp.response);
-		List<Map<String, String>> myMaps = (List<Map<String, String>>) meta.get('Items');
-		return myMaps;
-	}
 
 	public static void cloudconfig(String sobjectName){
 		GRAXSettings gxcSettings = new GRAXSettings(sobjectName);

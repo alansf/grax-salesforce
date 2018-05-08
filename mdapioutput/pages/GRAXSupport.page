@@ -54,26 +54,36 @@
 <body>
     <div class="slds-scope">
       <div class="slds-tabs_scoped">
-        <ul class="slds-tabs_scoped__nav" role="tablist" id="tabs">
-            <li class="slds-tabs_scoped__item slds-is-active" title="Support" role="presentation">
-                <a class="slds-tabs_scoped__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected="true" aria-controls="tab-support" id="tab-suport__item">
-                    Support
-                </a>
-            </li>
-            
-            <li class="slds-tabs_scoped__item" title="Debug Logs" role="presentation">
+        <ul class="slds-tabs_scoped__nav" role="tablist" id="tabs">            
+            <li class="slds-tabs_scoped__item slds-is-active" title="Debug Logs" role="presentation">
                 <a class="slds-tabs_scoped__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected="false" aria-controls="tab-debuglogs" id="tab-debuglogs__item">
                     Debug Logs
                 </a>
             </li>
         </ul>
         
-        <div id="tab-support" class="slds-tabs_scoped__content slds-show" role="tabpanel" aria-labelledby="tab-support__item">
-            <apex:form id="form-support">
-            </apex:form>
-        </div>
-        <div id="tab-debuglogs" class="slds-tabs_scoped__content slds-show" role="tabpanel" aria-labelledby="tab-debuglogs__item">
+        <div id="tab-debuglogs" class="slds-tabs_scoped__content" role="tabpanel" aria-labelledby="tab-debuglogs__item">
             <apex:form id="form-debuglogs">
+            		<apex:pageBlock>   	
+            			<apex:pageblockTable value="{!GRAXLogInfo.Logs}" var="mw" styleClass="slds-table slds-table--bordered slds-table--striped">
+            			  <apex:column value="{!mw.logging_timestamp}">
+            			  	<apex:facet name="header">Time Stamp</apex:facet>                        
+            			  </apex:column>
+					  <apex:column value="{!mw.source}">
+					  	<apex:facet name="header">Source</apex:facet>  
+					  </apex:column>
+					  <apex:column value="{!mw.error}">
+					  	<apex:facet name="header">Error</apex:facet>  
+					  </apex:column>
+					  <apex:column value="{!mw.information}">
+					  	<apex:facet name="header">Information</apex:facet>  
+					  </apex:column>
+					</apex:pageBlockTable>
+				</apex:pageBlock>	
+				 
+				<apex:pageBlock>
+					<!-- <apex:inputTextarea id="exceptionlist" value="{!LoggingJSON}" cols="100" rows="5" styleClass="slds-input" />  -->
+				</apex:pageBlock>
             </apex:form>
         </div>
        
