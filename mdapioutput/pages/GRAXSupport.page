@@ -73,6 +73,12 @@
             <apex:form id="form-debuglogs">
             		<apex:pageBlock>   	
             			<apex:pageblockTable value="{!GRAXLogInfo.Logs}" var="mw" styleClass="slds-table slds-table--bordered slds-table--striped">
+            			  <apex:column>
+            			  		<apex:facet name="header">
+	            			  		<div class="headerStyle">Support</div>
+	            			  	</apex:facet>    
+						     <apex:commandButton value="Open Ticket" action="/one/one.app#/n/GRAX_Support?organizationid={!mw.organizationid}&logging_timestamp={!mw.logging_timestamp}&source={!mw.source}&error={!mw.error}" /> 
+					  </apex:column>
             			  <apex:column value="{!mw.logging_timestamp}">
             			  	<apex:facet name="header">
             			  		<div class="headerStyle">Time Stamp</div>
