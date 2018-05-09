@@ -95,6 +95,14 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>GRAXLogRecord</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXLogging</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>GRAXSchedulerToCleanDataRecords</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -264,8 +272,4 @@
         <apexPage>GRAXSupport</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
-    <tabVisibilities>
-        <tab>GRAX_Support</tab>
-        <visibility>DefaultOn</visibility>
-    </tabVisibilities>
 </Profile>
