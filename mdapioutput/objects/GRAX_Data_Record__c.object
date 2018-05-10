@@ -66,6 +66,7 @@
     <visibility>Public</visibility>
     <fields>
         <fullName>Error_Message__c</fullName>
+        <description>Error_Message</description>
         <externalId>false</externalId>
         <label>Error Message</label>
         <length>32768</length>
@@ -75,7 +76,22 @@
         <visibleLines>3</visibleLines>
     </fields>
     <fields>
+        <fullName>GRAX_Schedule_Process__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>GRAX_Schedule_Process</description>
+        <externalId>false</externalId>
+        <label>GRAX Schedule Process</label>
+        <referenceTo>GRAX_Schedule_Process__c</referenceTo>
+        <relationshipLabel>GRAX Data Records</relationshipLabel>
+        <relationshipName>GRAX_Data_Records</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
         <fullName>Last_Sent_Date__c</fullName>
+        <description>Last_Sent_Date</description>
         <externalId>false</externalId>
         <label>Last Sent Date</label>
         <required>false</required>
@@ -85,6 +101,7 @@
     </fields>
     <fields>
         <fullName>Salesforce_ID__c</fullName>
+        <description>Salesforce_ID</description>
         <externalId>false</externalId>
         <label>Salesforce ID</label>
         <length>10000</length>
@@ -95,6 +112,7 @@
     </fields>
     <fields>
         <fullName>Salesforce_Object__c</fullName>
+        <description>Salesforce_Object</description>
         <externalId>false</externalId>
         <label>Salesforce Object</label>
         <required>false</required>
@@ -103,7 +121,20 @@
         <type>TextArea</type>
     </fields>
     <fields>
+        <fullName>Sched_Proc_Hierarchy_Unique_Key__c</fullName>
+        <description>Sched_Proc_Hierarchy_Unique_Key</description>
+        <externalId>false</externalId>
+        <label>Sched Proc Hierarchy Unique Key</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
         <fullName>Status__c</fullName>
+        <description>Status</description>
         <externalId>false</externalId>
         <label>Status</label>
         <required>false</required>
@@ -139,6 +170,7 @@
     </fields>
     <fields>
         <fullName>of_Times_Sent__c</fullName>
+        <description>of_Times_Sent</description>
         <externalId>false</externalId>
         <label># of Times Sent</label>
         <precision>5</precision>

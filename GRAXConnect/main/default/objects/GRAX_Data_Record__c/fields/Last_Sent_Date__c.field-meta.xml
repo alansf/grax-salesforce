@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Last_Sent_Date__c</fullName>
+    <description>Last_Sent_Date</description>
     <externalId>false</externalId>
     <label>Last Sent Date</label>
     <required>false</required>
