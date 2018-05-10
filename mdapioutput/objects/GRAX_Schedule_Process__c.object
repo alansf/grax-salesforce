@@ -66,13 +66,35 @@
     <fields>
         <fullName>Archive__c</fullName>
         <defaultValue>false</defaultValue>
+        <description>Archive</description>
         <externalId>false</externalId>
         <label>Archive</label>
         <trackTrending>false</trackTrending>
         <type>Checkbox</type>
     </fields>
     <fields>
+        <fullName>Date_Field__c</fullName>
+        <description>Date_Field</description>
+        <externalId>false</externalId>
+        <label>Date Field</label>
+        <length>80</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Last_Run_Date__c</fullName>
+        <description>Last_Run_Date</description>
+        <externalId>false</externalId>
+        <label>Last Run Date</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
         <fullName>Next_Run_Date__c</fullName>
+        <description>Next_Run_Date</description>
         <externalId>false</externalId>
         <label>Next Run Date</label>
         <required>false</required>
@@ -80,7 +102,19 @@
         <type>DateTime</type>
     </fields>
     <fields>
+        <fullName>Object_Name__c</fullName>
+        <description>Object_Name</description>
+        <externalId>false</externalId>
+        <label>Object Name</label>
+        <length>80</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
         <fullName>Schedule_Start_Date__c</fullName>
+        <description>Schedule_Start_Date</description>
         <externalId>false</externalId>
         <label>Schedule Start Date</label>
         <required>false</required>
@@ -89,6 +123,7 @@
     </fields>
     <fields>
         <fullName>Schedule_Start_Time__c</fullName>
+        <description>Schedule_Start_Time</description>
         <externalId>false</externalId>
         <label>Schedule Start Time</label>
         <length>8</length>
@@ -99,6 +134,7 @@
     </fields>
     <fields>
         <fullName>Schedule_Type__c</fullName>
+        <description>Schedule_Type</description>
         <externalId>false</externalId>
         <label>Schedule Type</label>
         <required>false</required>
@@ -147,7 +183,43 @@
         </valueSet>
     </fields>
     <fields>
+        <fullName>Select_Criteria__c</fullName>
+        <description>Select_Criteria</description>
+        <externalId>false</externalId>
+        <label>Select Criteria</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Main Object not modified</fullName>
+                    <default>false</default>
+                    <label>Main Object not modified</label>
+                </value>
+                <value>
+                    <fullName>Main Object and Children not modified</fullName>
+                    <default>false</default>
+                    <label>Main Object and Children not modified</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Selected_Object_Hierarchy_JSON__c</fullName>
+        <description>Selected_Object_Hierarchy_JSON</description>
+        <externalId>false</externalId>
+        <label>Selected Object Hierarchy JSON</label>
+        <length>131072</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
         <fullName>Status__c</fullName>
+        <description>Status</description>
         <externalId>false</externalId>
         <label>Status</label>
         <required>false</required>
@@ -174,5 +246,14 @@
                 </value>
             </valueSetDefinition>
         </valueSet>
+    </fields>
+    <fields>
+        <fullName>Target_Date__c</fullName>
+        <description>Target_Date</description>
+        <externalId>false</externalId>
+        <label>Target Date</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
     </fields>
 </CustomObject>

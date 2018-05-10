@@ -96,18 +96,30 @@
     <members>GRAXSettings__c.s3bucket__c</members>
     <members>GRAXSettings__c.s3region__c</members>
     <members>GRAXSettings__c.s3secretaccesskey__c</members>
+    <members>GRAX_Data_Record_Id__c.GRAX_Data_Record__c</members>
+    <members>GRAX_Data_Record_Id__c.Processed_Child_Index__c</members>
+    <members>GRAX_Data_Record_Id__c.SFDC_Id__c</members>
+    <members>GRAX_Data_Record_Id__c.Status__c</members>
     <members>GRAX_Data_Record__c.Error_Message__c</members>
+    <members>GRAX_Data_Record__c.GRAX_Schedule_Process__c</members>
     <members>GRAX_Data_Record__c.Last_Sent_Date__c</members>
     <members>GRAX_Data_Record__c.Salesforce_ID__c</members>
     <members>GRAX_Data_Record__c.Salesforce_Object__c</members>
+    <members>GRAX_Data_Record__c.Sched_Proc_Hierarchy_Unique_Key__c</members>
     <members>GRAX_Data_Record__c.Status__c</members>
     <members>GRAX_Data_Record__c.of_Times_Sent__c</members>
     <members>GRAX_Schedule_Process__c.Archive__c</members>
+    <members>GRAX_Schedule_Process__c.Date_Field__c</members>
+    <members>GRAX_Schedule_Process__c.Last_Run_Date__c</members>
     <members>GRAX_Schedule_Process__c.Next_Run_Date__c</members>
+    <members>GRAX_Schedule_Process__c.Object_Name__c</members>
     <members>GRAX_Schedule_Process__c.Schedule_Start_Date__c</members>
     <members>GRAX_Schedule_Process__c.Schedule_Start_Time__c</members>
     <members>GRAX_Schedule_Process__c.Schedule_Type__c</members>
+    <members>GRAX_Schedule_Process__c.Select_Criteria__c</members>
+    <members>GRAX_Schedule_Process__c.Selected_Object_Hierarchy_JSON__c</members>
     <members>GRAX_Schedule_Process__c.Status__c</members>
+    <members>GRAX_Schedule_Process__c.Target_Date__c</members>
   </types>
   <types>
     <name>ListView</name>
