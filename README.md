@@ -2,6 +2,8 @@
 
 # GRAX Salesforce SDK
 
+[![Build Status](https://travis-ci.com/HardingPoint/GRAXForSFDC.svg?token=iwuJ51YUkASpxxW2x4Nt&branch=master)](https://travis-ci.com/HardingPoint/GRAXForSFDC)
+
 [GRAX](https://www.grax.io/) Salesforce SDK uses your Salesforce instance(s) to build, power, and synchronize your enterprise graph. The power of your enterprise graph is the extensibility, flexibility, and fluidity to relate micro events to measure and correlate outcome (revenue, costs, risk, etc). Everything from multi channel marketing events, buying pattern awareness/alerts, to recognizing risks in customer service patterns. It all starts with building your enterprise graph from your existing Salesforce then extending.  
 
 ---------------------------------------------------------------------------------------------------------
@@ -21,6 +23,9 @@ With a few clicks you can deploy GRAX for Salesforce, synchronize your enterpris
 	  <img alt="Deploy to Salesforce"
 	       src="https://deploytosalesforce.herokuapp.com/resources/img/deploy-to-salesforce3.png">
 	</a>
+	
+1. Make sure that the username and organization matches with what you've logged in with. 
+1. Click Deploy 
 
 1. Configure GRAX
 

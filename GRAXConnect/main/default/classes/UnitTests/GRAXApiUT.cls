@@ -17,7 +17,18 @@ public with sharing class GRAXApiUT {
     @isTest
     static void cloudconfigTest() {
     		GRAXSettings gxs = GRAXUnitTest.getSettings();
-      	GRAXApi.cloudconfig('Account');
+
+        GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{}', 'http://test.grax.io/applications/neo4j/configure', null);
+        
+        Test.startTest();
+
+        Test.setMock(HttpCalloutMock.class, fakeResponse);
+        GRAXApi.cloudconfig('Account');
+
+        Test.stopTest();
+
+
+      	
     }
     
     @isTest

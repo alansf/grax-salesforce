@@ -112,6 +112,14 @@
     </classAccesses>
     <classAccesses>
         <apexClass>GRAXSchedulerToProcessSchedJobs</apexClass>
+      <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXLogRecord</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXLogging</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -136,6 +144,10 @@
     </classAccesses>
     <classAccesses>
         <apexClass>GRAXSetupCtrlTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXSupportCtrl</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -371,6 +383,10 @@
     </pageAccesses>
     <pageAccesses>
         <apexPage>GRAXSetup</apexPage>
+        <enabled>true</enabled>
+    </pageAccesses>
+    <pageAccesses>
+        <apexPage>GRAXSupport</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
 </Profile>

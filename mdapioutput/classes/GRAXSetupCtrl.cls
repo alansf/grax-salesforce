@@ -380,7 +380,9 @@ public with sharing class GRAXSetupCtrl {
     
     public Map<String,GRAXQuery__c> getSynchedObjects()
     {
-        return GRAXSettings.getSynchedObjects();
+        gxs.SynchedObjects = GRAXSettings.getSynchedObjects();
+    	
+        return gxs.SynchedObjects;
     }
     
     public List<FieldProperties> getfieldProperties()

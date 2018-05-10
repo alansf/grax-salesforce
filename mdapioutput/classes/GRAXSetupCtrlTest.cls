@@ -69,7 +69,14 @@ public with sharing class GRAXSetupCtrlTest {
     @isTest
     static void ConfigurationConstructorTest() {
         GRAXSettings gxs = GRAXUnitTest.getSettings();
-		GRAXConfiguration config = GRAXSetupCtrlTest.Initialize();
+		GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{}', 'http://test.grax.io', null);
+        
+        Test.startTest();
+
+		Test.setMock(HttpCalloutMock.class, fakeResponse);
+        GRAXConfiguration config = GRAXSetupCtrlTest.Initialize();
+
+        Test.stopTest();
     }
 
     @isTest

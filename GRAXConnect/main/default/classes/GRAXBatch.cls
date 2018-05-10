@@ -12,7 +12,7 @@
  * License:	https://github.com/HardingPoint/GRAXForSFDC/blob/master/LICENSE
  * --------------------------------------------------------------------------*/
 
-global class GRAXBatch implements
+global class GRAXBatch implements 
     Database.Batchable<sObject>, Database.AllowsCallouts, Database.Stateful {
     // instance member to retain state across transactions
     global Integer recordsProcessed = 0;
