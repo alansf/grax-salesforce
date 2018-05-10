@@ -10,9 +10,12 @@
     <members>GRAXApi</members>
     <members>GRAXApiUT</members>
     <members>GRAXAuditTrail</members>
+    <members>GRAXBackupCtrl</members>
     <members>GRAXBatch</members>
     <members>GRAXBatchToCleanDataRecords</members>
     <members>GRAXBatchToCleanDataRecordsTest</members>
+    <members>GRAXBatchToDeleteBackedUpData</members>
+    <members>GRAXBatchToProcessSchedJob</members>
     <members>GRAXBatchToResendDataRecords</members>
     <members>GRAXBatchToResendDataRecordsTest</members>
     <members>GRAXBatchUT</members>
@@ -30,6 +33,7 @@
     <members>GRAXFlowUT</members>
     <members>GRAXSchedulerToCleanDataRecords</members>
     <members>GRAXSchedulerToCleanDataRecordsTest</members>
+    <members>GRAXSchedulerToProcessSchedJobs</members>
     <members>GRAXSchedulerToResendDataRecords</members>
     <members>GRAXSchedulerToResendDataRecordsTest</members>
     <members>GRAXSettings</members>
@@ -49,6 +53,7 @@
   <types>
     <name>Layout</name>
     <members>GRAXQuery__c-GRAXQueries Layout</members>
+    <members>GRAX_Schedule_Process__c-GRAX Schedule Process Layout</members>
   </types>
   <types>
     <name>CustomObjectTranslation</name>
@@ -58,7 +63,9 @@
     <name>CustomObject</name>
     <members>GRAXQuery__c</members>
     <members>GRAXSettings__c</members>
+    <members>GRAX_Data_Record_Id__c</members>
     <members>GRAX_Data_Record__c</members>
+    <members>GRAX_Schedule_Process__c</members>
   </types>
   <types>
     <name>CustomField</name>
@@ -95,6 +102,12 @@
     <members>GRAX_Data_Record__c.Salesforce_Object__c</members>
     <members>GRAX_Data_Record__c.Status__c</members>
     <members>GRAX_Data_Record__c.of_Times_Sent__c</members>
+    <members>GRAX_Schedule_Process__c.Archive__c</members>
+    <members>GRAX_Schedule_Process__c.Next_Run_Date__c</members>
+    <members>GRAX_Schedule_Process__c.Schedule_Start_Date__c</members>
+    <members>GRAX_Schedule_Process__c.Schedule_Start_Time__c</members>
+    <members>GRAX_Schedule_Process__c.Schedule_Type__c</members>
+    <members>GRAX_Schedule_Process__c.Status__c</members>
   </types>
   <types>
     <name>ListView</name>
@@ -104,6 +117,7 @@
   <types>
     <name>ApexPage</name>
     <members>GRAXAbout</members>
+    <members>GRAXBackup</members>
     <members>GRAXConfiguration</members>
     <members>GRAXConnect</members>
     <members>GRAXDeploy</members>
@@ -121,6 +135,12 @@
     <members>GRAX_prod</members>
     <members>GRAX_qa</members>
     <members>GRAX_test</members>
+  </types>
+  <types>
+    <name>StaticResource</name>
+    <members>aljs</members>
+    <members>grax</members>
+    <members>sldsTree</members>
   </types>
   <types>
     <name>CustomTab</name>

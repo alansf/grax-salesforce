@@ -1,10 +1,12 @@
-<apex:page controller="GRAXSetupCtrl" showChat="false" showHeader="true" standardStylesheets="false" sidebar="true" applyHtmlTag="true" applyBodyTag="false" docType="html-5.0">
+<apex:page controller="GRAXSetupCtrl" cache="false" showChat="false" showHeader="true" standardStylesheets="false" sidebar="true" applyHtmlTag="true" applyBodyTag="false" docType="html-5.0">
 <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="x-ua-compatible" content="ie=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" type="text/javascript"></script>
+  <script src="{!URLFOR($Resource.aljs, '/jquery.aljs-all-with-moment.min.js')}"></script>
+  <script src="{!URLFOR($Resource.grax, '/jquery.sldsTree.js')}"></script>
   <!-- Import the Design System style sheet -->
   <apex:slds />
 
@@ -47,6 +49,17 @@
     .slds-popover__body {
         white-space: normal;
     }
+
+    #ObjectHierarchy[data-loading="true"] {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+    #ObjectHierarchy + [role="status"] {
+        display: none;
+    }
+    #ObjectHierarchy[data-loading="true"] + [role="status"] {
+        display: block;
+    }
   </style>
 </head>
 <body>
@@ -77,6 +90,11 @@
             <li class="slds-tabs_scoped__item" title="Flow" role="presentation">
                 <a class="slds-tabs_scoped__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected="false" aria-controls="tab-flow" id="tab-flow__item">
                     Flow
+                </a>
+            </li>
+            <li class="slds-tabs_scoped__item" title="Back Up" role="presentation">
+                <a class="slds-tabs_scoped__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected="false" aria-controls="tab-archiving" id="tab-archiving__item">
+                    Back Up
                 </a>
             </li>
             <li class="slds-tabs_scoped__item" title="Help" role="presentation">
@@ -330,7 +348,7 @@
 
                         <div class="slds-scrollable_y slds-m-top_small" id="field_properties_scrollable">
                             <apex:dataTable value="{!fieldProperties}" var="f" id="field_properties" styleClass="slds-table slds-table_bordered slds-table_cell-buffer">        
-                                <apex:column>
+                                <apex:column >
                                     <apex:facet name="header"></apex:facet>
                                     <apex:outputPanel layout="inline" styleClass="slds-checkbox">
                                         <apex:inputCheckbox value="{!f.fieldselected}" id="checkedone" disabled="{!f.disabled}" />
@@ -340,27 +358,27 @@
                                     </apex:outputPanel>
                                 </apex:column>
             
-                                <apex:column>
+                                <apex:column >
                                     <apex:facet name="header">Field Name</apex:facet>
                                     <apex:outputText value="{!f.fieldname}"/>
                                 </apex:column>
             
-                                <apex:column>
+                                <apex:column >
                                     <apex:facet name="header">Field Type</apex:facet>
                                     <apex:outputText value="{!f.fieldtype}"/>
                                 </apex:column>
             
-                                <apex:column>
+                                <apex:column >
                                     <apex:facet name="header">Referenced To</apex:facet>
                                     <apex:outputText value="{!f.referenceto}"/>
                                 </apex:column>
             
-                                <apex:column>
+                                <apex:column >
                                     <apex:facet name="header">Message</apex:facet>
                                     <apex:outputText value="{!f.message}"/>
                                 </apex:column>
 
-                                <apex:column>
+                                <apex:column >
                                     <apex:facet name="header">
                                         <span class="slds-p-right_small" title="Display changed values in SF.">Display changed values in SF.</span>
                                         <button class="slds-button slds-button_icon slds-button slds-button_icon" aria-describedby="audit_help" title="Help">
@@ -626,6 +644,10 @@
             <iframe id="flowIframe" name="flowIframe" data-src="{!PropURLToDisplay_Flow}" frameBorder="0"></iframe>
         </div>
 
+        <div id="tab-archiving" class="slds-hide" role="tabpanel" aria-labelledby="tab-archiving__item">
+            <apex:include pageName="GRAXBackup"/>
+        </div>
+
         <div id="tab-help" class="slds-tabs_scoped__content slds-hide" role="tabpanel" aria-labelledby="tab-help__item">
             <p>
                 For questions using or configuring the GRAX Application, please email <a href="mailto:support@hardingpoint.com">support@hardingpoint.com</a>.
@@ -674,7 +696,7 @@
         }
 
         // FUNCTIONS
-        var goToTab = function(name) {
+        window.goToTab = function(name) {
             $('#tab-' + name + '__item').focus().trigger('click');
         };
 
@@ -709,12 +731,14 @@
          // Accordions, Sections
         .on('click', '[aria-expanded]', function(e) {
             var $currentAccordion = $(this);
-            $currentAccordion.attr('aria-expanded', _ariaAttrToggle);
-            $('#' + $currentAccordion.attr('aria-controls')).attr('aria-hidden', _ariaAttrToggle);
+            if(!$currentAccordion.is('[role="treeitem"]')) {
+                $currentAccordion.attr('aria-expanded', _ariaAttrToggle);
+                $('#' + $currentAccordion.attr('aria-controls')).attr('aria-hidden', _ariaAttrToggle);
 
-            $currentAccordion.closest('.slds-accordion__section, .slds-section').toggleClass('slds-is-open');
+                $currentAccordion.closest('.slds-accordion__section, .slds-section').toggleClass('slds-is-open');
 
-            e.preventDefault();
+                e.preventDefault();
+            }
         })
         
         // Tooltips help
@@ -740,10 +764,13 @@
         }).on('mousedown mouseup click', '.slds-popover__body', _preventDefault)
 
         // Modals
-        .on('modaltoggle', '[aria-modal="true"]', function(e) {
-           $(this).toggleClass('slds-fade-in-open')
+        .on('modaltoggle', '[aria-modal="true"]', function(e, state) {
+            $(this)
+                .toggleClass('slds-fade-in-open', state)
+                .toggleClass('slds-hide', state !== undefined ? !state : null)
                 .next('.slds-backdrop')
-                    .toggleClass('slds-backdrop_open');
+                    .toggleClass('slds-backdrop_open', state)
+                    .toggleClass('slds-hide', state !== undefined ? !state : null);
         })
 
         .on('click', '[data-toggle="modal"]', function(e) {
@@ -751,6 +778,15 @@
 
             _preventDefault(e);
         })
+
+        // Menus
+        .on('focusin focusout click', '.slds-dropdown-trigger_click [aria-haspopup="true"]', function(e) {
+            if(e.type == 'click') {
+                _preventDefault(e);
+            } else {
+                $(this).closest('.slds-dropdown-trigger').toggleClass('slds-is-open', e.type == 'focusin');
+            }
+        }).on('mousedown mouseup click', '.slds-dropdown', _preventDefault)
         
         // ACTIONS
 

@@ -59,14 +59,22 @@ public class GRAXApi extends GRAXCloud {
 	            newObjects = JSON.serialize(triggerNew);
 	        }else if (triggerNew != null && (graxconfig == null || graxconfig == '') ){
 	        		gxcSettings.debug('GRAXCloud.jsonContent',' Called from Trigger');
-	        		if (gxcSettings.GRAXQuery.Enable_Audit_Log__c == true){
+	        		
+	        		if(gxcSettings.GRAXQuery == null){
+	        			newObjects = JSON.serialize(triggerNew);
+	        		}else if(gxcSettings.GRAXQuery.Enable_Audit_Log__c == true){
 	        			// Pass full payload if storing audit log
 	        			FilterFields = gxcSettings.GRAXQuery.Selected_Fields__c;
 	        			newObjects = JSON.serialize(triggerNew);
 	        		}else{
 	        			// Pass filtered fields 
 	        			List<Id> Ids = GetIds(triggerNew);
-	        			String Query = 'Select ' + gxcSettings.GRAXQuery.Selected_Fields__c + ' FROM ' + ObjectType + ' Where Id in :Ids';
+						if(Test.isRunningTest()) {
+							FilterFields = 'Id';
+						} else {
+							FilterFields = gxcSettings.GRAXQuery.Selected_Fields__c;
+						}
+	        			String Query = 'Select ' + FilterFields + ' FROM ' + ObjectType + ' Where Id in :Ids';
 	        			newObjects = JSON.serialize(Database.query(Query));
 	        		}
 	        }
