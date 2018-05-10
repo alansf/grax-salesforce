@@ -13,8 +13,16 @@ public with sharing class GRAXBatchUT {
     
     @isTest
     static void ProcessHistoryTest() {
-    		GRAXSettings gxs = GRAXUnitTest.getSettings();
-      	GRAXBatch.ProcessHistory('Account');
+		GRAXSettings gxs = GRAXUnitTest.getSettings();
+
+		GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{}', 'http://test.grax.io', null);
+        
+        Test.startTest();
+
+        Test.setMock(HttpCalloutMock.class, fakeResponse);
+        GRAXBatch.ProcessHistory('Account');
+
+        Test.stopTest();
     }
     
 }
