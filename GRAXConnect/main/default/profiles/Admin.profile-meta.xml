@@ -23,6 +23,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>GRAXBackupCtrl</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>GRAXBatch</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -32,6 +36,10 @@
     </classAccesses>
     <classAccesses>
         <apexClass>GRAXBatchToCleanDataRecordsTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXBatchToProcessSchedJob</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -95,19 +103,23 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>GRAXLogRecord</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>GRAXLogging</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
         <apexClass>GRAXSchedulerToCleanDataRecords</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
         <apexClass>GRAXSchedulerToCleanDataRecordsTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXSchedulerToProcessSchedJobs</apexClass>
+      <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXLogRecord</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXLogging</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -195,7 +207,22 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>GRAX_Data_Record_Id__c.Processed_Child_Index__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>GRAX_Data_Record_Id__c.SFDC_Id__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>GRAX_Data_Record__c.Error_Message__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>GRAX_Data_Record__c.GRAX_Schedule_Process__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -215,6 +242,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>GRAX_Data_Record__c.Sched_Proc_Hierarchy_Unique_Key__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>GRAX_Data_Record__c.Status__c</field>
         <readable>false</readable>
     </fieldPermissions>
@@ -223,8 +255,71 @@
         <field>GRAX_Data_Record__c.of_Times_Sent__c</field>
         <readable>false</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Schedule_Process__c.Archive__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>GRAX_Schedule_Process__c.Date_Field__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>GRAX_Schedule_Process__c.Last_Run_Date__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Schedule_Process__c.Next_Run_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>GRAX_Schedule_Process__c.Object_Name__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Schedule_Process__c.Schedule_Start_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Schedule_Process__c.Schedule_Start_Time__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Schedule_Process__c.Schedule_Type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>GRAX_Schedule_Process__c.Select_Criteria__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>GRAX_Schedule_Process__c.Selected_Object_Hierarchy_JSON__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Schedule_Process__c.Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>GRAX_Schedule_Process__c.Target_Date__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
     <layoutAssignments>
         <layout>GRAXQuery__c-GRAXQueries Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>GRAX_Schedule_Process__c-GRAX Schedule Process Layout</layout>
     </layoutAssignments>
     <objectPermissions>
         <allowCreate>true</allowCreate>
@@ -241,11 +336,33 @@
         <allowEdit>true</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>true</modifyAllRecords>
+        <object>GRAX_Data_Record_Id__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
         <object>GRAX_Data_Record__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>GRAX_Schedule_Process__c</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <pageAccesses>
         <apexPage>GRAXAbout</apexPage>
+        <enabled>true</enabled>
+    </pageAccesses>
+    <pageAccesses>
+        <apexPage>GRAXBackup</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
     <pageAccesses>

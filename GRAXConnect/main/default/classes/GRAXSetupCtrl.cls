@@ -622,4 +622,5 @@ public with sharing class GRAXSetupCtrl {
 
         return pageRef;
     }
+
 }

@@ -59,7 +59,10 @@ public class GRAXApi extends GRAXCloud {
 	            newObjects = JSON.serialize(triggerNew);
 	        }else if (triggerNew != null && (graxconfig == null || graxconfig == '') ){
 	        		gxcSettings.debug('GRAXCloud.jsonContent',' Called from Trigger');
-	        		if (gxcSettings.GRAXQuery.Enable_Audit_Log__c == true){
+	        		
+	        		if(gxcSettings.GRAXQuery == null){
+	        			newObjects = JSON.serialize(triggerNew);
+	        		}else if(gxcSettings.GRAXQuery.Enable_Audit_Log__c == true){
 	        			// Pass full payload if storing audit log
 	        			FilterFields = gxcSettings.GRAXQuery.Selected_Fields__c;
 	        			newObjects = JSON.serialize(triggerNew);

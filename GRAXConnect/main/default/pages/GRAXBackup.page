@@ -1,0 +1,836 @@
+<apex:page controller="GRAXBackupCtrl" showHeader="false" applyHtmlTag="false" applyBodyTag="false">
+    <apex:form id="form-archiving" styleClass="slds-tabs_scoped__content">
+        <apex:actionFunction action="{!changeSelectedObject}" name="changeSelectedObject" immediate="true" reRender="relStructureOutput, sObjectDateFieldsList" oncomplete="renderObjectHierarchy();">
+            <apex:param name="selectedObjectValue" assignTo="{!selectedObject}" value="" />
+        </apex:actionFunction>
+
+        <apex:actionFunction action="{!saveScheduledProcess}" name="saveScheduledProcess" reRender="scheduledprocesses, sObjectDateFieldsList, fillInputs" oncomplete="reRendered();showScheduledProcessModal(false);fillForm();"></apex:actionFunction>
+        
+        <apex:actionFunction action="{!cleanFormDataHandler}" name="cleanFormData" immediate="true" reRender="sObjectDateFieldsList, fillInputs" oncomplete="reRendered();fillForm();"></apex:actionFunction>
+
+        <apex:actionFunction action="{!selectScheduledProcess}" name="selectScheduledProcess" immediate="true" reRender="sObjectDateFieldsList, fillInputs, relStructureOutput" oncomplete="fillForm();renderObjectHierarchy();showScheduledProcessModal(true);">
+            <apex:param name="spId" value="" />
+        </apex:actionFunction>
+
+        <apex:actionFunction action="{!deleteScheduledProcess}" name="deleteScheduledProcess" immediate="true" reRender="scheduledprocesses" oncomplete="reRendered();">
+            <apex:param name="spId" value="" />
+        </apex:actionFunction>
+
+        <div class="slds-tabs_default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <ul class="slds-tabs_default__nav" role="tablist">
+                <li class="slds-tabs_default__item slds-is-active" title="Scheduled Processes" role="presentation">
+                    <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" aria-selected="false" aria-controls="tab-archiving_scheduledprocesses" id="tab-archiving_scheduledprocesses__item">Scheduled Processes</a>
+                </li>
+            </ul>
+            <div id="tab-archiving_scheduledprocesses" class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-archiving_scheduledprocesses__item">                
+                <div class="slds-clearfix slds-p-bottom_medium">
+                    <div class="slds-clearfix">
+                        <div class="slds-float_left">
+                            <button class="slds-button slds-button_brand" data-toggle="modal" data-target="#scheduledProcessModal">Create</button>
+                        </div>
+                    </div>
+              	</div>
+                
+                <apex:dataTable value="{!scheduledProcesses}" var="sp" id="scheduledprocesses" styleClass="slds-table slds-table_bordered slds-table_cell-buffer">        
+                    <apex:column >
+                        <apex:facet name="header">Created Date</apex:facet>
+                        <apex:outputtext value="{0, date, full}">
+                            <apex:param value="{!sp.createdDate}"></apex:param>
+                        </apex:outputtext>
+                    </apex:column>
+
+                    <apex:column >
+                        <apex:facet name="header">Created By</apex:facet>
+                        <apex:outputText value="{!sp.createdBy}"/>
+                    </apex:column>
+
+                    <apex:column >
+                        <apex:facet name="header">Date Last Ran</apex:facet>
+                        <apex:outputtext value="{0, date, MM'/'dd'/'yyyy' 'HH':'mm}">
+                            <apex:param value="{!sp.lastRunDate}"></apex:param>
+                        </apex:outputtext>
+                    </apex:column>
+
+                    <apex:column >
+                        <apex:facet name="header">Next Run Date</apex:facet>
+                        <apex:outputtext value="{0, date, MM'/'dd'/'yyyy' 'HH':'mm}">
+                            <apex:param value="{!sp.nextRunDate}"></apex:param>
+                        </apex:outputtext>
+                    </apex:column>
+
+                    <apex:column >
+                        <apex:facet name="header">Parent Object</apex:facet>
+                        <apex:outputText value="{!sp.parentObject}"/>
+                    </apex:column>
+
+                    <apex:column >
+                        <apex:facet name="header">Archive</apex:facet>
+                        <apex:outputText value="{!sp.archive}"/>
+                    </apex:column>
+
+                    <apex:column rendered="false">
+                        <apex:facet name="header">Selected Object Hierarchy</apex:facet>
+                        <apex:outputPanel ></apex:outputPanel>
+                    </apex:column>
+
+                    <apex:column >
+                        <apex:facet name="header">
+                            <span class="slds-assistive-text">Actions</span>
+                        </apex:facet>
+                        <apex:outputPanel >
+                            <div class="slds-dropdown-trigger slds-dropdown-trigger_click">
+                                <button class="slds-button slds-button_icon slds-button_icon-border-filled slds-button_icon-x-small" aria-haspopup="true" title="Show Actions">
+                                    <i data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#down')}" class="slds-button__icon"></i>
+                                    <span class="slds-assistive-text">Show Actions</span>
+                                </button>
+                                <div class="slds-dropdown slds-dropdown_right slds-dropdown_actions">
+                                    <ul class="slds-dropdown__list" role="menu">
+                                        <li class="slds-dropdown__item" role="presentation">
+                                            <a href="javascript:void(0);" onclick="editScheduledProcess('{!sp.GRAXScheduleProcess.Id}');return false;" role="menuitem" tabindex="0">
+                                                <span class="slds-truncate" title="Edit">Edit</span>
+                                            </a>
+                                        </li>
+                                        <li class="slds-dropdown__item" role="presentation">
+                                            <a href="javascript:void(0);" onclick="deleteScheduledProcess('{!sp.GRAXScheduleProcess.Id}');return false;" role="menuitem" tabindex="-1">
+                                                <span class="slds-truncate" title="Delete">Delete</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </apex:outputPanel>
+                    </apex:column>
+                </apex:dataTable>
+            </div>
+        </div>
+
+        <section id="scheduledProcessModal" role="dialog" tabindex="-1" aria-labelledby="modal-ScheduledProcess" aria-modal="true" aria-describedby="modal-content-ScheduledProcess" class="slds-modal slds-modal_medium slds-hide">
+            <div class="slds-modal__container" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" data-toggle="modal" data-target="#scheduledProcessModal">
+                        <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                            <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                        </svg>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-ScheduledProcess" class="slds-text-heading_medium slds-hyphenate"></h2>
+                </header>
+                
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-ScheduledProcess">
+                    <div class="slds-section slds-is-open">
+                        <h3 class="slds-section__title slds-theme_shade">
+                            <span class="slds-truncate slds-p-horizontal_small" title="Select SalesForce object">Select SalesForce object</span>
+                        </h3>
+                        <div aria-hidden="false" class="slds-section__content">
+                            <div class="slds-grid slds-grid_vertical-align-center">
+                                <div class="slds-col slds-grow-none slds-m-right_small">
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-select_container">
+                                                <apex:selectList id="objectList" value="{!selectedObject}" onchange="changeSelectedObject(this.value)" multiselect="false" size="1" styleClass="slds-select">
+                                                    <apex:selectOptions value="{!items}"/>
+                                                </apex:selectList>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="slds-section slds-is-open slds-p-top_large">
+                        <h3 class="slds-section__title slds-theme_shade">
+                            <span class="slds-truncate slds-p-horizontal_small" title="Select Filter Date Criteria">Select Filter Date Criteria</span>
+                        </h3>
+                        <div aria-hidden="false" class="slds-section__content">
+                            <div class="slds-grid slds-grid_vertical-align-center">
+                                <div class="slds-col slds-grow-none slds-m-right_small">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">Select your Date Field</label>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-select_container">
+                                                <apex:selectList id="sObjectDateFieldsList" value="{!sObjectDateField}" multiselect="false" size="1" styleClass="slds-select sObjectDateFieldsList">
+                                                    <apex:selectOptions value="{!sObjectDateFields}"/>
+                                                </apex:selectList>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <div class="slds-grid slds-grid_vertical-align-center slds-p-top_small">
+                                <div class="slds-col slds-grow-none slds-m-right_small">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label" for="colDt_q">Select the Date from when this field value is applicable on the record</label>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-select_container">
+                                                <select id="colDt_q" name="colDt_q" onchange="window.changecolDt(this.options[this.selectedIndex].value)" class="slds-select">
+                                                    <option value="custom">Custom</option>
+                                                
+                                                    <optgroup label="Calendar Year">
+                                                        <option value="cury">Current CY</option>
+                                                        <option value="prevy">Previous CY</option>
+                                                        <option value="prev2y">Previous 2 CY</option>
+                                                        <option value="ago2y">2 CY Ago</option>
+                                                        <option value="prevcury">Current and Previous CY</option>
+                                                        <option value="prevcur2y">Current and Previous 2 CY</option>
+                                                    </optgroup>
+                                                
+                                                    <optgroup label="Calendar Quarter">
+                                                        <option value="currentq">Current CQ</option>
+                                                        <option value="curprevq">Current and Previous CQ</option>
+                                                        <option value="prevq">Previous CQ</option>
+                                                    </optgroup>
+                                                
+                                                    <optgroup label="Calendar Month">
+                                                        <option value="lastmonth">Last Month</option>
+                                                        <option value="thismonth">This Month</option>
+                                                        <option value="lastthismonth">Current and Previous Month</option>
+                                                    </optgroup>
+                                                
+                                                    <optgroup label="Calendar Week">
+                                                        <option value="lastweek">Last Week</option>
+                                                        <option value="thisweek">This Week</option>
+                                                    </optgroup>
+                                                
+                                                    <optgroup label="Day">
+                                                        <option value="yesterday">Yesterday</option>
+                                                        <option value="today">Today</option>
+                                                        <option value="tomorrow">Tomorrow</option>
+                                                        <option value="last7">Last 7 Days</option>
+                                                        <option value="last30">Last 30 Days</option>
+                                                        <option value="last60">Last 60 Days</option>
+                                                        <option value="last90">Last 90 Days</option>
+                                                        <option value="last120">Last 120 Days</option>                                    
+                                                    </optgroup>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <div class="slds-grid slds-grid_vertical-align-center slds-p-top_small">
+                                <div class="slds-col slds-grow-none slds-m-right_small">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label">Target Date</label>
+                                        <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right">
+                                            <svg aria-hidden="true" class="slds-input__icon slds-icon-text-default">
+                                                <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#event')}"></use>
+                                            </svg>
+                                            <apex:inputText id="targetDate" value="{!targetDate}" styleClass="slds-input targetDate" html-placeholder="00/00/0000"></apex:inputText>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="slds-section slds-is-open slds-p-top_large">
+                        <h3 class="slds-section__title slds-theme_shade">
+                            <span class="slds-truncate slds-p-horizontal_small" title="Select Criteria">Select Criteria</span>
+                        </h3>
+                        <div aria-hidden="false" class="slds-section__content">
+                            <fieldset class="slds-form-element">
+                                <apex:inputHidden id="criteria" value="{!criteria}" required="true"></apex:inputHidden>
+                                <div class="slds-form-element__control">
+                                    <span class="slds-radio">
+                                        <input id="criteriaOption1" name="criteriaOptions" value="Main Object not modified" type="radio" onchange="radioChange(this,'{!$Component.criteria}');" required="required" />
+                                        <label class="slds-radio__label" for="criteriaOption1">
+                                            <span class="slds-radio_faux"></span>
+                                            <span class="slds-form-element__label">Top level object hasn’t been modified since this date.</span>
+                                        </label>
+                                    </span>
+                                    <span class="slds-radio">
+                                        <input id="criteriaOption2" name="criteriaOptions" value="Main Object and Children not modified" type="radio" onchange="radioChange(this,'{!$Component.criteria}');" disabled="disabled" />
+                                        <label class="slds-radio__label" for="criteriaOption2">
+                                            <span class="slds-radio_faux"></span>
+                                            <span class="slds-form-element__label">Top level object AND any related records selected haven’t been modified since this date.</span>
+                                        </label>
+                                    </span>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+    
+                    <div class="slds-section slds-is-open slds-p-top_large">
+                        <h3 class="slds-section__title slds-theme_shade">
+                            <span class="slds-truncate slds-p-horizontal_small" title="Schedule">Schedule</span>
+                        </h3>
+                        <div aria-hidden="false" class="slds-section__content">
+                            <fieldset class="slds-form-element">
+                                <apex:inputHidden id="schedule" value="{!schedule}" required="true"></apex:inputHidden>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-radio_button-group">
+                                        <span class="slds-button slds-radio_button">
+                                            <input id="scheduleOnce" name="scheduleOptions" value="Once" type="radio" onchange="radioChange(this,'{!$Component.schedule}');" required="required" />
+                                            <label class="slds-radio_button__label" for="scheduleOnce">
+                                                <span class="slds-radio_faux">Once</span>
+                                            </label>
+                                        </span>
+                                        <span class="slds-button slds-radio_button">
+                                            <input id="scheduleDaily" name="scheduleOptions" value="Daily" type="radio" onchange="radioChange(this,'{!$Component.schedule}');" required="required" />
+                                            <label class="slds-radio_button__label" for="scheduleDaily">
+                                                <span class="slds-radio_faux">Daily</span>
+                                            </label>
+                                        </span>
+                                        <span class="slds-button slds-radio_button">
+                                            <input id="scheduleWeekly" name="scheduleOptions" value="Weekly" type="radio" onchange="radioChange(this,'{!$Component.schedule}');" required="required" />
+                                            <label class="slds-radio_button__label" for="scheduleWeekly">
+                                                <span class="slds-radio_faux">Weekly</span>
+                                            </label>
+                                        </span>
+                                        <span class="slds-button slds-radio_button">
+                                            <input id="scheduleMonthly" name="scheduleOptions" value="Monthly" type="radio" onchange="radioChange(this,'{!$Component.schedule}');" required="required" />
+                                            <label class="slds-radio_button__label" for="scheduleMonthly">
+                                                <span class="slds-radio_faux">Monthly</span>
+                                            </label>
+                                        </span>
+                                        <span class="slds-button slds-radio_button">
+                                            <input id="scheduleQuarterly" name="scheduleOptions" value="Quarterly" type="radio" onchange="radioChange(this,'{!$Component.schedule}');" required="required" />
+                                            <label class="slds-radio_button__label" for="scheduleQuarterly">
+                                                <span class="slds-radio_faux">Quarterly</span>
+                                            </label>
+                                        </span>
+                                        <span class="slds-button slds-radio_button">
+                                            <input id="scheduleSemiAnnually" name="scheduleOptions" value="Semi-Annually" type="radio" onchange="radioChange(this,'{!$Component.schedule}');" required="required" />
+                                            <label class="slds-radio_button__label" for="scheduleSemiAnnually">
+                                                <span class="slds-radio_faux">Semi-Annually</span>
+                                            </label>
+                                        </span>
+                                        <span class="slds-button slds-radio_button">
+                                            <input id="scheduleAnnually" name="scheduleOptions" value="Annually" type="radio" onchange="radioChange(this,'{!$Component.schedule}');" required="required" />
+                                            <label class="slds-radio_button__label" for="scheduleAnnually">
+                                                <span class="slds-radio_faux">Annually</span>
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                            </fieldset>
+    
+                            <div class="slds-form slds-form--compound slds-p-top_small">
+                                <fieldset class="slds-form-element">
+                                    <div class="slds-form-element__group">
+                                        <div class="slds-form-element__row">
+                                            <div class="slds-form-element">
+                                                <label class="slds-form-element__label">Schedule Start Date</label>
+                                                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right">
+                                                    <svg aria-hidden="true" class="slds-input__icon slds-icon-text-default">
+                                                        <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#event')}"></use>
+                                                    </svg>
+                                                    <apex:inputText id="scheduleStartDate" value="{!scheduleStartDate}" styleClass="slds-input scheduleStartDate" html-placeholder="00/00/0000"></apex:inputText>
+                                                </div>
+                                            </div>
+    
+                                            <div class="slds-form-element">
+                                                <label class="slds-form-element__label">Schedule Start Time</label>
+                                                <div class="slds-form-element__control">
+                                                    <div class="slds-select_container">
+                                                        <apex:selectList id="scheduleStartTime" value="{!scheduleStartTime}" multiselect="false" size="1" styleClass="slds-select scheduleStartTime">
+                                                            <apex:selectOption itemValue="12:00 AM" itemLabel="12 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="01:00 AM" itemLabel="01 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="02:00 AM" itemLabel="02 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="03:00 AM" itemLabel="03 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="04:00 AM" itemLabel="04 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="05:00 AM" itemLabel="05 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="06:00 AM" itemLabel="06 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="07:00 AM" itemLabel="07 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="08:00 AM" itemLabel="08 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="09:00 AM" itemLabel="09 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="10:00 AM" itemLabel="10 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="11:00 AM" itemLabel="11 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="12:00 PM" itemLabel="12 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="01:00 PM" itemLabel="01 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="02:00 PM" itemLabel="02 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="03:00 PM" itemLabel="03 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="04:00 PM" itemLabel="04 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="05:00 PM" itemLabel="05 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="06:00 PM" itemLabel="06 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="07:00 PM" itemLabel="07 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="08:00 PM" itemLabel="08 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="09:00 PM" itemLabel="09 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="10:00 PM" itemLabel="10 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="11:00 PM" itemLabel="11 PM"></apex:selectOption>
+                                                        </apex:selectList>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="slds-section slds-is-open slds-p-top_large" id="ObjectHierarchySection">
+                        <h3 class="slds-section__title slds-theme_shade">
+                            <span class="slds-truncate slds-p-horizontal_small" title="Object Hierarchy">Object Hierarchy</span>
+                        </h3>
+                        <div aria-hidden="false" class="slds-section__content slds-is-relative">
+                            <apex:inputHidden id="objectJSON" value="{!objectJSON}" html-data-id="objectJSON"></apex:inputHidden>
+                            <div id="ObjectHierarchy"></div>
+                            <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
+                                <span class="slds-assistive-text">Loading Tree...</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="slds-modal__footer">
+                    <div class="slds-form-element slds-float_left">
+                        <label class="slds-checkbox_toggle slds-grid">
+                            <span class="slds-form-element__label slds-m-bottom_none">Archive</span>
+                            <apex:inputCheckbox id="archive" value="{!archive}"/>
+                            <span class="slds-checkbox_faux_container" aria-live="assertive">
+                            <span class="slds-checkbox_faux"></span>
+                            <span class="slds-checkbox_on">Yes</span>
+                            <span class="slds-checkbox_off">No</span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <button id="cancelScheduledProcess" class="slds-button slds-button_neutral">Cancel</button>
+                    <button id="saveScheduledProcess" class="slds-button slds-button_brand" disabled="disabled">Save</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-hide"></div>
+
+        <script>
+            var $sf = function(id) {
+                return $(document.getElementById(id));
+            };
+    
+            var $objectList = $sf('{!$Component.objectList}');
+            var $targetDate = $sf('{!$Component.targetDate}');
+            var $schedule = $sf('{!$Component.schedule}');
+            var $scheduleStartDate = $sf('{!$Component.scheduleStartDate}');
+            var $scheduleStartTime = $sf('{!$Component.scheduleStartTime}');
+            var $objectJSON = $sf('{!$Component.objectJSON}');
+            var $archive = $sf('{!$Component.archive}');
+            var $sObjectDateFieldsList = $sf('{!$Component.sObjectDateFieldsList}');
+            var $ObjectHierarchy = $('#ObjectHierarchy');
+            var $saveScheduledProcess = $('#saveScheduledProcess');
+            var $cancelScheduledProcess = $('#cancelScheduledProcess');
+        </script>
+
+        <apex:outputPanel id="fillInputs">
+            <script>
+                var fillForm = function() {
+                    var selectedObject = '{!selectedObject}';
+
+                    $("#colDt_q").val('today').trigger('change');
+
+                    $objectList.val('{!selectedObject}');
+                    $schedule.val('{!schedule}');
+                    $targetDate.datepicker('setDate', selectedObject ? '{!targetDate}': moment());
+                    $scheduleStartDate.datepicker('setDate', selectedObject ? '{!scheduleStartDate}' : moment());
+                    if(selectedObject) $scheduleStartTime.val('{!scheduleStartTime}');
+                    $objectJSON.val('{!objectJSON}');
+                    $archive.prop('checked', {!archive});
+
+                    $sObjectDateFieldsList
+                        .prop('disabled', !selectedObject)
+                        .val('{!sObjectDateField}' || '{!sObjectDateFieldDefault}');
+
+                    $("#colDt_q").val(selectedObject ? 'custom' : 'today').trigger('change');
+                    
+                    document.querySelector('[name="criteriaOptions"][value="{!criteria}"]').checked = true;
+                    document.querySelector('[name="scheduleOptions"][value="{!schedule}"]').checked = true;
+                };
+            </script>
+        </apex:outputPanel>
+
+        <apex:outputPanel id="relStructureOutput" layout="block">
+            <script>
+                var renderObjectHierarchy = function() {
+                    if('{!selectedObject}') window.ObjectHierarchy({!RelStructure});
+                };
+            </script>
+        </apex:outputPanel>
+    </apex:form>
+
+    <script>
+        $(function() {
+            var sfId = function(id) {
+                return id.split(':').join('\\:');
+            };
+
+            $targetDate.datepicker({
+                initDate: moment(),
+                format: 'MM/DD/YYYY',
+                onSelect: function() {
+                    $('#colDt_q').val('custom');
+                }
+            });
+
+            $scheduleStartDate.datepicker({
+                initDate: moment(),
+                format: 'MM/DD/YYYY',
+            });
+
+            window.radioChange = function(input, hiddenId) {
+                document.getElementById(hiddenId).value = input.value;
+            };
+
+
+            $scheduleStartTime.removeAttr('size');
+            $sObjectDateFieldsList.prop('disabled', true);
+
+            var updateSaveState = function() {
+                var condition = false;
+
+                condition = $objectList.val() != null;
+                condition = condition && $targetDate.val() != '';
+                condition = condition && $scheduleStartDate.val() != '';
+                condition = condition && $('[name="criteriaOptions"]:checked, [name="scheduleOptions"]:checked').length == 2;
+
+                $saveScheduledProcess.prop('disabled', !condition);
+            };
+
+            $('#modal-content-ScheduledProcess').on('change', 'input, select', updateSaveState);
+
+
+            $saveScheduledProcess.on('click', function(e) {
+                saveScheduledProcess();
+
+                e.preventDefault();
+            });
+
+            $cancelScheduledProcess.on('click', function(e) {
+                cleanFormData();
+
+                e.preventDefault();
+            });
+
+
+            // Tree 
+            window.ObjectHierarchyLoading = function(state) {
+                $ObjectHierarchy.attr({'data-loading': state});
+            };
+
+            $objectList.on('change', function(e) {
+                window.ObjectHierarchyLoading($objectList.val() != null);
+            });
+
+            var getSelectedItems = function(settings, items) {
+                var fields = ['uniqueKey', 'parentUniqueKey', 'relatedFieldName', 'name'];
+                var _items = [];
+
+                $.each(items, function(i, item) {
+                    if(item.isSelected) {
+                        var _item = {};
+
+                        $.each(fields, function(i, field) {
+                            _item[field] = item[field];
+                        });
+
+                        _item[settings.items.childs] = getSelectedItems(settings, item[settings.items.childs]);
+
+                        _items.push(_item);
+                    }
+                });
+
+                return _items;
+            }
+
+            var callNested = function(settings, items, fn, parent) {
+                $.each(items, function(i, item) {
+                    fn(item, parent);
+
+                    if(item[settings.items.childs]) {
+                        callNested(settings, item[settings.items.childs], fn, item);
+                    }
+                });
+            };
+
+            var mergeObjectsSelection = function(a, b) {
+                if(a.uniqueKey != b.uniqueKey) return;
+
+                $.each(b, function(bkey, bval) {
+                    if(bkey == 'uniqueKey') {
+                        a.isSelected = true;
+                    }
+
+                    if(bkey == 'childObjRelStructure') {
+                        $.each(bval, function(bi, bitem) {
+                            if(a[bkey]) {
+                                $.each(a[bkey], function(ai, aitem) {
+                                    if(bitem.uniqueKey == aitem.uniqueKey) {
+                                        mergeObjectsSelection(aitem, bitem);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            };
+
+            var setCascadeDeleteParents = function(settings, items) {
+                var hasCascadeDelete = function(item) {
+                    var isCascadeDelete = false;
+
+                    if(!isCascadeDelete) {
+                        $.each(item[settings.items.childs], function(i, item) {
+                            isCascadeDelete = item.isCascadeDelete;
+
+                            if(isCascadeDelete) return;
+                        });
+                    }
+
+                    if(!isCascadeDelete) {
+                        $.each(item[settings.items.childs], function(i, item) {
+                            isCascadeDelete = hasCascadeDelete(item);
+
+                            if(isCascadeDelete) return;
+                        });
+                    }
+
+                    return isCascadeDelete;
+                };
+
+                callNested(settings, items, function(item) {
+                    if(item[settings.items.childs] && item[settings.items.childs].length > 0 && !item.isCascadeDelete) {
+                        item.isCascadeDelete = hasCascadeDelete(item);
+                    }
+                });
+            };
+
+            window.ObjectHierarchy = function(objRoot) {
+                if(Object.keys(objRoot).length == 0) return;
+
+                var selection = null;
+
+                try {
+                    selection = $.parseJSON($('[data-id="objectJSON"]').val());
+                } catch(e) {}
+
+
+                if(selection != null) {
+                    mergeObjectsSelection(objRoot, selection);
+                }
+
+                $ObjectHierarchy.sldsTree({
+                    data: [objRoot],
+                    items: {
+                        id: 'uniqueKey',
+                        childs: 'childObjRelStructure'
+                    },
+                    attrs: {
+                        root: {'class': ''}
+                    },
+                    expandIcon: {
+                        path: "{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#chevronright')}"
+                    },
+                    onDiv: function($div, item, settings) {
+                        $div.append('<div class="slds-size_1-of-1">\
+                        <div class="slds-form-element">\
+                            <div class="slds-form-element__control">\
+                                <span class="slds-checkbox">\
+                                <input name="' + item[settings.items.id] + '" id="' + item[settings.items.id] + '" type="checkbox" />\
+                                <label class="slds-checkbox__label" for="' + item[settings.items.id] + '">\
+                                    <span class="slds-checkbox_faux"></span>\
+                                    <span class="slds-form-element__label">'
+                                    + item[settings.items.label]
+                                    + (!!item.relationshipName ? ' (' + item.relationshipName + ')' : '')
+                                    + '</span>\
+                                </label>\
+                                </span>\
+                            </div>\
+                            </div>\
+                        </div>');
+                    },
+                    onUl: function($ul, items, settings) {
+                        setCascadeDeleteParents(settings, items);
+                    },
+                    onFinish: function($root, items, settings) {
+                        var setObjectHierarchyJSON = function() {
+                            var selectedItems = getSelectedItems(settings, items);
+
+                            return $objectJSON.val(JSON.stringify(selectedItems.length > 0 ? selectedItems[0] : {}));
+                        };
+
+                        callNested(settings, items, function(item, parent) {
+                            if(item.isCascadeDelete) {
+                                item.isSelected = true;
+
+                                $root.find('#' + item[settings.items.id])
+                                    .prop({'checked': true, 'disabled': true});
+                            }
+
+                            if(item.isSelected && !item.isCascadeDelete) {
+                                $root.find('#' + item[settings.items.id])
+                                    .prop({'checked': true});
+                            }
+
+                            if(!parent && item[settings.items.childs] && item[settings.items.childs].length > 1) { // ROOT
+                                $root.find('#' + item[settings.items.id])
+                                    .prop({'checked': true, 'disabled': true})
+                                    .closest('[role="treeitem"]').attr({'aria-expanded': 'true'});
+                            } else if(parent && item[settings.items.childs] && item[settings.items.childs].length > 1) { // PARENT
+                                $root.on('change', '#' + item[settings.items.id], function(e) {
+                                    callNested(settings, item[settings.items.childs], function(item) {
+                                        item.isSelected = item.isCascadeDelete || e.target.checked;
+
+                                        $root.find('#' + item[settings.items.id])
+                                            .prop({
+                                                'checked': item.isSelected,
+                                                'disabled': item.isCascadeDelete
+                                            });
+                                    });
+
+                                    setObjectHierarchyJSON();
+                                });
+                            } else  { // CHILD
+                                $root.on('change', '#' + item[settings.items.id], function(e) {
+                                    item.isSelected = e.target.checked;
+                                    parent.isSelected = parent.isCascadeDelete
+                                        || e.target.checked
+                                        || $.grep(parent[settings.items.childs], function(item, i) {
+                                                return item.isSelected;
+                                            }).length;
+
+                                    $root
+                                        .find('#' + parent[settings.items.id])
+                                        .prop({
+                                            'checked': parent.isSelected,
+                                            'disabled': parent.isSelected
+                                        });
+
+                                    setObjectHierarchyJSON();
+                                });
+                            }
+                        });
+
+                        setObjectHierarchyJSON();
+                        window.ObjectHierarchyLoading(false);
+                    }
+                });
+            };
+
+            // Date range picklist
+            window.changecolDt = function(val) {
+                var currentDate = new Date();
+                var dp = $(sfId('#{!$Component.targetDate}'));
+            
+                if (val == 'cury') {
+                    dp.datepicker('setDate', '1' + '/' + '1' + '/' + currentDate.getFullYear());
+                }
+                if (val == 'prevy') {
+                    dp.datepicker('setDate', '1' + '/' + '1' + '/' + (currentDate.getFullYear() - 1));
+                }
+                if (val == 'prev2y') {
+                    dp.datepicker('setDate', '1' + '/' + '1' + '/' + (currentDate.getFullYear() - 2));
+                }
+                if (val == 'ago2y') {
+                    dp.datepicker('setDate', '1' + '/' + '1' + '/' + (currentDate.getFullYear() - 2));
+                }
+                if (val == 'prevcury') {
+                    dp.datepicker('setDate', '1' + '/' + '1' + '/' + (currentDate.getFullYear() - 1));
+                }
+                if (val == 'prevcur2y') {
+                    dp.datepicker('setDate', '1' + '/' + '1' + '/' + (currentDate.getFullYear() - 2));
+                }
+                if (val == 'currentq') {
+                    var quarterMonth = (Math.floor((currentDate.getMonth())/3)*3);
+                    currentDate = new Date(currentDate.getFullYear(), quarterMonth, 1);
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                    currentDate.setMonth(currentDate.getMonth() + 3);
+                    currentDate.setDate(currentDate.getDate() - 1);
+                }
+                if (val == 'curprevq') {
+                    var quarterMonth = (Math.floor((currentDate.getMonth())/3)*3);
+                    currentDate = new Date(currentDate.getFullYear(), quarterMonth, 1);
+                    currentDate.setMonth(currentDate.getMonth() - 3);
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                }
+                if (val == 'prevq') {
+                    var quarterMonth = (Math.floor((currentDate.getMonth())/3)*3);
+                    currentDate = new Date(currentDate.getFullYear(), quarterMonth, 1);
+                    currentDate.setMonth(currentDate.getMonth() - 3);
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                }
+                if (val == 'lastmonth') {
+                    currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                }
+                if (val == 'thismonth') {
+                    currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                }
+                if (val == 'lastthismonth') {
+                    currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                }
+                if (val == 'lastweek') {
+                    currentDate.setDate(currentDate.getDate() - currentDate.getDay() - 7);
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                }
+                if (val == 'thisweek') {
+                    currentDate.setDate(currentDate.getDate() - currentDate.getDay());
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                }
+                if (val == 'yesterday') {
+                    currentDate.setDate(currentDate.getDate() - 1);
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                }
+                if (val == 'today') {
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                }
+                if (val == 'tomorrow') {
+                    currentDate.setDate(currentDate.getDate() + 1);
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                }
+                if (val == 'last7') {
+                    currentDate.setDate(currentDate.getDate() - 6);
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                }
+                if (val == 'last30') {
+                    currentDate.setDate(currentDate.getDate() - 29);
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                }
+                if (val == 'last60') {
+                    currentDate.setDate(currentDate.getDate() - 59);
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                }
+                if (val == 'last90') {
+                    currentDate.setDate(currentDate.getDate() - 89);
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                }
+                if (val == 'last120') {
+                    currentDate.setDate(currentDate.getDate() - 119);
+                    dp.datepicker('setDate', (currentDate.getMonth() + 1) + '/' + currentDate.getDate() + '/' + currentDate.getFullYear());
+                }
+                return true;
+            }
+
+            var $scheduledProcessModal = $('#scheduledProcessModal');
+            var $scheduledProcessModalTitle = $('#modal-ScheduledProcess');
+
+            window.editScheduledProcess = function(spId) {
+                $scheduledProcessModalTitle.text(spId);
+
+                selectScheduledProcess(spId);
+            };
+
+            window.showScheduledProcessModal = function(state) {
+                $scheduledProcessModal.trigger('modaltoggle', [state]);
+            };
+
+            $scheduledProcessModal.on('modaltoggle', function(e, state) {
+                if(!state)  {
+                    cleanFormData();
+                    $scheduledProcessModalTitle.text('Create');
+                    $scheduleStartTime.prop('selectedIndex', 0);
+                    $ObjectHierarchy.html(null);
+                    $sObjectDateFieldsList.prop('disabled', true);
+                    $scheduledProcessModal.find('[type="radio"]').prop('checked', false);
+                } else {
+                    updateSaveState();
+                }
+            });
+        });
+    </script>
+</apex:page>
