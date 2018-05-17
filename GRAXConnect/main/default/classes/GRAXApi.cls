@@ -56,7 +56,9 @@ public class GRAXApi extends GRAXCloud {
             
             /*--------------------------------------------------*/
             
-            FilterFields = gxcSettings.GRAXQuery.Selected_Fields__c;
+            if (gxcSettings.GRAXQuery!=null)
+            		FilterFields = gxcSettings.GRAXQuery.Selected_Fields__c;
+            		
             newObjects = JSON.serialize(triggerNew);
             
             /* --------------------------------------------------   
