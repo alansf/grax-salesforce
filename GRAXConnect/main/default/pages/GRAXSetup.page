@@ -452,7 +452,7 @@
                     </div>
                 </div>
 
-                <section id="tiggerDeployModal" role="dialog" tabindex="-1" aria-labelledby="modal-deploy-trigger" aria-modal="true" aria-describedby="modal-deploy-trigger-content" class="slds-modal">
+                <section id="tiggerDeployModal" role="dialog" tabindex="-1" aria-labelledby="modal-deploy-trigger" aria-modal="true" aria-describedby="modal-deploy-trigger-content" class="slds-modal slds-hide">
                     <div class="slds-modal__container">
                         <header class="slds-modal__header">
                             <button data-toggle="modal" data-target="#tiggerDeployModal" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
@@ -482,7 +482,7 @@
                         </footer>
                     </div>
                 </section>
-                <div class="slds-backdrop"></div>
+                <div class="slds-backdrop slds-hide"></div>
             </apex:form>
         </div>
         
