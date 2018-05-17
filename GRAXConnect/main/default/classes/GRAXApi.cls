@@ -53,26 +53,25 @@ public class GRAXApi extends GRAXCloud {
             
             gxcSettings.debug('GRAXCloud.jsonContent',Operation + ' : ObjectType=' + ObjectType);
             
+            
+            /*--------------------------------------------------*/
+            
+            FilterFields = gxcSettings.GRAXQuery.Selected_Fields__c;
+            newObjects = JSON.serialize(triggerNew);
+            
+            /* --------------------------------------------------   
             // If graxconfig is NOT null it has been passed in from outside a trigger and is correct
             if ((graxconfig != null && graxconfig != '') && triggerNew != null) {
                     gxcSettings.debug('GRAXCloud.jsonContent',' Called from GRAX Configuration');
                 newObjects = JSON.serialize(triggerNew);
             }else if (triggerNew != null && (graxconfig == null || graxconfig == '') ){
                     gxcSettings.debug('GRAXCloud.jsonContent',' Called from Trigger');
-                    
                     if(gxcSettings.GRAXQuery == null){
                         newObjects = JSON.serialize(triggerNew);            
+                    } else if(gxcSettings.GRAXQuery.Enable_Audit_Log__c == true){
+                        FilterFields = gxcSettings.GRAXQuery.Selected_Fields__c;
+                        newObjects = JSON.serialize(triggerNew);
                     }else{
-                        FilterFields = gxcSettings.GRAXQuery.Selected_Fields__c;
-                        newObjects = JSON.serialize(triggerNew);
-                    }
-                /* --------------------------------------------------   
-                    else // if(gxcSettings.GRAXQuery.Enable_Audit_Log__c == true)
-                    {
-                        FilterFields = gxcSettings.GRAXQuery.Selected_Fields__c;
-                        newObjects = JSON.serialize(triggerNew);
-                    }                
-                    else{
                         // Pass filtered fields 
                         List<Id> Ids = GetIds(triggerNew);
                         if(Test.isRunningTest()) {
@@ -82,9 +81,9 @@ public class GRAXApi extends GRAXCloud {
                         }
                         String Query = 'Select ' + FilterFields + ' FROM ' + ObjectType + ' Where Id in :Ids';
                         newObjects = JSON.serialize(Database.query(Query));
-                    }
-                --------------------------------------------------*/            
+                    }         
             }
+			--------------------------------------------------*/   
             
             if (graxconfig=='')
                     graxconfig = gxcSettings.GRAXQuery.graxconfig__c;
