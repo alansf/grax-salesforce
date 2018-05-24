@@ -1,18 +1,32 @@
-<apex:page controller="GRAXBackupCtrl" showHeader="false" applyHtmlTag="false" applyBodyTag="false">
+<apex:page controller="GRAXBackupCtrl" showHeader="false" applyHtmlTag="false" applyBodyTag="false" language="en_Us">
+    <style>
+        #archive_help_button {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+        }
+        #archive_help {
+            position: absolute;
+            bottom: 2.5rem;
+            left: 0;
+            z-index: 99999999;
+        }
+    </style>    
+
     <apex:form id="form-archiving" styleClass="slds-tabs_scoped__content">
         <apex:actionFunction action="{!changeSelectedObject}" name="changeSelectedObject" immediate="true" reRender="relStructureOutput, sObjectDateFieldsList" oncomplete="renderObjectHierarchy();">
             <apex:param name="selectedObjectValue" assignTo="{!selectedObject}" value="" />
         </apex:actionFunction>
 
-        <apex:actionFunction action="{!saveScheduledProcess}" name="saveScheduledProcess" reRender="scheduledprocesses, sObjectDateFieldsList, fillInputs" oncomplete="reRendered();showScheduledProcessModal(false);fillForm();"></apex:actionFunction>
+        <apex:actionFunction action="{!saveScheduledProcess}" name="saveScheduledProcess" reRender="scheduledprocesses, sObjectDateFieldsList, fillInputs" oncomplete="showScheduledProcessModal(false);reRendered();showGlobalSpinner(false);"></apex:actionFunction>
         
-        <apex:actionFunction action="{!cleanFormDataHandler}" name="cleanFormData" immediate="true" reRender="sObjectDateFieldsList, fillInputs" oncomplete="reRendered();fillForm();"></apex:actionFunction>
+        <apex:actionFunction action="{!cleanFormDataHandler}" name="cleanFormData" immediate="true" reRender="sObjectDateFieldsList, fillInputs" oncomplete="reRendered();showGlobalSpinner(false);"></apex:actionFunction>
 
-        <apex:actionFunction action="{!selectScheduledProcess}" name="selectScheduledProcess" immediate="true" reRender="sObjectDateFieldsList, fillInputs, relStructureOutput" oncomplete="fillForm();renderObjectHierarchy();showScheduledProcessModal(true);">
+        <apex:actionFunction action="{!selectScheduledProcess}" name="selectScheduledProcess" immediate="true" reRender="sObjectDateFieldsList, fillInputs, relStructureOutput" oncomplete="renderObjectHierarchy();showScheduledProcessModal(true);showGlobalSpinner(false);">
             <apex:param name="spId" value="" />
         </apex:actionFunction>
 
-        <apex:actionFunction action="{!deleteScheduledProcess}" name="deleteScheduledProcess" immediate="true" reRender="scheduledprocesses" oncomplete="reRendered();">
+        <apex:actionFunction action="{!deleteScheduledProcess}" name="deleteScheduledProcess" immediate="true" reRender="scheduledprocesses" oncomplete="reRendered();showGlobalSpinner(false);">
             <apex:param name="spId" value="" />
         </apex:actionFunction>
 
@@ -26,7 +40,7 @@
                 <div class="slds-clearfix slds-p-bottom_medium">
                     <div class="slds-clearfix">
                         <div class="slds-float_left">
-                            <button class="slds-button slds-button_brand" data-toggle="modal" data-target="#scheduledProcessModal">Create</button>
+                            <button id="createScheduledProcess" class="slds-button slds-button_brand">Create</button>
                         </div>
                     </div>
               	</div>
@@ -34,9 +48,7 @@
                 <apex:dataTable value="{!scheduledProcesses}" var="sp" id="scheduledprocesses" styleClass="slds-table slds-table_bordered slds-table_cell-buffer">        
                     <apex:column >
                         <apex:facet name="header">Created Date</apex:facet>
-                        <apex:outputtext value="{0, date, full}">
-                            <apex:param value="{!sp.createdDate}"></apex:param>
-                        </apex:outputtext>
+                        <apex:outputText value="{!sp.createdDate}"/>
                     </apex:column>
 
                     <apex:column >
@@ -46,16 +58,12 @@
 
                     <apex:column >
                         <apex:facet name="header">Date Last Ran</apex:facet>
-                        <apex:outputtext value="{0, date, MM'/'dd'/'yyyy' 'HH':'mm}">
-                            <apex:param value="{!sp.lastRunDate}"></apex:param>
-                        </apex:outputtext>
+                        <apex:outputText value="{!sp.lastRunDate}"/>
                     </apex:column>
 
                     <apex:column >
                         <apex:facet name="header">Next Run Date</apex:facet>
-                        <apex:outputtext value="{0, date, MM'/'dd'/'yyyy' 'HH':'mm}">
-                            <apex:param value="{!sp.nextRunDate}"></apex:param>
-                        </apex:outputtext>
+                        <apex:outputText value="{!sp.nextRunDate}"/>
                     </apex:column>
 
                     <apex:column >
@@ -86,12 +94,12 @@
                                 <div class="slds-dropdown slds-dropdown_right slds-dropdown_actions">
                                     <ul class="slds-dropdown__list" role="menu">
                                         <li class="slds-dropdown__item" role="presentation">
-                                            <a href="javascript:void(0);" onclick="editScheduledProcess('{!sp.GRAXScheduleProcess.Id}');return false;" role="menuitem" tabindex="0">
+                                            <a href="javascript:void(0);" onclick="showGlobalSpinner(true);editScheduledProcess('{!sp.GRAXScheduleProcess.Id}');return false;" role="menuitem" tabindex="0">
                                                 <span class="slds-truncate" title="Edit">Edit</span>
                                             </a>
                                         </li>
                                         <li class="slds-dropdown__item" role="presentation">
-                                            <a href="javascript:void(0);" onclick="deleteScheduledProcess('{!sp.GRAXScheduleProcess.Id}');return false;" role="menuitem" tabindex="-1">
+                                            <a href="javascript:void(0);" onclick="showGlobalSpinner(true);deleteScheduledProcess('{!sp.GRAXScheduleProcess.Id}');return false;" role="menuitem" tabindex="-1">
                                                 <span class="slds-truncate" title="Delete">Delete</span>
                                             </a>
                                         </li>
@@ -107,13 +115,13 @@
         <section id="scheduledProcessModal" role="dialog" tabindex="-1" aria-labelledby="modal-ScheduledProcess" aria-modal="true" aria-describedby="modal-content-ScheduledProcess" class="slds-modal slds-modal_medium slds-hide">
             <div class="slds-modal__container" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <header class="slds-modal__header">
-                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" data-toggle="modal" data-target="#scheduledProcessModal">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
                         <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
                             <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
                         </svg>
                         <span class="slds-assistive-text">Close</span>
                     </button>
-                    <h2 id="modal-ScheduledProcess" class="slds-text-heading_medium slds-hyphenate"></h2>
+                    <h2 id="modal-ScheduledProcess" class="slds-text-heading_medium slds-hyphenate">GRAX Schedule Job</h2>
                 </header>
                 
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-ScheduledProcess">
@@ -327,30 +335,30 @@
                                                 <div class="slds-form-element__control">
                                                     <div class="slds-select_container">
                                                         <apex:selectList id="scheduleStartTime" value="{!scheduleStartTime}" multiselect="false" size="1" styleClass="slds-select scheduleStartTime">
-                                                            <apex:selectOption itemValue="12:00 AM" itemLabel="12 AM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="01:00 AM" itemLabel="01 AM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="02:00 AM" itemLabel="02 AM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="03:00 AM" itemLabel="03 AM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="04:00 AM" itemLabel="04 AM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="05:00 AM" itemLabel="05 AM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="06:00 AM" itemLabel="06 AM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="07:00 AM" itemLabel="07 AM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="08:00 AM" itemLabel="08 AM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="09:00 AM" itemLabel="09 AM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="10:00 AM" itemLabel="10 AM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="11:00 AM" itemLabel="11 AM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="12:00 PM" itemLabel="12 PM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="01:00 PM" itemLabel="01 PM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="02:00 PM" itemLabel="02 PM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="03:00 PM" itemLabel="03 PM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="04:00 PM" itemLabel="04 PM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="05:00 PM" itemLabel="05 PM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="06:00 PM" itemLabel="06 PM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="07:00 PM" itemLabel="07 PM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="08:00 PM" itemLabel="08 PM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="09:00 PM" itemLabel="09 PM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="10:00 PM" itemLabel="10 PM"></apex:selectOption>
-                                                            <apex:selectOption itemValue="11:00 PM" itemLabel="11 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="00:00" itemLabel="12 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="01:00" itemLabel="01 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="02:00" itemLabel="02 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="03:00" itemLabel="03 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="04:00" itemLabel="04 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="05:00" itemLabel="05 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="06:00" itemLabel="06 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="07:00" itemLabel="07 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="08:00" itemLabel="08 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="09:00" itemLabel="09 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="10:00" itemLabel="10 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="11:00" itemLabel="11 AM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="12:00" itemLabel="12 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="13:00" itemLabel="01 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="14:00" itemLabel="02 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="15:00" itemLabel="03 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="16:00" itemLabel="04 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="17:00" itemLabel="05 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="18:00" itemLabel="06 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="19:00" itemLabel="07 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="20:00" itemLabel="08 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="21:00" itemLabel="09 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="22:00" itemLabel="10 PM"></apex:selectOption>
+                                                            <apex:selectOption itemValue="23:00" itemLabel="11 PM"></apex:selectOption>
                                                         </apex:selectList>
                                                     </div>
                                                 </div>
@@ -368,7 +376,7 @@
                         </h3>
                         <div aria-hidden="false" class="slds-section__content slds-is-relative">
                             <apex:inputHidden id="objectJSON" value="{!objectJSON}" html-data-id="objectJSON"></apex:inputHidden>
-                            <div id="ObjectHierarchy"></div>
+                            <div id="ObjectHierarchy" data-load="true"></div>
                             <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
                                 <span class="slds-assistive-text">Loading Tree...</span>
                                 <div class="slds-spinner__dot-a"></div>
@@ -378,25 +386,44 @@
                     </div>
                 </div>
 
-                <footer class="slds-modal__footer">
+                <footer class="slds-modal__footer slds-is-relative">
+                    <div class="slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-rise-from-ground slds-hide" id="archive_help" aria-hidden="true">
+                        <div class="slds-popover__body slds-text-align_left">
+                            Archive - This will Back up and then delete the record(s) from Salesforce.
+                            <br/>
+                            Back up - This will Back up and NOT delete the record(s) from Salesforce.
+                        </div>
+                    </div>
                     <div class="slds-form-element slds-float_left">
+                        <button id="archive_help_button" class="slds-button slds-button_icon slds-button slds-button_icon" title="Help">
+                            <i class="slds-button__icon" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#info')}"></i>
+                            <span class="slds-assistive-text">Help</span>
+                        </button>
                         <label class="slds-checkbox_toggle slds-grid">
                             <span class="slds-form-element__label slds-m-bottom_none">Archive</span>
                             <apex:inputCheckbox id="archive" value="{!archive}"/>
                             <span class="slds-checkbox_faux_container" aria-live="assertive">
                             <span class="slds-checkbox_faux"></span>
-                            <span class="slds-checkbox_on">Yes</span>
-                            <span class="slds-checkbox_off">No</span>
+                            <span class="slds-checkbox_on">Yes - (Delete records)</span>
+                            <span class="slds-checkbox_off">No - (Backup Only)</span>
                             </span>
                         </label>
                     </div>
 
-                    <button id="cancelScheduledProcess" class="slds-button slds-button_neutral">Cancel</button>
                     <button id="saveScheduledProcess" class="slds-button slds-button_brand" disabled="disabled">Save</button>
+                    <button id="cancelScheduledProcess" class="slds-button slds-button_neutral">Cancel</button>
                 </footer>
             </div>
         </section>
         <div class="slds-backdrop slds-hide"></div>
+
+        <div id="globalSpinner" class="slds-spinner_container slds-is-fixed slds-hide">
+            <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
 
         <script>
             var $sf = function(id) {
@@ -412,8 +439,10 @@
             var $archive = $sf('{!$Component.archive}');
             var $sObjectDateFieldsList = $sf('{!$Component.sObjectDateFieldsList}');
             var $ObjectHierarchy = $('#ObjectHierarchy');
+            var $createScheduledProcess = $('#createScheduledProcess');
             var $saveScheduledProcess = $('#saveScheduledProcess');
-            var $cancelScheduledProcess = $('#cancelScheduledProcess');
+            var $cancelScheduledProcess = $('#cancelScheduledProcess, #scheduledProcessModal .slds-modal__close');
+            var $globalSpinner = $('#globalSpinner');
         </script>
 
         <apex:outputPanel id="fillInputs">
@@ -423,7 +452,7 @@
 
                     $("#colDt_q").val('today').trigger('change');
 
-                    $objectList.val('{!selectedObject}');
+                    $objectList.val(!selectedObject ? null : selectedObject);
                     $schedule.val('{!schedule}');
                     $targetDate.datepicker('setDate', selectedObject ? '{!targetDate}': moment());
                     $scheduleStartDate.datepicker('setDate', selectedObject ? '{!scheduleStartDate}' : moment());
@@ -436,9 +465,12 @@
                         .val('{!sObjectDateField}' || '{!sObjectDateFieldDefault}');
 
                     $("#colDt_q").val(selectedObject ? 'custom' : 'today').trigger('change');
-                    
-                    document.querySelector('[name="criteriaOptions"][value="{!criteria}"]').checked = true;
-                    document.querySelector('[name="scheduleOptions"][value="{!schedule}"]').checked = true;
+                
+                    $('[name="criteriaOptions"], [name="scheduleOptions"]').prop('checked', false);
+
+                    var criteria = '{!criteria}'; var schedule = '{!schedule}';
+                    if(criteria) $('[name="criteriaOptions"][value="' + criteria + '"]').prop('checked', true);
+                    if(schedule) $('[name="scheduleOptions"][value="' + schedule + '"]').prop('checked', true);
                 };
             </script>
         </apex:outputPanel>
@@ -458,17 +490,24 @@
                 return id.split(':').join('\\:');
             };
 
+            var replaceDatePickerArrows = function($datepicker) {
+                $('#aljs-prevButton').html('&#9666;');
+                $('#aljs-nextButton').html('&#9656;');
+            };
+
             $targetDate.datepicker({
                 initDate: moment(),
                 format: 'MM/DD/YYYY',
                 onSelect: function() {
                     $('#colDt_q').val('custom');
-                }
+                },
+                onShow: replaceDatePickerArrows
             });
 
             $scheduleStartDate.datepicker({
                 initDate: moment(),
                 format: 'MM/DD/YYYY',
+                onShow: replaceDatePickerArrows
             });
 
             window.radioChange = function(input, hiddenId) {
@@ -492,15 +531,46 @@
 
             $('#modal-content-ScheduledProcess').on('change', 'input, select', updateSaveState);
 
+            
+            var cleanForm = function() {
+                $("#colDt_q").val('today').trigger('change');
+
+                $objectList.val(null);
+                $schedule.val(null);
+                $targetDate.datepicker('setDate', moment());
+                $scheduleStartDate.datepicker('setDate', moment());
+                $scheduleStartTime.val(null);
+                $objectJSON.val(null);
+                $archive.prop('checked', false);
+
+                $scheduleStartTime.prop('selectedIndex', 0);
+                $ObjectHierarchy.html(null);
+                $sObjectDateFieldsList.prop('disabled', true).val(null);
+
+                $("#colDt_q").val('today').trigger('change');
+            
+                $('[name="scheduleOptions"]').prop('checked', false);
+
+                var criteria = 'Main Object not modified';
+                $('[name="criteriaOptions"][value="' + criteria + '"]').prop('checked', true);
+            };
+            
+            
+            $createScheduledProcess.on('click', function(e) {
+                showScheduledProcessModal(true);
+
+                e.preventDefault();
+            });
 
             $saveScheduledProcess.on('click', function(e) {
+                showGlobalSpinner(true);
                 saveScheduledProcess();
 
                 e.preventDefault();
             });
 
             $cancelScheduledProcess.on('click', function(e) {
-                cleanFormData();
+                showScheduledProcessModal(false);
 
                 e.preventDefault();
             });
@@ -807,11 +877,8 @@
             }
 
             var $scheduledProcessModal = $('#scheduledProcessModal');
-            var $scheduledProcessModalTitle = $('#modal-ScheduledProcess');
 
             window.editScheduledProcess = function(spId) {
-                $scheduledProcessModalTitle.text(spId);
-
                 selectScheduledProcess(spId);
             };
 
@@ -820,17 +887,25 @@
             };
 
             $scheduledProcessModal.on('modaltoggle', function(e, state) {
-                if(!state)  {
-                    cleanFormData();
-                    $scheduledProcessModalTitle.text('Create');
-                    $scheduleStartTime.prop('selectedIndex', 0);
-                    $ObjectHierarchy.html(null);
-                    $sObjectDateFieldsList.prop('disabled', true);
-                    $scheduledProcessModal.find('[type="radio"]').prop('checked', false);
+                if(!state) {
+                    fillForm = cleanForm;
                 } else {
+                    fillForm();
                     updateSaveState();
                 }
             });
+
+            window.showGlobalSpinner = function(state) {
+                $globalSpinner.toggleClass('slds-hide', !state);
+            };
+
+            $('#archive_help_button').on('mouseover mouseleave', function(e) {
+                $('#archive_help').toggleClass('slds-hide', e.type == 'mouseleave');
+            }).on('click', function(e) {
+                e.preventDefault();
+            });
+
+            window.cleanForm = cleanForm;
         });
     </script>
 </apex:page>

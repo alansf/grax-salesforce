@@ -27,6 +27,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>GRAXBackupCtrlTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>GRAXBatch</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -43,7 +47,15 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>GRAXBatchToDeleteBackedUpDataTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>GRAXBatchToProcessSchedJob</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXBatchToProcessSchedJobTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -115,6 +127,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>GRAXRestoreCtrl</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>GRAXSchedulerToCleanDataRecords</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -123,7 +139,19 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>GRAXSchedulerToDeleteBackedUpData</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXSchedulerToDeleteBackedUpDataTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>GRAXSchedulerToProcessSchedJobs</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXSchedulerToProcessSchedJobsTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -391,6 +419,10 @@
         <enabled>true</enabled>
     </pageAccesses>
     <pageAccesses>
+        <apexPage>GRAXRestore</apexPage>
+        <enabled>true</enabled>
+    </pageAccesses>
+    <pageAccesses>
         <apexPage>GRAXSetup</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
@@ -398,4 +430,20 @@
         <apexPage>GRAXSupport</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
+    <tabVisibilities>
+        <tab>GRAX_Intro</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
+    <tabVisibilities>
+        <tab>GRAX_DEPLOY</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
+    <tabVisibilities>
+        <tab>GRAX_Support</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
+    <tabVisibilities>
+        <tab>GRAXQuery__c</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
 </Profile>

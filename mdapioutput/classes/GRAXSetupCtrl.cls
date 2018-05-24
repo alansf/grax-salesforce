@@ -117,7 +117,7 @@ public with sharing class GRAXSetupCtrl {
 
             // Verify if the scheduler is not in the queue and adds it.
             if(!crons.contains(cronName)) {
-                cronExpression = '0 '+ String.valueOf(i * minutesFactor) + ' 0 * * ?'; 
+                cronExpression = '0 '+ String.valueOf(i * minutesFactor) + ' * * * ?'; 
                 String jobId = System.schedule(cronName, cronExpression, new GRAXSchedulerToResendDataRecords());
             }
         }
@@ -452,8 +452,11 @@ public with sharing class GRAXSetupCtrl {
         public FieldProperties(string objname, string fieldname, Map<String,GRAXQuery__c> sychedObjectsSaved) {
             this.sObjtoquery = objname;
             this.fieldname = fieldname;
-            this.fieldselected = false;
-            this.fieldauditenabled = false;
+            
+           	Boolean defaultSelected = true;
+            this.fieldselected = defaultSelected;
+            this.fieldauditenabled = defaultSelected;
+            
             getAttributes(objname, fieldname, sychedObjectsSaved);
         }
     
@@ -473,7 +476,9 @@ public with sharing class GRAXSetupCtrl {
                         fieldselected=true;
                         message = 'Synchronized';
                     } else {
-                        fieldselected=false;
+                    // Default to True
+                        // fieldselected=false;
+                        fieldselected = true;
                         disabled = true;
                         message = 'Not Synchronized';
                     }

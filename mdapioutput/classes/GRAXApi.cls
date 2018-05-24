@@ -17,9 +17,15 @@ public class GRAXApi extends GRAXCloud {
     // https://grax.io
     // Support Contact - Support@Grax.io
     // -------------------------------------------------
+	private static Boolean isArchive = false;
     
     public static String jsonContent(List<SObject> triggerNew, List<SObject> triggerOld) {
             return jsonContent(triggerNew,triggerOld,'');
+    }
+
+	public static String jsonContentArchive(List<SObject> triggerNew) {
+    	isArchive = true;
+        return jsonContent(triggerNew,null,'');
     }
     
     // Gets a list of Ids
@@ -98,34 +104,35 @@ public class GRAXApi extends GRAXCloud {
             if (graxconfig!=null && graxconfig!='')
                 graxconfigsetting = '"graxconfig": ' + graxconfig + ',';
 
-            String s3settings = '';    
-            // Eventually should support object to region mapping
-            if (gxcSettings.GRAXQuery.Enable_Audit_Log__c == true && triggerNew != null && 
-                    gxcSettings.graxConfig.s3accesskeyid__c!='' && gxcSettings.graxConfig.s3secretaccesskey__c!='' ){
-                    s3settings = '"s3audit":"true",' + 
-                                 '"s3accesskeyid":"' + gxcSettings.graxConfig.s3accesskeyid__c + '",' + 
-                                 '"s3secretaccesskey":"' + gxcSettings.graxConfig.s3secretaccesskey__c + '",' + 
-                                 '"s3bucket":"' + gxcSettings.graxConfig.s3bucket__c + '",' + 
-                                 '"s3region":"' + gxcSettings.graxConfig.s3region__c + '",' + 
-                                 '"filterfields":"' + FilterFields + '",';
-            }
-            
-            String content = '{' + 
-                                    '"orgId": "'+ UserInfo.getOrganizationId() + '",' +
-                                    '"userId": ' + JSON.serialize(UserInfo.getUserId()) + ',' + 
-                                    '"graphdburl": "' + gxcSettings.graphdburl + '",' + 
-                                    '"postgresurl": "' + gxcSettings.PostgresURL + '",' + 
-                                    s3settings +
-                                    graxconfigsetting + 
-                                    '"new": ' + newObjects + ',' + 
-                                    '"old": ' + oldObjects + 
-                                '}';        
-    
-            return content;
-        }else{
-            GRAXSettings.debug('GRAXCloud.jsonContent','Both Lists Empty, should never happen','ERROR triggerNew==null && triggerOld==null', 0);
-            return '{}';
-        }
+	        String s3settings = '';    
+	        // Eventually should support object to region mapping
+	        if (gxcSettings.GRAXQuery.Enable_Audit_Log__c == true && triggerNew != null && 
+	        		gxcSettings.graxConfig.s3accesskeyid__c!='' && gxcSettings.graxConfig.s3secretaccesskey__c!='' ){
+	        		s3settings = '"s3audit":"true",' + 
+	        					 '"s3accesskeyid":"' + gxcSettings.graxConfig.s3accesskeyid__c + '",' + 
+	        					 '"s3secretaccesskey":"' + gxcSettings.graxConfig.s3secretaccesskey__c + '",' + 
+	        					 '"s3bucket":"' + gxcSettings.graxConfig.s3bucket__c + '",' + 
+	        					 '"s3region":"' + gxcSettings.graxConfig.s3region__c + '",' + 
+	        					 '"filterfields":"' + FilterFields + '",';
+	        }
+	        
+	        String content = '{' + 
+									'"archive": '+ (isArchive? 'true':'false') + ',' +
+	        						'"orgId": "'+ UserInfo.getOrganizationId() + '",' +
+	        						'"userId": ' + JSON.serialize(UserInfo.getUserId()) + ',' + 
+	        						'"graphdburl": "' + gxcSettings.graphdburl + '",' + 
+	        						'"postgresurl": "' + gxcSettings.PostgresURL + '",' + 
+	        						s3settings +
+	        						graxconfigsetting + 
+	        						'"new": ' + newObjects + ',' + 
+	        						'"old": ' + oldObjects + 
+	        					'}';        
+	
+	        return content;
+		}else{
+			GRAXSettings.debug('GRAXCloud.jsonContent','Both Lists Empty, should never happen','ERROR triggerNew==null && triggerOld==null', 0);
+			return '{}';
+		}
         
     }
     

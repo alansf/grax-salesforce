@@ -116,7 +116,7 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
 		CallOutResponse callOutRes = GRAXCloud.calloutnow(url, content);
 		
 		dr.Error_Message__c = '';
-		dr.Last_Sent_Date__c = Date.today();
+		dr.Last_Sent_Date__c = System.now();
 		dr.of_Times_Sent__c += 1;
 			
 		if(callOutRes.success){
