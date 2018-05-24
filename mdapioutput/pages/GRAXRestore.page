@@ -1,0 +1,490 @@
+<apex:page controller="GRAXRestoreCtrl" cache="false" showChat="false" showHeader="true" standardStylesheets="true" sidebar="true" applyHtmlTag="true" applyBodyTag="false" docType="html-5.0">
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" type="text/javascript"></script>
+    <script src="{!URLFOR($Resource.grax, '/jquery.slds.js')}"></script>
+    <script src="{!URLFOR($Resource.grax, '/jquery.sldsTree.js')}"></script>
+    <!-- Import the Design System style sheet -->
+    <apex:slds />
+
+    <style>
+        .assistiveText {
+            display: none;
+        }
+
+        [data-load="true"][data-loading="true"] {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        [data-load="true"] + [role="status"] {
+            display: none;
+        }
+        [data-load="true"][data-loading="true"] + [role="status"] {
+            display: block;
+        }
+
+        #fieldListSelector.slds-scrollable_y {
+            max-height: 13.15rem;
+            max-height: 31.5vh;
+        }
+
+        #fieldListSelector .slds-checkbox__label {
+            display: inline-block;
+            width: 100%;
+        }
+
+        #datePicker {
+            z-index: 99999;
+            top: 2.9rem!important;
+            left: 0!important;
+        }
+
+        .dateFormat {
+            display: none;
+        }
+
+        .noPointerEvents {
+            pointer-events: none;
+        }
+    </style>
+
+    <script>
+        var selectedObject;
+    </script>
+</head>
+<body>
+    <div class="slds-scope">
+        <apex:form id="form-restore">
+            <apex:actionFunction action="{!changeObjToQuery}" name="changeObjToQuery" immediate="true" reRender="fieldListOutput">
+                <apex:param name="objToQueryValue" value="" />
+            </apex:actionFunction>
+
+            <apex:actionFunction action="{!updateDataTable}" name="updateDataTable" immediate="true" reRender="datatableOuput" oncomplete="showDataTable();">
+                <apex:param name="selectedFields" value="" />
+            </apex:actionFunction>
+
+            <apex:actionFunction action="{!changeSObjectToRestore}" name="changeSObjectToRestore" immediate="true" reRender="restoreOutput" oncomplete="showRestoreModal(true);">
+                <apex:param name="soToRestore" value="" />
+            </apex:actionFunction>
+
+            <apex:actionFunction action="{!saveSObjectToRestore}" name="saveSObjectToRestore" reRender="restoreOutput" oncomplete="showRestoreModal(false);renderSvgIcons();"></apex:actionFunction>
+
+            <div class="slds-tabs_default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <!--<ul class="slds-tabs_default__nav" role="tablist">
+                    <li class="slds-tabs_default__item slds-is-active" title="Restore" role="presentation">
+                        <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" aria-selected="false" aria-controls="tab-restore_restore" id="tab-restore_restore__item">Restore</a>
+                    </li>
+                </ul>
+                <div id="tab-restore_restore" class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-restore_restore__item">-->
+                <div id="tab-restore_restore">       
+                    <div class="slds-section slds-is-open">
+                        <h3 class="slds-section__title slds-theme_shade">
+                            <span class="slds-truncate slds-p-horizontal_small" title="Select SalesForce object">Select SalesForce object</span>
+                        </h3>
+                        <div aria-hidden="false" class="slds-section__content">
+                            <div class="slds-grid slds-grid_vertical-align-center">
+                                <div class="slds-col slds-grow-none slds-m-right_small">
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-select_container">
+                                                <select id="objectList" class="slds-select" disabled="disabled">
+                                                    <option value="" disabled="disabled" selected="selected">-- SELECT SALESFORCE OBJECT --</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slds-section slds-is-open slds-p-top_large">
+                        <h3 class="slds-section__title slds-theme_shade">
+                            <span class="slds-truncate slds-p-horizontal_small" title="Select Object Fields">Select Object Fields</span>
+                        </h3>
+                        <div aria-hidden="false" class="slds-section__content slds-is-relative">
+                            <input type="hidden" id="fieldlist" />
+                            <div id="fieldListSelector" data-load="true"></div>
+                            <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
+                                <span class="slds-assistive-text">Loading Fields...</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slds-section slds-is-open slds-p-top_large">
+                        <h3 class="slds-section__title slds-theme_shade">
+                            <span class="slds-truncate slds-p-horizontal_small" title="GRAX Stored Records">GRAX Stored Records</span>
+                        </h3>
+                        <div aria-hidden="false" class="slds-section__content slds-is-relative">
+                            <div class="slds-clearfix slds-p-bottom_medium">
+                                <div class="slds-clearfix">
+                                    <div class="slds-float_left">
+                                        <button id="retriveGRAXFields" class="slds-button slds-button_brand">Retrieve</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="sObjectDataTableContainer" data-load="true">
+                                <apex:outputPanel id="datatableOuput" layout="block">
+                                    <apex:dataTable value="{!sObjectMap}" var="sid" id="sObjectDataTable" styleClass="slds-table slds-table_bordered slds-table_cell-buffer" rendered="{!!isTableRecordsEmpty}">
+                                        <apex:repeat var="n" value="{!selectedFieldsList}">
+                                            <apex:column headerValue="{!fieldMap[n].label}">
+                                                <apex:outputField value="{!sObjectMap[sid][fieldMap[n].name]}" />
+                                            </apex:column>
+                                        </apex:repeat>
+                    
+                                        <apex:column >
+                                            <apex:facet name="header">
+                                                <span class="slds-assistive-text">Actions</span>
+                                            </apex:facet>
+                                            <apex:outputPanel >
+                                                <div class="slds-dropdown-trigger slds-dropdown-trigger_click">
+                                                    <a href="javascript:void(0);" onclick="restore('{!sid}');return false;" class="slds-button">
+                                                        <i data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#undo')}" class="slds-button__icon slds-button__icon_left"></i>
+                                                        <span class="slds-truncate">Restore</span>
+                                                    </a>
+                                                </div>
+                                            </apex:outputPanel>
+                                        </apex:column>
+                                    </apex:dataTable>
+
+                                    <apex:outputPanel layout="block" rendered="{!isTableRecordsEmpty && !!isFieldSelected}" styleClass="slds-text-align_center">
+                                        No records were found in GRAX
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                            </div>
+
+                            <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
+                                <span class="slds-assistive-text">Loading GRAX Fields...</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section id="restoreModal" role="dialog" tabindex="-1" aria-labelledby="modal-restore" aria-modal="true" aria-describedby="modal-content-restore" class="slds-modal slds-modal_medium slds-hide">
+                <div class="slds-modal__container" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" data-toggle="modal" data-target="#restoreModal">
+                            <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                            </svg>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-restore" class="slds-text-heading_medium slds-hyphenate">Restore</h2>
+                    </header>
+                    
+                    <div class="slds-modal__content slds-p-horizontal_medium" id="modal-content-restore">
+                        <apex:outputPanel id="restoreOutput" layout="block" styleClass="slds-m-bottom_large">
+                            <apex:outputPanel layout="block" styleClass="slds-m-vertical_small pageMessages">
+                                <apex:pageMessages></apex:pageMessages>
+                            </apex:outputPanel>
+
+                            <apex:repeat var="f" value="{!sObjectFields}" rendered="{!sobjectToRestore != null}">
+                                <apex:outputPanel styleClass="slds-form-element slds-m-bottom_xx-small" rendered="{!f.isCreateable}">
+                                    <apex:outputLabel styleClass="slds-form-element__label" for="inputField" value="{!f.label}"/>
+                                    <div class="slds-form-element__control">
+                                        <div class="{!f.containerClass}">
+                                            <apex:inputField id="inputField" value="{!sobjectToRestore[f.name]}" styleClass="{!f.styleClass}" />
+                                            <apex:outputLabel styleClass="slds-checkbox__label" for="inputField" rendered="{!f.type == 'BOOLEAN'}">
+                                                <span class="slds-checkbox_faux"></span>
+                                            </apex:outputLabel>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                            </apex:repeat>
+                        </apex:outputPanel>
+                    </div>
+    
+                    <footer class="slds-modal__footer">
+                        <button id="saveRestore" class="slds-button slds-button_brand">Save</button>
+                        <button id="cancelRestore" class="slds-button slds-button_neutral" data-toggle="modal" data-target="#restoreModal">Cancel</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-hide"></div>
+
+            <div id="globalSpinner" class="slds-spinner_container slds-is-fixed slds-hide">
+                <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+
+            <script>
+                $(function() {
+                    var $objectList = $('#objectList');
+                    var $fieldlist = $('#fieldlist');
+                    var $sObjectDataTableContainer = $('#sObjectDataTableContainer');
+                    var $restoreModal = $('#restoreModal');
+                    var $saveRestore = $('#saveRestore');
+                    var $fieldListSelector = $('#fieldListSelector');
+                    var $retriveGRAXFields = $('#retriveGRAXFields');
+                    var $globalSpinner = $('#globalSpinner');
+
+                    window.addObjectListOptions = function(options) {
+                        options.sort(function (a, b) {
+                            if (a.label > b.label) {
+                                return 1;
+                            }
+        
+                            if (a.label < b.label) {
+                                return -1;
+                            }
+                            
+                            return 0;
+                        });
+        
+                        $.each(options, function(i, item) {
+                            var $option = $('<option>')
+                                            .attr('value', item.index)
+                                            .text(item.label + ' (' + item.relation + ')');
+                            $objectList.append($option).prop('disabled', false);
+                        });
+                    };
+
+                    $objectList.on('change', function(e) {
+                        selectedObject = e.target.value;
+                        changeObjToQuery(selectedObject);
+
+                        $fieldListSelector.attr({'data-loading': true});
+                    });
+
+                    $retriveGRAXFields.on('click', function(e) {
+                        var selectedFields = $fieldlist.val();
+
+                        if(selectedFields) {
+                            $sObjectDataTableContainer.attr({'data-loading': true});
+                            updateDataTable(selectedFields);
+                        } else {
+                            alert('No fields selected.');
+                        }
+        
+                        e.preventDefault();
+                    });
+
+                    window.showDataTable = function() {
+                        $sObjectDataTableContainer.attr({'data-loading': false});
+                        renderSvgIcons();
+                    };
+
+                    window.restore = function(sid) {
+                        changeSObjectToRestore(sid);
+                        $globalSpinner.removeClass('slds-hide');
+                    };
+        
+                    $saveRestore.on('click', function(e) {
+                        saveSObjectToRestore();
+        
+                        e.preventDefault();
+                    });
+        
+                    window.showRestoreModal = function(state) {
+                        if(!state) {
+                            state = $restoreModal.find('.pageMessages').text().trim() != '';
+                        }
+        
+                        if(state) {
+                            var $lookupInputs = $restoreModal.find('span.lookupInput');
+                            if ($lookupInputs.length > 0) {
+                                $lookupInputs.addClass('slds-is-relative');
+        
+                                var $i = $('<i>').attr({
+                                    'data-icon': "{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#search')}",
+                                    'class': 'slds-icon slds-icon-text-default slds-icon_xx-small'
+                                });
+        
+                                $lookupInputs.find('a').attr('class', 'slds-button slds-button_icon slds-input__icon slds-input__icon_right');
+                                $lookupInputs.find('img.lookupIcon').replaceWith($i);
+                                renderSvgIcons();
+                            }
+        
+                            var $namePointings = $restoreModal.find('div.is-name-pointing');
+                            if ($namePointings.length > 0) {
+                                $namePointings.addClass('slds-grid slds-wrap');
+        
+                                $namePointings.find('select')
+                                    .addClass('slds-select')
+                                    .wrap('<div class="slds-select_container slds-col slds-size_1-of-4"></div>');
+        
+                                $namePointings.find('span.lookupInput')
+                                    .addClass('slds-col slds-size_3-of-4 slds-p-left_small')
+                                    .find('input')
+                                        .addClass('slds-input');
+                            }
+        
+                            $restoreModal.find('.slds-form-element').each(function() {
+                                var $this = $(this);
+                                var $errorMsgs = $this.find('.errorMsg');
+                                
+                                if($errorMsgs.length > 0) {
+                                    $errorMsgs.addClass('slds-form-element__help');
+                                    $this.addClass('slds-has-error');
+                                }
+                            });
+
+
+                            var $dateInputs = $restoreModal.find('span.dateInput');
+                            if ($dateInputs.length > 0) {
+                                $dateInputs.addClass('slds-is-relative');
+
+                                var $button = $('<button>').attr('class', 'slds-button slds-button_icon slds-input__icon slds-input__icon_right noPointerEvents');
+                                var $i = $('<i>').attr({
+                                    'data-icon': "{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#event')}",
+                                    'class': 'slds-icon slds-icon-text-default slds-icon_xx-small'
+                                });
+                                $button.append($i);
+                                
+                                $button.on('click', function(e) {
+                                    $(this).prev('input').focus();
+
+                                    e.preventDefault();
+                                });
+
+                                $dateInputs.find('input')
+                                    .wrap('<div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right"></div>')
+                                    .after($button);
+
+                                $dateInputs.on('focus', 'input', function(e) {
+                                    $('#datePicker').insertAfter($(this).parent());
+
+                                    e.preventDefault();
+                                });
+
+                                renderSvgIcons();
+                            }
+                            
+
+                            $globalSpinner.addClass('slds-hide');
+                        }
+        
+                        $restoreModal.trigger('modaltoggle', [state]);
+                    };
+
+                    $restoreModal.on('modaltoggle', function(e, state) {
+                        if(!state) $('#datePicker').appendTo($('body'));
+                    });
+
+ 
+                    window.renderFieldListSelector = function(data) {
+                        data.sort(function (a, b) {
+                            if (a.label > b.label) {
+                                return 1;
+                            }
+        
+                            if (a.label < b.label) {
+                                return -1;
+                            }
+                            
+                            return 0;
+                        });
+
+                        $fieldListSelector.sldsTree({ 
+                            data: data,
+                            attrs: {
+                                root: {'class': 'slds-scrollable_y'}
+                            },
+                            onDiv: function($div, item, settings) {
+                                $div.append('<div class="slds-size_1-of-1">\
+                                <div class="slds-form-element">\
+                                    <div class="slds-form-element__control">\
+                                        <span class="slds-checkbox">\
+                                        <input name="field_' + item[settings.items.id] + '" id="field_' + item[settings.items.id] + '" type="checkbox" ' + (item.isSelected ? 'checked' : '') + ' />\
+                                        <label class="slds-checkbox__label" for="field_' + item[settings.items.id] + '">\
+                                            <span class="slds-checkbox_faux"></span>\
+                                            <span class="slds-form-element__label">' + item[settings.items.label] + '</span>\
+                                        </label>\
+                                        </span>\
+                                    </div>\
+                                    </div>\
+                                </div>');
+                            },
+                            onFinish: function($root, items, settings) {
+                                var fields = {};
+                                var countChecked = 1;
+
+                                var getSelectedFields = function() {
+                                    var selectedFields = [];
+
+                                    $.each(fields, function(field, selected) {
+                                        if(selected) {
+                                            selectedFields.push(field);
+                                        }
+                                    });
+
+                                    return selectedFields;
+                                };
+
+                                var cookieSelected = window.getCookie(selectedObject + 'Fields');
+
+                                var updateValue = function() {
+                                    var selectedFields = getSelectedFields().join(',');
+
+                                    $fieldlist.val(selectedFields);
+                                    window.setCookie(selectedObject + 'Fields', selectedFields);
+                                };
+
+                                $.each(items, function(i, item) {
+                                    var id = item[settings.items.id];
+
+                                    if(cookieSelected) {
+                                        fields[id] = item.isSelected || cookieSelected.split(',').indexOf(id) != -1;
+                                    } else {
+                                        fields[id] = item.isSelected;
+                                    }
+
+                                    $('#field_' + id).on('change', function(e) {
+                                        if(e.target.checked && countChecked >= 7) {
+                                            e.target.checked = false;
+                                            e.preventDefault();
+                                            
+                                            return false;
+                                        }
+
+                                        fields[id] = e.target.checked;
+
+                                        if(e.target.checked) {
+                                            countChecked++;
+                                        } else {
+                                            countChecked--;
+                                        }
+
+                                        updateValue();
+                                    }).prop('checked', fields[id]);
+
+                                    updateValue();
+                                });
+                            }
+                        }).attr({'data-loading': false});
+                    };
+        
+                    renderSvgIcons();
+                });
+            </script>
+        
+            <script>
+                $(function() {
+                    addObjectListOptions({!relatedJSON});
+                });
+            </script>
+        
+            <apex:outputPanel id="fieldListOutput">
+                <script>
+                    $(function() {
+                        renderFieldListSelector({!fieldsJSON});
+                    });
+                </script>
+            </apex:outputPanel>
+        </apex:form>
+    </div>
+</body>
+</html>
+</apex:page>

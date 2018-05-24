@@ -117,7 +117,7 @@ public with sharing class GRAXSetupCtrl {
 
             // Verify if the scheduler is not in the queue and adds it.
             if(!crons.contains(cronName)) {
-                cronExpression = '0 '+ String.valueOf(i * minutesFactor) + ' 0 * * ?'; 
+                cronExpression = '0 '+ String.valueOf(i * minutesFactor) + ' * * * ?'; 
                 String jobId = System.schedule(cronName, cronExpression, new GRAXSchedulerToResendDataRecords());
             }
         }

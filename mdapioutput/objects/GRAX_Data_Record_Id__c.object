@@ -64,6 +64,15 @@
     <sharingModel>ControlledByParent</sharingModel>
     <visibility>Public</visibility>
     <fields>
+        <fullName>Error_Description__c</fullName>
+        <externalId>false</externalId>
+        <label>Error Description</label>
+        <length>2000</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
         <fullName>GRAX_Data_Record__c</fullName>
         <description>GRAX_Data_Record</description>
         <externalId>false</externalId>

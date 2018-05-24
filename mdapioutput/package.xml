@@ -11,11 +11,14 @@
     <members>GRAXApiUT</members>
     <members>GRAXAuditTrail</members>
     <members>GRAXBackupCtrl</members>
+    <members>GRAXBackupCtrlTest</members>
     <members>GRAXBatch</members>
     <members>GRAXBatchToCleanDataRecords</members>
     <members>GRAXBatchToCleanDataRecordsTest</members>
     <members>GRAXBatchToDeleteBackedUpData</members>
+    <members>GRAXBatchToDeleteBackedUpDataTest</members>
     <members>GRAXBatchToProcessSchedJob</members>
+    <members>GRAXBatchToProcessSchedJobTest</members>
     <members>GRAXBatchToResendDataRecords</members>
     <members>GRAXBatchToResendDataRecordsTest</members>
     <members>GRAXBatchUT</members>
@@ -33,9 +36,14 @@
     <members>GRAXFlowUT</members>
     <members>GRAXLogRecord</members>
     <members>GRAXLogging</members>
+    <members>GRAXRestoreCtrl</members>
+    <members>GRAXRestoreCtrlTest</members>
     <members>GRAXSchedulerToCleanDataRecords</members>
     <members>GRAXSchedulerToCleanDataRecordsTest</members>
+    <members>GRAXSchedulerToDeleteBackedUpData</members>
+    <members>GRAXSchedulerToDeleteBackedUpDataTest</members>
     <members>GRAXSchedulerToProcessSchedJobs</members>
+    <members>GRAXSchedulerToProcessSchedJobsTest</members>
     <members>GRAXSchedulerToResendDataRecords</members>
     <members>GRAXSchedulerToResendDataRecordsTest</members>
     <members>GRAXSettings</members>
@@ -56,6 +64,7 @@
   <types>
     <name>Layout</name>
     <members>GRAXQuery__c-GRAXQueries Layout</members>
+    <members>GRAX_Data_Record_Id__c-Formato GRAX Data Record Id</members>
     <members>GRAX_Schedule_Process__c-GRAX Schedule Process Layout</members>
   </types>
   <types>
@@ -99,6 +108,7 @@
     <members>GRAXSettings__c.s3bucket__c</members>
     <members>GRAXSettings__c.s3region__c</members>
     <members>GRAXSettings__c.s3secretaccesskey__c</members>
+    <members>GRAX_Data_Record_Id__c.Error_Description__c</members>
     <members>GRAX_Data_Record_Id__c.GRAX_Data_Record__c</members>
     <members>GRAX_Data_Record_Id__c.Processed_Child_Index__c</members>
     <members>GRAX_Data_Record_Id__c.SFDC_Id__c</members>
@@ -137,6 +147,7 @@
     <members>GRAXConnect</members>
     <members>GRAXDeploy</members>
     <members>GRAXFlow</members>
+    <members>GRAXRestore</members>
     <members>GRAXSetup</members>
     <members>GRAXSupport</members>
   </types>
@@ -156,12 +167,12 @@
     <name>StaticResource</name>
     <members>aljs</members>
     <members>grax</members>
-    <members>sldsTree</members>
   </types>
   <types>
     <name>CustomTab</name>
     <members>GRAXQuery__c</members>
     <members>GRAX_DEPLOY</members>
+    <members>GRAX_Data_Record__c</members>
     <members>GRAX_Intro</members>
     <members>GRAX_Support</members>
   </types>

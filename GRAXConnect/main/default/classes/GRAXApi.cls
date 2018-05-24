@@ -17,9 +17,15 @@ public class GRAXApi extends GRAXCloud {
     // https://grax.io
     // Support Contact - Support@Grax.io
     // -------------------------------------------------
+	private static Boolean isArchive = false;
     
     public static String jsonContent(List<SObject> triggerNew, List<SObject> triggerOld) {
     		return jsonContent(triggerNew,triggerOld,'');
+    }
+
+	public static String jsonContentArchive(List<SObject> triggerNew) {
+    	isArchive = true;
+        return jsonContent(triggerNew,null,'');
     }
     
     // Gets a list of Ids
@@ -103,6 +109,7 @@ public class GRAXApi extends GRAXCloud {
 	        }
 	        
 	        String content = '{' + 
+									'"archive": '+ (isArchive? 'true':'false') + ',' +
 	        						'"orgId": "'+ UserInfo.getOrganizationId() + '",' +
 	        						'"userId": ' + JSON.serialize(UserInfo.getUserId()) + ',' + 
 	        						'"graphdburl": "' + gxcSettings.graphdburl + '",' + 

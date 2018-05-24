@@ -1,3 +1,5 @@
+
+
 /*****************************************************************************************
 Name              : GRAXBackupCtrl
 Description       : Implementation of the tab "Back Up" in GRAXSetupUI.
@@ -7,13 +9,14 @@ Created/Modified by   Created/Modified Date     Requested by        Related Task
 1. Leandro Brunner       04/27/2018             David Mackey        GRAX Audit Trail Process (https://app.asana.com/0/326600806074978/633149554508926/f)
 ******************************************************************************************/
 public with sharing class GRAXBackupCtrl {
+    public String userTimeZone {get;set;}
     public String selectedObject {get;set;}
     public String selectedObjectDefault {get;set;}
     public String sObjectDateField {get;set;}
     public String sObjectDateFieldDefault {get;set;}
 
     public Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
-    private Set<String> excludedStandardObjects = new Set<String>{'AccountCleanInfo','ContentDistribution','ContentDocumentLink','DuplicateRecordItem','EntitySubscription','ProcessInstance','TopicAssignment','AccountPartner','ContactCleanInfo','EmailMessageRelation','EventRelation','OpportunityPartner','Partner','CollaborationGroupRecord','CaseTeamMember','CaseTeamTemplateRecord','FlowRecordRelation'};
+    private Set<String> excludedStandardObjects = new Set<String>{'AccountCleanInfo','ContentDistribution','ContentDocumentLink','DuplicateRecordItem','EntitySubscription','ProcessInstance','TopicAssignment','AccountPartner','ContactCleanInfo','EmailMessageRelation','EventRelation','OpportunityPartner','Partner','CollaborationGroupRecord','CaseTeamMember','CaseTeamTemplateRecord','FlowRecordRelation','NetworkUserHistoryRecent'};
     private Set<String> excludedStandardObjectSufixes = new Set<String>{'Share','History','Feed'};
 
     public String targetDate {get;set;}
@@ -27,9 +30,9 @@ public with sharing class GRAXBackupCtrl {
     public class ScheduledProcess {
         public Id cronId {get;set;}
         public String createdBy {get;set;}
-        public Datetime createdDate {get;set;}
-        public Datetime lastRunDate {get;set;}
-        public Datetime nextRunDate {get;set;}
+        public String createdDate {get;set;}
+        public String lastRunDate {get;set;}
+        public String nextRunDate {get;set;}
         public String parentObject {get;set;}
         public String archive {get;set;}
         public GRAX_Schedule_Process__c GRAXScheduleProcess {get;set;}
@@ -37,9 +40,9 @@ public with sharing class GRAXBackupCtrl {
 
     public GRAX_Schedule_Process__c gsp {get;set;}
     public Map<Id, ScheduledProcess> scheduledProcessMap {get;set;}
-    public Map<String, String> cronExpressions {get;set;}
 
     public GRAXBackupCtrl() {
+        userTimeZone = UserInfo.getTimeZone().getID();
         selectedObject = '';
         sObjectDateFieldDefault = 'LastModifiedDate';
         criteria = 'Main Object not modified';
@@ -182,12 +185,25 @@ public with sharing class GRAXBackupCtrl {
         }
     }
 
-    public Date parseDate(String str) {
-        if(str.containsAny('/')) {
-            return Date.parse(str);
-        } else {
-            return Date.valueOf(str);
-        }
+    // Create new Date intance from a date string with the format 31/12/2018
+    public Date createDate(String dateStr) {
+        List<String> dParts = dateStr.split('/');
+        Integer y = Integer.valueOf(dParts.get(2));
+        Integer m = Integer.valueOf(dParts.get(0));
+        Integer d = Integer.valueOf(dParts.get(1));
+
+        return Date.newInstance(y, m, d);
+    }
+
+    // Create new Datetime intance from a date string with the format 31/12/2018 and a time srtring with the format 23:00
+    public Datetime createDateTime(String dateStr, String time24) {
+        Date d = createDate(dateStr);
+
+        List<String> timeParts =  time24.split(':');
+        Integer hh = Integer.valueOf(timeParts.get(0));
+        Integer mm = Integer.valueOf(timeParts.get(1));
+
+        return DateTime.newInstance(d.year(), d.month(), d.day(), hh, mm, 0);
     }
     
     // Save the GRAX_Schedule_Process__c record based on the form data.
@@ -206,26 +222,41 @@ public with sharing class GRAXBackupCtrl {
         if(condition) {
             gsp.Object_Name__c = selectedObject;
             gsp.Date_Field__c = sObjectDateField;
-            gsp.Target_Date__c = parseDate(targetDate);
+            gsp.Target_Date__c = createDate(targetDate);
             gsp.Select_Criteria__c = criteria;
             gsp.Schedule_Type__c = schedule;
-            gsp.Schedule_Start_Date__c = parseDate(scheduleStartDate);
+            gsp.Schedule_Start_Date__c = createDate(scheduleStartDate);
             gsp.Schedule_Start_Time__c = scheduleStartTime;
-            gsp.Next_Run_Date__c = Datetime.parse(gsp.Schedule_Start_Date__c.format() + ' ' + scheduleStartTime);
+            gsp.Next_Run_Date__c = createDateTime(scheduleStartDate, scheduleStartTime);
             gsp.Selected_Object_Hierarchy_JSON__c = objectJSON;
             gsp.Archive__c = archive;
 
             // Insert or update the record.
             upsert gsp;
 
-            String cronJobDetailName = 'GRAXSchedulerToProcessSchedJobs';
+            String graxSchedulerToProcessSchedJobs = 'GRAXSchedulerToProcessSchedJobs';
+            String graxSchedulerToDeleteBackedUpData = 'GRAXSchedulerToDeleteBackedUpData';
 
-            List<CronTrigger> ct = [SELECT CronJobDetail.Name FROM CronTrigger WHERE CronJobDetail.Name = :cronJobDetailName];
+            Set<String> crons = new Set<String>();
+
+            for(CronTrigger ct : [
+                SELECT CronJobDetail.Name
+                FROM CronTrigger
+                WHERE CronJobDetail.Name IN :new List<String>{ graxSchedulerToProcessSchedJobs, graxSchedulerToDeleteBackedUpData }
+            ]) {
+                crons.add(ct.CronJobDetail.Name);
+            }
 
             // Check if the Scheduled not exist.
-            if(ct.size() == 0) {
+            if(!crons.contains(graxSchedulerToProcessSchedJobs)) {
                 // RUN HOURLY
-                String jobId = System.schedule(cronJobDetailName, '0 0 * * * ?', new GRAXSchedulerToProcessSchedJobs());
+                String jobId = System.schedule(graxSchedulerToProcessSchedJobs, '0 0 * * * ?', new GRAXSchedulerToProcessSchedJobs());
+            }
+
+            // Check if the Scheduled not exist and is archive = true
+            if(!crons.contains(graxSchedulerToDeleteBackedUpData) && archive) {
+                // RUN HOURLY
+                String jobId = System.schedule(graxSchedulerToDeleteBackedUpData, '0 0 * * * ?', new GRAXSchedulerToDeleteBackedUpData());
             }
 
             cleanFormData();
@@ -243,6 +274,7 @@ public with sharing class GRAXBackupCtrl {
         gsp = new GRAX_Schedule_Process__c();
         selectedObject = '';
         targetDate = null;
+        criteria = 'Main Object not modified';
         schedule = null;
         scheduleStartDate = null;
         scheduleStartTime = null;
@@ -258,6 +290,8 @@ public with sharing class GRAXBackupCtrl {
 
     // Select a ScheduledProcess to edit.
     public Pagereference selectScheduledProcess() {
+        cleanFormData();
+        
         // Get Id of the selected Scheduled Process.
         Id spId = Apexpages.currentPage().getParameters().get('spId');
 
@@ -314,10 +348,14 @@ public with sharing class GRAXBackupCtrl {
                 ScheduledProcess sp = new ScheduledProcess();
 
                 sp.createdBy = gsp.CreatedBy.Name;
-                sp.createdDate = gsp.CreatedDate;
-                sp.lastRunDate = gsp.Last_Run_Date__c;
+                sp.createdDate = gsp.CreatedDate.format('EEEE, MMMM d, yyyy', userTimeZone);
+                if(gsp.Last_Run_Date__c <> null) {
+                    sp.lastRunDate = gsp.Last_Run_Date__c.format('MM/dd/yyyy HH:mm', userTimeZone);
+                }
+                if(gsp.Next_Run_Date__c <> null) {
+                    sp.nextRunDate = gsp.Next_Run_Date__c.format('MM/dd/yyyy HH:mm', userTimeZone);
+                }
                 sp.parentObject = gsp.Object_Name__c;
-                sp.nextRunDate = gsp.Next_Run_Date__c;
                 sp.archive = gsp.Archive__c ? 'Yes' : 'No';
                 sp.GRAXScheduleProcess = GRAXScheduledProcessMap.get(gsp.Id);
 
@@ -355,3 +393,4 @@ public with sharing class GRAXBackupCtrl {
     }
 
 }
+
