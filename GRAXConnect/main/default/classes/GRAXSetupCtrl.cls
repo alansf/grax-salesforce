@@ -283,7 +283,6 @@ public with sharing class GRAXSetupCtrl {
 			    gxs.graxConfig.LicenseToken__c = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
 			    gxs.graxConfig.Postgres_URL__c = GetAppConfig('DATABASE_URL');
 			    gxs.graxConfig.GRAX_Flow_URL__c = 'https://' + appName + '.herokuapp.com';
-			    // gxs.graxConfig.GRAX_API_Url__c = ''; // Let it default to code base
 			    
 			} catch (Exception e) {
 			     //Generic exception handling code here
