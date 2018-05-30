@@ -159,9 +159,8 @@
   </types>
   <types>
     <name>RemoteSiteSetting</name>
-    <members>GRAX_connect</members>
     <members>grax_API</members>
-    <members>graxproxy</members>
+    <members>grax_GraphConnect</members>
   </types>
   <types>
     <name>StaticResource</name>
