@@ -275,6 +275,7 @@ public with sharing class GRAXSetupCtrl {
 			    		HttpResponse res = h.send(req);
 			    		graxappJSON = res.getBody();
 			    	}
+			    	
 			    LastAppName = appName;
 			    gxs.graxConfig.Heroku_App_Name__c = appName;
 			    gxs.graxConfig.ApiToken__c = GetAppConfig('ENGAGEMENTGRAPH_APITOKEN');
@@ -283,6 +284,10 @@ public with sharing class GRAXSetupCtrl {
 			    gxs.graxConfig.LicenseToken__c = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
 			    gxs.graxConfig.Postgres_URL__c = GetAppConfig('DATABASE_URL');
 			    gxs.graxConfig.GRAX_Flow_URL__c = 'https://' + appName + '.herokuapp.com';
+			    
+			    // Move API to Proxy
+			    //gxs.graxConfig.GRAX_API_Url__c = 'https://' + appName + '.herokuapp.com/graxproxy/api';
+			    //gxs.ApiURL = 'https://' + appName + '.herokuapp.com/graxproxy/api';
 			    
 			} catch (Exception e) {
 			     //Generic exception handling code here
