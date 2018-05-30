@@ -7,6 +7,7 @@
   </types>
   <types>
     <name>ApexClass</name>
+    <members>GRAXAccountTest</members>
     <members>GRAXApi</members>
     <members>GRAXApiUT</members>
     <members>GRAXAuditTrail</members>
@@ -28,6 +29,7 @@
     <members>GRAXConfigurationUT</members>
     <members>GRAXConnect</members>
     <members>GRAXConnectUT</members>
+    <members>GRAXContactTest</members>
     <members>GRAXDeploy</members>
     <members>GRAXDeployUT</members>
     <members>GRAXException</members>
@@ -158,10 +160,8 @@
   <types>
     <name>RemoteSiteSetting</name>
     <members>GRAX_connect</members>
-    <members>GRAX_dev</members>
-    <members>GRAX_prod</members>
-    <members>GRAX_qa</members>
-    <members>GRAX_test</members>
+    <members>grax_API</members>
+    <members>graxproxy</members>
   </types>
   <types>
     <name>StaticResource</name>
