@@ -7,7 +7,6 @@
   </types>
   <types>
     <name>ApexClass</name>
-    <members>GRAXAccountTest</members>
     <members>GRAXApi</members>
     <members>GRAXApiUT</members>
     <members>GRAXAuditTrail</members>
@@ -29,7 +28,6 @@
     <members>GRAXConfigurationUT</members>
     <members>GRAXConnect</members>
     <members>GRAXConnectUT</members>
-    <members>GRAXContactTest</members>
     <members>GRAXDeploy</members>
     <members>GRAXDeployUT</members>
     <members>GRAXException</members>
