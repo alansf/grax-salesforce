@@ -5,9 +5,6 @@
 
 [GRAX](https://www.grax.io/) Salesforce SDK uses your Salesforce instance(s) to build, power, and synchronize your enterprise graph. The power of your enterprise graph is the extensibility, flexibility, and fluidity to relate micro events to measure and correlate outcome (revenue, costs, risk, etc). Everything from multi channel marketing events, buying pattern awareness/alerts, to recognizing risks in customer service patterns. It all starts with building your enterprise graph from your existing Salesforce then extending.  
 
-[![Build Status](https://travis-ci.org/HardingPoint/GRAXForSFDC.svg?branch=master)](https://travis-ci.org/HardingPoint/GRAXForSFDC)
-
-
 ---------------------------------------------------------------------------------------------------------
 ## Installation
 
