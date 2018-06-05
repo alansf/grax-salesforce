@@ -1,6 +1,6 @@
 ![GRAX by Harding Point](https://static.wixstatic.com/media/fa96ca_4cb02045be8445468545da7de475da38~mv2.png/v1/fill/w_334,h_128,al_c,usm_0.66_1.00_0.01/fa96ca_4cb02045be8445468545da7de475da38~mv2.png)
 
-# GRAX Salesforce SDK [![Build Status](https://travis-ci.org/HardingPoint/GRAXForSFDC.svg?branch=master)](https://travis-ci.org/HardingPoint/GRAXForSFDC)
+# GRAX Salesforce SDK [![Build Status](https://travis-ci.org/HardingPoint/grax-salesforce.svg?branch=master)](https://travis-ci.org/HardingPoint/grax-salesforce)
 
 
 [GRAX](https://www.grax.io/) Salesforce SDK uses your Salesforce instance(s) to build, power, and synchronize your enterprise graph. The power of your enterprise graph is the extensibility, flexibility, and fluidity to relate micro events to measure and correlate outcome (revenue, costs, risk, etc). Everything from multi channel marketing events, buying pattern awareness/alerts, to recognizing risks in customer service patterns. It all starts with building your enterprise graph from your existing Salesforce then extending.  
@@ -18,7 +18,7 @@ With a few clicks you can deploy GRAX for Salesforce, synchronize your enterpris
 	
 	<i>(Skip to the next step if you have one)</i>
 
-1. <a href="https://deploytosalesforce.herokuapp.com?owner=HardingPoint&repo=GRAXForSFDC">
+1. <a href="https://deploytosalesforce.herokuapp.com?owner=HardingPoint&repo=grax-salesforce">
 	  <img alt="Deploy to Salesforce"
 	       src="https://deploytosalesforce.herokuapp.com/resources/img/deploy-to-salesforce3.png">
 	</a>
@@ -39,7 +39,7 @@ Below are the instructions to deploy GRAX to any Salesforce environment.
 1. Clone this repository from GitHub using the following command:
 
     ```bash
-    git clone https://github.com/HardingPoint/GRAXForSFDC && cd GRAXForSFDC
+    git clone https://github.com/HardingPoint/grax-salesforce && cd grax-salesforce
 
 1. Convert the source code:
 
@@ -71,7 +71,7 @@ Open use Force IDE 2 or deploy to scratch org using commands below.
 1. Clone this repository from GitHub using the following command:
 
     ```bash
-    git clone https://github.com/HardingPoint/GRAXForSFDC && cd GRAXForSFDC
+    git clone https://github.com/HardingPoint/grax-salesforce && cd grax-salesforce
 
 1. Create a new scratch environment or use IDE.
 
