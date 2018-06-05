@@ -4,7 +4,7 @@
 
 
 [GRAX](https://www.grax.io/) Salesforce SDK uses your Salesforce instance(s) to backup, archive, and maintain your
-enterprise storage. GRAX allows you to capture every field change, complete object time machine,   
+enterprise storage. GRAX allows you to capture every field change, complete object time machine,
 
 ---------------------------------------------------------------------------------------------------------
 ## Installation
@@ -19,7 +19,9 @@ With a few clicks you can deploy GRAX for Salesforce, synchronize your enterpris
 	
 	<i>(Skip to the next step if you have one)</i>
 
-1. <a href="https://deploytosalesforce.herokuapp.com?owner=HardingPoint&repo=grax-salesforce">
+1. Right click "Open Link in New Tab"
+
+    <a href="https://deploytosalesforce.herokuapp.com?owner=HardingPoint&repo=grax-salesforce">
 	  <img alt="Deploy to Salesforce"
 	       src="https://deploytosalesforce.herokuapp.com/resources/img/deploy-to-salesforce3.png">
 	</a>
@@ -41,17 +43,20 @@ Below are the instructions to deploy GRAX to any Salesforce environment.
 
     ```bash
     git clone https://github.com/HardingPoint/grax-salesforce && cd grax-salesforce
+    ```
 
 1. Convert the source code:
 
     ```bash
+
     rm -rf ./mdapioutput && sfdx force:source:convert -d mdapioutput/
+
     ```
 
 1. Authenticate the Salesforce DX CLI to the target environment:
 
     ```bash
-    
+
     sfdx force:auth:web:login -a <ALIAS> -r <INSTANCEURL>
    
     ```
@@ -73,6 +78,7 @@ Open use Force IDE 2 or deploy to scratch org using commands below.
 
     ```bash
     git clone https://github.com/HardingPoint/grax-salesforce && cd grax-salesforce
+     ```
 
 1. Create a new scratch environment or use IDE.
 
