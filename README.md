@@ -19,14 +19,15 @@ With a few clicks you can deploy GRAX for Salesforce, synchronize your enterpris
 	
 	<i>(Skip to the next step if you have one)</i>
 
-1. Right click "Open Link in New Tab"
+1. Right click Deploy to Salesforce Button - "Open Link in New Tab"
 
     <a href="https://deploytosalesforce.herokuapp.com?owner=HardingPoint&repo=grax-salesforce">
 	  <img alt="Deploy to Salesforce"
 	       src="https://deploytosalesforce.herokuapp.com/resources/img/deploy-to-salesforce3.png">
 	</a>
 	
-1. Make sure that the username and organization matches with what you've logged in with. 
+1. Make sure that the username and organization matches with what you've logged in with.
+
 1. Click Deploy 
 
 1. Configure GRAX
