@@ -6,7 +6,7 @@
 [GRAX](https://www.grax.io/) Salesforce SDK uses your Salesforce instance(s) to backup, archive, and maintain your
 enterprise storage. GRAX allows you to capture every field change, complete object time machine, and report within
 Salesforce. Please contact GRAX support team at support@grax.io, join the [SLACK](https://join.slack.com/t/grax-engineering/shared_invite/enQtMzY2NDM5NzYyODY5LTE2Y2IyOGFkNmZlNzk3ZDBkNDA1NWI3NjZlOGZkODk5OTIzNjkxZjczZGM4YTI5NDA1OGVjMTU4NGM4ZmNiNTA)
-channel, or chat on [grax.io]
+channel, or chat on [![grax.io](https://www.grax.io/).
 
 ---------------------------------------------------------------------------------------------------------
 ## Installation
