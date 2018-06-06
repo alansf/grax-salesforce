@@ -11,96 +11,152 @@ channel, or chat on [![grax.io](https://www.grax.io/).
 ---------------------------------------------------------------------------------------------------------
 ## Installation
 
-For detailed installation instructions with pictures & videos please visit [our website](https://www.grax.io/try-now)
 
 For any questions, please contact us at support@grax.io
 
-With a few clicks you can deploy GRAX for Salesforce, synchronize your enterprise graph, and begin to utilize flow.
+Notes: 
+1. Upgrade instructions down on bottom. 
+2. There are two installation paths. 
+	1. GRAX Enterprise (Includes Graph Database) 
+	2. GRAX Archive & Audit - The following instructions are for Archive + Audit. 
 
-1. <a href="https://developer.salesforce.com/signup">Create a Salesforce Developer Org</a>
-	
-	<i>(Skip to the next step if you have one)</i>
+1. Install GRAX for Salesforce:  <a href="https://github.com/HardingPoint/grax-salesforce" target="_new">grax-salesforce</a>
+	1. Click "Deploy GRAX to Salesforce" button
+	2. Allow GRAX Application Access to Salesforce 
+	3. Click deploy in the upper right corner. Wait for deployment to finish and log back into Salesforce. 
+3. Create Amazon S3 bucket. Note Access, secret keys, bucket, region
+    1. https://s3.console.aws.amazon.com/s3/
+4. Configure Salesforce 
+    1. In the App Launacher, search for GARX. Click on GRAX Settings--> Configuration --> Authorize Heroku. You should see "Connected" 
+    2. Click "Create New GRAX App" New window will open. 
+ 	2. Specify your App name
+ 	3. Deploy App
+    3. Once Heroku deployment complete, go back to Salesforce GRAX app, refresh and select your newly created app. Click save button. You will now see GRAX settings data populated. 
+    4. Click Unlock. Under Advanced settings, update API url with 
+	2. https://<<YOUR HEROKU APP NAME>>.herokuapp.com/graxproxy/api - for Audit & Archive 
+	3. In another tab in Salesforce settings to go Setup->Security->Remote site settings and add the proxy URL above. Name: "GRAX_Proxy"
+5. Go to GRAX Connect Tab. 
+    1. Select SF Object. Check Enable audit Trail. Select fields as necessary. 
+    2. Save Field Choices 
+    3. Process history 
+    4. Deploy Trigger 
+    5. Connect SF Object selected in step 1 to graph (trigger) 
+5.1 Go to the Audit Trail Tab
+    1. Validate that correct postgres URL is prefilled out. Slide "Enable Field Level Tracking".  
+    2. Click "Deploy partitions". Refresh page. You should see "Deploy Partitions" greyed out next to "Drop Partitions" 
+    3. Slide "Enable Object Level Tracking." Fill in S3 credentials below.  
+6. Go to SF Object and edit. Must be one of the fields you are syncing from step 5.1
+7. Go to your Heroku Dash board and select the App that you have created in step 2. 
+8. [Optional: Go to Neo4J and check that you see the node and a AuditLog Relationship Type] 
+9. [Optional: go to S3 and check your bucket. There should be a GRAX entry) 
 
-1. Right click Deploy to Salesforce Button - "Open Link in New Tab"
-
-    <a href="https://deploytosalesforce.herokuapp.com?owner=HardingPoint&repo=grax-salesforce">
-	  <img alt="Deploy to Salesforce"
-	       src="https://deploytosalesforce.herokuapp.com/resources/img/deploy-to-salesforce3.png">
-	</a>
-	
-1. Make sure that the username and organization matches with what you've logged in with.
-
-1. Click Deploy 
-
-1. Configure GRAX
-
-	1. <a href="https://login.salesforce.com/one/one.app#/n/GRAX_DEPLOY">Configure Production or Developer Instance</a>
-	1. <a href="https://test.salesforce.com/one/one.app#/n/GRAX_DEPLOY">Configure Sandbox</a>
-
-
-## Manual Installation
-
-Below are the instructions to deploy GRAX to any Salesforce environment.
-
-1. Clone this repository from GitHub using the following command:
-
-    ```bash
-    git clone https://github.com/HardingPoint/grax-salesforce && cd grax-salesforce
-    ```
-
-1. Convert the source code:
-
-    ```bash
-
-    rm -rf ./mdapioutput && sfdx force:source:convert -d mdapioutput/
-
-    ```
-
-1. Authenticate the Salesforce DX CLI to the target environment:
-
-    ```bash
-
-    sfdx force:auth:web:login -a <ALIAS> -r <INSTANCEURL>
-   
-    ```
-    In the browser window that opens, sign in to your org with your credentials. More information [here](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_auth_web_flow.htm)
-
-1. Deploy the source code:
-
-    ```bash
+10. 1. Go To your Heroku app and open Heroku Connect. 
+    2. In the overview tab click setup connection. 
+    3. Schema name will defailt to Salesforce, click next. 
+    4. Authorize. 
+    5. Login to your Salesforce environment. 
+    6. Go back to Heroku Connect and click  the "External Objects" tab
+    7. Click create credentials. 
+    8. Note the service URL, username and password. This will be used in the next step. 
+    9. Open your Heroku Connect app and click on the tab of your app name. 
+    10. Click on setup connection 
+    11. On the "Provision Connection" page leave the values as is, click next. 
+    12. On the "Authorize Connection" page click "Authorize" 
+    13. Salesforce login page will open, login and "Authorize" 
+    14. In your Heroku Connect App click on the "External Objects" Tab and click "Create Credentials" 
+    15. Note the server URL. Refresh page. 
+    16. Under Sata Sources you should see "auditlog" followed by "auditlog_pxxxxx". Click shared for "auditlog" 
     
-    sfdx force:mdapi:deploy -d mdapioutput/ -w 100 -u <ALIAS>
-    
-    ```
 
-### GRAX Development
+11. In Salesforce Go Setup —> SF External Data Sources. 
+    1. Click New External Data Source
+    2. Enter Name "GRAX:Audit Trail" 
+    3. Enter type Data 4.0
+    4. [For Enterprise Only] Validate that your OData Connector works-  https://<<REPLACE WITH YOUR APP NAME>>.herokuapp.com/grax.svc/$metadata ]
+    5.1 [For Enterprise Only] Enter URL: https://<<REPLACE WITH YOUR APP NAME>>.herokuapp.com/grax.svc/ - This is for GRAPH Odata Connector (Enterprise) 
+    5.2 Enter URL: from step 10.8  - This is your Heroku Connect URL
+    5.3 Under Authentication set Identity Type to "Named Principal" and Authentication Protocol to "Password Authentication". Enter the username and password from 10.8 
+    6. Leave all other settings unchanged. click save. 
+    7. Click on Validate and Sync.
+12. You should see one item: "grax$auditlog" 
+    1. Click Sync. 
+13. Go to External Objects. Edit ‘AuditLog’ 
+    1. Optional Features —> Check allow reports
+	2. Update Deployment Status to "Deployed"
+    3. Save
+ 	  4. Click on ‘grax$auditlog’
+	   5. Under Custom Fields & Relationships click on each Field Label. 
+	   6. Click on “Set Field-Level Security”
+	   7. Under External Object Definition Detail click Edit
+	   8. Update Label & Plural Label from ‘grax$auditlog’ --> "GRAX Audit Log". Check Allow Reports. 
+    7. Make sure all is set to visible. 
+    8. Repeat for all desired AuditLog Custom Fields. 
+14. Go to SF Reports. 
+    1. Click on New Report
+    2. Search for AuditLog and click on it
+    3. Click Create
+    4. Drag Audit Log Columns into the preview. 
+    5. In the top left corner click Save. 
+    6. Run report. 
+15. Optional: Now you can sync more SF Objects. Follow steps 5
+16. Setting up External Object to show Audit Log Records in related tab: 
 
-Open use Force IDE 2 or deploy to scratch org using commands below.
+1. Click on the Label “grax$auditlog” under external objects 
+2. copy the value ‘objectid’
+3. under custom fields & relationships click the new button 
+4. lookup relationship —> next 
+5. related to SF Objectt
+6. External Column name 
+7. make all visible 
+8. Navigate to Sales --> your Salesorce Object that you want to show the Audot Log in the related tab. 
+9. Switch to classic. 
+10. In the top right click on "Edit Layout" 
+11. Scroll to the bottom of the page, you should see "GRAX Audit Log". Click on the wrench. 
+12. Add in the following fields and update the sortby: https://www.screencast.com/t/Eh2YoOePy
+13. Click save at the top of the page. 
 
-1. Clone this repository from GitHub using the following command:
+You should now see the audit log
 
-    ```bash
-    git clone https://github.com/HardingPoint/grax-salesforce && cd grax-salesforce
-     ```
+Configuring the backup via the GRAX UI: 
+1. Go to the Back Up Tab in the GRAX application. 
+2. CLick Create 
+3. Select your Salesforce Object
+4. Define other backup criteria as outlined on the page. (UI Updates are coming) 
+5. Run this script to force a backup: 
 
-1. Create a new scratch environment or use IDE.
+```
+//--------------------------
+//Code to fire the Schedule Processes now       
+        
+        List<GRAX_Schedule_Process__c> schedProcesses2Up = new List<GRAX_Schedule_Process__c>();
+       
+        // Find any Schedule Process Job that is supposed to run at the current GMT time, 
+        // or that it hasn't been executed on the previous Schedule run and it's not currently executing
+        for(GRAX_Schedule_Process__c schedProcess : [SELECT Id, Status__c FROM GRAX_Schedule_Process__c WHERE Next_Run_Date__c <=: System.now() AND Status__c <> 'Running']){
+            GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(schedProcess.Id, null, 0, null);
+            
+            try{
+                // Check if the call to "executebatch" failed to acquire an Apex flex queue lock
+                Id jobId = Database.executebatch(b, 1000);
+                schedProcess.Status__c = 'Running';
+            }catch(System.AsyncException e){
+                schedProcess.Status__c = 'Error';
+            }
+            
+            schedProcesses2Up.add(schedProcess);
+        }        
+        
+        if(schedProcesses2Up.size() > 0){
+            update schedProcesses2Up;
+        }
+        
+//--------------------------
+```
 
-    ```bash
-    sfdx force:org:create -a grax-sdk -s -f config/developer-scratch-def.json
-    ```
-
-1. Push the source to the scratch environment or use IDE
-
-    ```bash
-    sfdx force:source:push
-    ```    
-    
-### Having Isues? 
-Below are a few helpful commands to analyze your SFDX environment to look for issues.
-
-
-	sfdx force:org:list
 	
-	sfdx force:alias:list
 
+## Heroku Scheduler
 
+    Add New Scheduled Task to Heroku to Run Daily at Midnight.
+    
+    heroku run 'psql $DATABASE_URL -c "select run_maintenance();"'
