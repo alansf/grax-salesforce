@@ -11,30 +11,47 @@ channel, or chat on [![grax.io](https://www.grax.io/).
 ---------------------------------------------------------------------------------------------------------
 ## Installation
 
-
 For any questions, please contact us at support@grax.io
 
 Notes: 
-1. Upgrade instructions down on bottom. 
-2. There are two installation paths. 
+There are two installation paths. 
 	1. GRAX Enterprise (Includes Graph Database) 
-	2. GRAX Archive & Audit - The following instructions are for Archive + Audit. 
+	2. GRAX Archiver & Audit - The following instructions are for Archiver + Audit. 
+	
+The GRAX Installation consists of three main steps:
+1) Deploy & Configure GRAX Salesforce App
+2) Deploy Amazon S3 Bucket and Elastic Search Instance
+3) Deploy Heroku GRAX App, Proxy & Odata Connector
 
-1. Install GRAX for Salesforce:  <a href="https://github.com/HardingPoint/grax-salesforce" target="_new">grax-salesforce</a>
+### GRAX Salesforce APP
+
+1. Install GRAX for Salesforce:
 	1. Click "Deploy GRAX to Salesforce" button
 	<a href="https://deploytosalesforce.herokuapp.com?owner=HardingPoint&repo=grax-salesforce">
-<img alt="Deploy to Salesforce" src="https://deploytosalesforce.herokuapp.com/resources/img/deploy-to-salesforce3.png"> </a>
+<img alt="Deploy to Salesforce" src="https://deploytosalesforce.herokuapp.com/resources/img/deploy-to-salesforce3.png"></a>
 	
 	2. Allow GRAX Application Access to Salesforce 
 	3. Click deploy in the upper right corner. Wait for deployment to finish and log back into Salesforce. 
-3. Create Amazon S3 bucket. Note Access, secret keys, bucket, region
+	4. Before continuning with the configuration of GRAX in Salesforce, Amazon S3 and Elastic Search instances need to be created.
+
+### Amazon S3 Configuration 
+
+1. If not already existing, create Amazon S3 bucket. Note Access, secret keys, bucket, region
     1. https://s3.console.aws.amazon.com/s3/
-4. Create Elastic Search Service. 
+
+### Create Elastic Search Service
+
+1. Create Elastic Search Service. 
 	1. https://www.elastic.co/cloud/elasticsearch-service
 	2. After creating account click "Create Deployment" 
 	3. Specify Deployment Name, leave all other settings default and click "Create Deployment" 
-    
-4. Configure Salesforce 
+	4. After service has been created, note the following values:
+		a) Elastic Search URL under Endpoints of your deployment. 
+		b) Under Security reset the passwford for your 'elastic' user. Note the password. 
+
+### Configure Salesforce & Heroku
+
+1. Configure Salesforce 
     1. In the App Launacher, search for GARX. Click on GRAX Settings--> Configuration --> Authorize Heroku. You should see "Connected" 
     2. Click "Create New GRAX App" New window will open. 
  	2. Specify your App name
@@ -43,22 +60,21 @@ Notes:
     4. Click Unlock. Under Advanced settings, update API url with 
 	2. https://<<YOUR HEROKU APP NAME>>.herokuapp.com/graxproxy/api - for Audit & Archive 
 	3. In another tab in Salesforce settings to go Setup->Security->Remote site settings and add the proxy URL above. Name: "GRAX_Proxy"
-5. Go to GRAX Connect Tab. 
+2. Go to GRAX Connect Tab. 
     1. Select SF Object. Check Enable audit Trail. Select fields as necessary. 
     2. Save Field Choices 
     3. Process history 
     4. Deploy Trigger 
     5. Connect SF Object selected in step 1 to graph (trigger) 
-5.1 Go to the Audit Trail Tab
+3.1 Go to the Audit Trail Tab
     1. Validate that correct postgres URL is prefilled out. Slide "Enable Field Level Tracking".  
     2. Click "Deploy partitions". Refresh page. You should see "Deploy Partitions" greyed out next to "Drop Partitions" 
     3. Slide "Enable Object Level Tracking." Fill in S3 credentials below.  
-6. Go to SF Object and edit. Must be one of the fields you are syncing from step 5.1
-7. Go to your Heroku Dash board and select the App that you have created in step 2. 
-8. [Optional: Go to Neo4J and check that you see the node and a AuditLog Relationship Type] 
-9. [Optional: go to S3 and check your bucket. There should be a GRAX entry) 
+4. Go to SF Object and edit. Must be one of the fields you are syncing from step 5.1
+4. Go to your Heroku Dash board and select the App that you have created in step 2. 
+6. [Optional: go to S3 and check your bucket. There should be a GRAX entry) 
 
-10. 1. Go To your Heroku app and open Heroku Connect. 
+7. 1. Go To your Heroku app and open Heroku Connect. 
     2. In the overview tab click setup connection. 
     3. Schema name will defailt to Salesforce, click next. 
     4. Authorize. 
@@ -76,7 +92,7 @@ Notes:
     16. Under Sata Sources you should see "auditlog" followed by "auditlog_pxxxxx". Click shared for "auditlog" 
     
 
-11. In Salesforce Go Setup —> SF External Data Sources. 
+8. In Salesforce Go Setup —> SF External Data Sources. 
     1. Click New External Data Source
     2. Enter Name "GRAX:Audit Trail" 
     3. Enter type Data 4.0
@@ -86,9 +102,9 @@ Notes:
     5.3 Under Authentication set Identity Type to "Named Principal" and Authentication Protocol to "Password Authentication". Enter the username and password from 10.8 
     6. Leave all other settings unchanged. click save. 
     7. Click on Validate and Sync.
-12. You should see one item: "grax$auditlog" 
+9. You should see one item: "grax$auditlog" 
     1. Click Sync. 
-13. Go to External Objects. Edit ‘AuditLog’ 
+10. Go to External Objects. Edit ‘AuditLog’ 
     1. Optional Features —> Check allow reports
 	2. Update Deployment Status to "Deployed"
     3. Save
@@ -99,15 +115,15 @@ Notes:
 	   8. Update Label & Plural Label from ‘grax$auditlog’ --> "GRAX Audit Log". Check Allow Reports. 
     7. Make sure all is set to visible. 
     8. Repeat for all desired AuditLog Custom Fields. 
-14. Go to SF Reports. 
+11. Go to SF Reports. 
     1. Click on New Report
     2. Search for AuditLog and click on it
     3. Click Create
     4. Drag Audit Log Columns into the preview. 
     5. In the top left corner click Save. 
     6. Run report. 
-15. Optional: Now you can sync more SF Objects. Follow steps 5
-16. Setting up External Object to show Audit Log Records in related tab: 
+12. Optional: Now you can sync more SF Objects. Follow steps 5
+13. Setting up External Object to show Audit Log Records in related tab: 
 
 1. Click on the Label “grax$auditlog” under external objects 
 2. copy the value ‘objectid’
