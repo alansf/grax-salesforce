@@ -1,9 +1,9 @@
 ![GRAX by Harding Point](https://static.wixstatic.com/media/fa96ca_4cb02045be8445468545da7de475da38~mv2.png/v1/fill/w_334,h_128,al_c,usm_0.66_1.00_0.01/fa96ca_4cb02045be8445468545da7de475da38~mv2.png)
 
-# GRAX Salesforce SDK [![Build Status](https://travis-ci.org/HardingPoint/grax-salesforce.svg?branch=master)](https://travis-ci.org/HardingPoint/grax-salesforce)
+# GRAX Salesforce [![Build Status](https://travis-ci.org/HardingPoint/grax-salesforce.svg?branch=master)](https://travis-ci.org/HardingPoint/grax-salesforce)
 
 
-[GRAX](https://www.grax.io/) Salesforce SDK uses your Salesforce instance(s) to backup, archive, and maintain your
+[GRAX](https://www.grax.io/) Salesforce uses your Salesforce instance(s) to backup, archive, and maintain your
 enterprise storage. GRAX allows you to capture every field change, complete object time machine, and report within
 Salesforce. Please contact GRAX support team at support@grax.io, join the [SLACK](https://join.slack.com/t/grax-engineering/shared_invite/enQtMzY2NDM5NzYyODY5LTE2Y2IyOGFkNmZlNzk3ZDBkNDA1NWI3NjZlOGZkODk5OTIzNjkxZjczZGM4YTI5NDA1OGVjMTU4NGM4ZmNiNTA)
 channel, or chat on [![grax.io](https://www.grax.io/).
@@ -22,10 +22,18 @@ Notes:
 
 1. Install GRAX for Salesforce:  <a href="https://github.com/HardingPoint/grax-salesforce" target="_new">grax-salesforce</a>
 	1. Click "Deploy GRAX to Salesforce" button
+	<a href="https://deploytosalesforce.herokuapp.com?owner=HardingPoint&repo=grax-salesforce">
+<img alt="Deploy to Salesforce" src="https://deploytosalesforce.herokuapp.com/resources/img/deploy-to-salesforce3.png"> </a>
+	
 	2. Allow GRAX Application Access to Salesforce 
 	3. Click deploy in the upper right corner. Wait for deployment to finish and log back into Salesforce. 
 3. Create Amazon S3 bucket. Note Access, secret keys, bucket, region
     1. https://s3.console.aws.amazon.com/s3/
+4. Create Elastic Search Service. 
+	1. https://www.elastic.co/cloud/elasticsearch-service
+	2. After creating account click "Create Deployment" 
+	3. Specify Deployment Name, leave all other settings default and click "Create Deployment" 
+    
 4. Configure Salesforce 
     1. In the App Launacher, search for GARX. Click on GRAX Settings--> Configuration --> Authorize Heroku. You should see "Connected" 
     2. Click "Create New GRAX App" New window will open. 
