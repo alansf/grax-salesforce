@@ -19,27 +19,29 @@ There are two installation paths.
 	2. GRAX Archiver & Audit - The following instructions are for Archiver + Audit. 
 	
 The GRAX Installation consists of three main steps:
-1) Deploy & Configure GRAX Salesforce App
-2) Deploy Amazon S3 Bucket and Elastic Search Instance
-3) Deploy Heroku GRAX App, Proxy & Odata Connector
 
-### GRAX Salesforce APP
 
-1. Install GRAX for Salesforce:
+1. Deploy Amazon S3 Bucket and Elastic Search Instance
+2. Deploy Heroku GRAX App, Proxy & Odata Connector
+3. Deploy & Configure GRAX Salesforce App
+
+## GRAX Salesforce APP
+
+1. Deploy GRAX APP for Salesforce:
 	1. Click "Deploy GRAX to Salesforce" button
 	<a href="https://deploytosalesforce.herokuapp.com?owner=HardingPoint&repo=grax-salesforce">
 <img alt="Deploy to Salesforce" src="https://deploytosalesforce.herokuapp.com/resources/img/deploy-to-salesforce3.png"></a>
-	
+
 	2. Allow GRAX Application Access to Salesforce 
 	3. Click deploy in the upper right corner. Wait for deployment to finish and log back into Salesforce. 
 	4. Before continuning with the configuration of GRAX in Salesforce, Amazon S3 and Elastic Search instances need to be created.
 
-### Amazon S3 Configuration 
+## Amazon S3 Configuration 
 
 1. If not already existing, create Amazon S3 bucket. Note Access, secret keys, bucket, region
     1. https://s3.console.aws.amazon.com/s3/
 
-### Create Elastic Search Service
+## Create Elastic Search Service
 
 1. Create Elastic Search Service. 
 	1. https://www.elastic.co/cloud/elasticsearch-service
@@ -49,7 +51,8 @@ The GRAX Installation consists of three main steps:
 		a) Elastic Search URL under Endpoints of your deployment. 
 		b) Under Security reset the passwford for your 'elastic' user. Note the password. 
 
-### Configure Salesforce & Heroku
+
+## Configure Salesforce & Heroku
 
 1. Configure Salesforce 
     1. In the App Launacher, search for GARX. Click on GRAX Settings--> Configuration --> Authorize Heroku. You should see "Connected" 
@@ -148,6 +151,7 @@ Configuring the backup via the GRAX UI:
 4. Define other backup criteria as outlined on the page. (UI Updates are coming) 
 5. Run this script to force a backup: 
 
+
 ```
 //--------------------------
 //Code to fire the Schedule Processes now       
@@ -177,6 +181,25 @@ Configuring the backup via the GRAX UI:
 //--------------------------
 ```
 
+
+## Deploy GRAX Proxy
+
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://www.heroku.com/deploy/?template=https://github.com/HardingPoint/grax-proxy-secure)
+
+1. Enter app name
+2. Go to your GRAX Salesforce app and retrieve the postgres URL from settings to enter DATABASE_URL
+3. Enter Elastic Search Password noted earlier. 
+4. Enter FOUNDELASTICSEARCH_URL
+5. Click Deploy
+
+## Deploy GRAX OData Connector
+
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://www.heroku.com/deploy/?template=https://github.com/HardingPoint/grax-odata-secure)
+
+1. Enter app name
+2. Enter Elastic Search Password noted earlier. 
+3. Enter FOUNDELASTICSEARCH_URL and remove https and port.
+4. Click Deploy
 	
 
 ## Heroku Scheduler
