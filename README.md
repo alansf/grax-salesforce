@@ -74,7 +74,7 @@ The GRAX Installation consists of three main steps:
     2. Click "Deploy partitions". Refresh page. You should see "Deploy Partitions" greyed out next to "Drop Partitions" 
     3. Slide "Enable Object Level Tracking." Fill in S3 credentials below.  
 4. Go to SF Object and edit. Must be one of the fields you are syncing from step 5.1
-4. Go to your Heroku Dash board and select the App that you have created in step 2. 
+5. Go to your Heroku Dash board and select the App that you have created in step 2. 
 6. [Optional: go to S3 and check your bucket. There should be a GRAX entry) 
 
 7. 1. Go To your Heroku app and open Heroku Connect. 
@@ -92,7 +92,7 @@ The GRAX Installation consists of three main steps:
     13. Salesforce login page will open, login and "Authorize" 
     14. In your Heroku Connect App click on the "External Objects" Tab and click "Create Credentials" 
     15. Note the server URL. Refresh page. 
-    16. Under Sata Sources you should see "auditlog" followed by "auditlog_pxxxxx". Click shared for "auditlog" 
+    16. Under Data Sources you should see "auditlog" followed by "auditlog_pxxxxx". Click shared for "auditlog" 
     
 
 8. In Salesforce Go Setup —> SF External Data Sources. 
@@ -111,11 +111,8 @@ The GRAX Installation consists of three main steps:
     1. Optional Features —> Check allow reports
 	2. Update Deployment Status to "Deployed"
     3. Save
- 	  4. Click on ‘grax$auditlog’
-	   5. Under Custom Fields & Relationships click on each Field Label. 
-	   6. Click on “Set Field-Level Security”
-	   7. Under External Object Definition Detail click Edit
-	   8. Update Label & Plural Label from ‘grax$auditlog’ --> "GRAX Audit Log". Check Allow Reports. 
+	   1. Under External Object Definition Detail click Edit
+	   2. Update Label & Plural Label from ‘grax$auditlog’ --> "GRAX Audit Log". Check Allow Reports. 
     7. Make sure all is set to visible. 
     8. Repeat for all desired AuditLog Custom Fields. 
 11. Go to SF Reports. 
@@ -183,6 +180,8 @@ Configuring the backup via the GRAX UI:
 
 
 ## Deploy GRAX Proxy
+
+The purpose of the standalone GRAX proxy is to have that separated from your main Heroku GRAX app for scalability and resourcing. 
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://www.heroku.com/deploy/?template=https://github.com/HardingPoint/grax-proxy-secure)
 
