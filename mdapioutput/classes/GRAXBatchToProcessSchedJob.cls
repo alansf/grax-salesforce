@@ -5,6 +5,7 @@ Revision History  :
 Created/Modified by   Created/Modified Date     Requested by          Related Task/Issue             
 ----------------------------------------------------------------------------------------
 1. Ariel Yankelevich       04/26/2018           David Mackey        GRAX Audit Trail Process (https://app.asana.com/0/326600806074978/633149554508926/f)
+2. Ariel Yankelevich       06/05/2018           David Mackey        Backup and Restore Notes & Attachments (https://app.asana.com/0/326600806074978/692982800286805/f)
 ******************************************************************************************/
 global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, Database.Stateful{
     public String query = '';
@@ -13,6 +14,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
     public String currentJobId;
     public String currentSelectCriteria;
     public String currentObjRelStrucUniqueKey;
+    public String currentArchiveProcessId;
     public Integer maxParentIds2ProcessByChildIteration = 5000;
     public List<Id> parentIds2ProcessForChild;
     public List<Id> graxDataRecIds2ProcessForChild;
@@ -25,11 +27,25 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         this.currentSelectCriteria = selectCriteria;
         this.parentIds2ProcessForChild = new List<Id>();
         this.graxDataRecIds2ProcessForChild = new List<Id>();
+        this.isArchive = isArchive;
         
         if(objects2Process == null){
             // If this is the first time the batch is firing for the current Schedule Process
             // calculate the selected object hierarchy and initial query
             GRAX_Schedule_Process__c schedProcess = [SELECT Id, Selected_Object_Hierarchy_JSON__c, Select_Criteria__c, Target_Date__c, Date_Field__c, Archive__c FROM GRAX_Schedule_Process__c WHERE Id =: jobId];
+            
+            // If this schedule job was set as an archive process, create the associted record and then also associate it to the GRAX Data Records
+            if(schedProcess.Archive__c){
+                GRAX_Archive_Process__c archiveProc = new GRAX_Archive_Process__c();
+                archiveProc.GRAX_Schedule_Process__c = schedProcess.Id;
+                archiveProc.Async_Records_Successfully_Sent__c = 0;
+                archiveProc.Async_Records_to_Process__c = 0;
+                archiveProc.Records_Successfully_Sent__c = 0;
+                archiveProc.Records_To_Process__c = 0;
+                insert archiveProc;
+                
+                currentArchiveProcessId = archiveProc.Id;
+            }
             
             // Get the JSON string and convert it to the object structure
             GRAXBackupCtrl.ObjRelStructure rootSObj = (GRAXBackupCtrl.ObjRelStructure)JSON.deserialize(schedProcess.Selected_Object_Hierarchy_JSON__c, GRAXBackupCtrl.ObjRelStructure.class);
@@ -101,7 +117,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
             }
         }
         
-        System.debug('Ari1: ' + query);
+        System.debug('The object Query is: ' + query);
     }
     
     global Database.querylocator start(Database.BatchableContext BC) {
@@ -129,27 +145,46 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         dr.Error_Message__c = null;
         dr.GRAX_Schedule_Process__c = this.currentJobId;
         dr.Sched_Proc_Hierarchy_Unique_Key__c = this.currentObjRelStrucUniqueKey;
+        dr.GRAX_Archive_Process__c = this.currentArchiveProcessId;
         insert dr;
 
+        String dataRecIdStatus;
+        if(this.isArchive){
+            dataRecIdStatus = 'To be Deleted';
+        }
+        
+        // Iterate through the list of records to create a GRAX_Data_Record_Id__c instance for each one of them
+        Map<Id, GRAX_Data_Record_Id__c> dataRecIds2InsBySObjId = new Map<Id, GRAX_Data_Record_Id__c>();
+        for(SObject sObj : scope){
+            GRAX_Data_Record_Id__c dataRecId = new GRAX_Data_Record_Id__c();
+            dataRecId.SFDC_Id__c = sObj.Id;
+            dataRecId.GRAX_Data_Record__c = dr.Id;
+            dataRecId.Status__c = dataRecIdStatus;
+            
+            dataRecIds2InsBySObjId.put(sObj.Id, dataRecId);
+        }
+        
+        insert dataRecIds2InsBySObjId.values();
+        
+        // If the current object is "Attachment", then add the GRAX_Data_Record_Id__c Id to the JSON
+        if(this.isArchive && sobjectName == 'Attachment'){
+            Map<String, Object> m = (Map<String, Object>)JSON.deserializeUntyped(content);
+            List<Object> recsList = (List<Object>)m.get('new');
+
+            for(Object recObj : recsList){
+                Map<String, Object> rec = (Map<String, Object>)recObj;
+                rec.put('GRAX_Data_Record_Id', dataRecIds2InsBySObjId.get((Id)rec.get('Id')).Id);
+                rec.put('GRAX_Status', 'Ready to Process');
+            }
+            content = JSON.serialize(m);
+        }
+        
+        // Save the Attachment with the JSON content associated to the GRAX_Data_Record__c
         Attachment req_att = new Attachment();
         req_att.Name = 'request.txt';
         req_att.Body = Blob.valueOf(content);
         req_att.ParentId = dr.Id;
         insert req_att;
-        
-        // Iterate through the list of records to create a GRAX_Data_Record_Id__c instance for each one of them
-        List<GRAX_Data_Record_Id__c> dataRecIds2Ins= new List<GRAX_Data_Record_Id__c>();
-        for(SObject sObj : scope){
-            GRAX_Data_Record_Id__c dataRecId = new GRAX_Data_Record_Id__c();
-            dataRecId.SFDC_Id__c = sObj.Id;
-            dataRecId.GRAX_Data_Record__c = dr.Id;
-            if(this.isArchive){
-                dataRecId.Status__c = 'To be Deleted';
-            }
-            dataRecIds2Ins.add(dataRecId);
-        }
-        
-        insert dataRecIds2Ins;
     }
     
     global void finish(Database.BatchableContext BC){
@@ -189,6 +224,8 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         if(this.currentElementIndex < this.objects2Process.size()){
             // Now we have to call the batch again based on the current parameters
             GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(this.currentJobId, this.objects2Process, this.currentElementIndex, this.currentSelectCriteria);
+            b.isArchive = this.isArchive;
+            b.currentArchiveProcessId = this.currentArchiveProcessId;
             
             if(!Test.isRunningTest()){
                 database.executebatch(b, 1000);
@@ -212,7 +249,9 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         if(fMap != null){
             for(Schema.SObjectField ft : fMap.values()){ // loop through all field tokens (ft)
                 Schema.DescribeFieldResult fd = ft.getDescribe(); // describe each field (fd)
-                selectFields += ',' + fd.getName();
+                if(!fd.getType().name().equalsIgnoreCase('base64')){
+                	selectFields += ',' + fd.getName();
+            	}
             }
             selectFields = selectFields.substring(1);
         }

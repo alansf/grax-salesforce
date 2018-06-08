@@ -27,6 +27,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         this.currentSelectCriteria = selectCriteria;
         this.parentIds2ProcessForChild = new List<Id>();
         this.graxDataRecIds2ProcessForChild = new List<Id>();
+        this.isArchive = isArchive;
         
         if(objects2Process == null){
             // If this is the first time the batch is firing for the current Schedule Process
@@ -173,6 +174,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
             for(Object recObj : recsList){
                 Map<String, Object> rec = (Map<String, Object>)recObj;
                 rec.put('GRAX_Data_Record_Id', dataRecIds2InsBySObjId.get((Id)rec.get('Id')).Id);
+                rec.put('GRAX_Status', 'Ready to Process');
             }
             content = JSON.serialize(m);
         }
@@ -222,6 +224,8 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         if(this.currentElementIndex < this.objects2Process.size()){
             // Now we have to call the batch again based on the current parameters
             GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(this.currentJobId, this.objects2Process, this.currentElementIndex, this.currentSelectCriteria);
+            b.isArchive = this.isArchive;
+            b.currentArchiveProcessId = this.currentArchiveProcessId;
             
             if(!Test.isRunningTest()){
                 database.executebatch(b, 1000);
@@ -245,7 +249,9 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         if(fMap != null){
             for(Schema.SObjectField ft : fMap.values()){ // loop through all field tokens (ft)
                 Schema.DescribeFieldResult fd = ft.getDescribe(); // describe each field (fd)
-                selectFields += ',' + fd.getName();
+                if(!fd.getType().name().equalsIgnoreCase('base64')){
+                	selectFields += ',' + fd.getName();
+            	}
             }
             selectFields = selectFields.substring(1);
         }

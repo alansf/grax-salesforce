@@ -204,6 +204,18 @@
                     </div>
     
                     <footer class="slds-modal__footer">
+                        <div class="slds-form-element slds-float_left">
+                            <label class="slds-checkbox_toggle slds-grid">
+                                <span class="slds-form-element__label slds-m-bottom_none">Restore Attachments?</span>
+                                    <apex:inputCheckbox id="restore_attachment"/>
+                                    <span class="slds-checkbox_faux_container" aria-live="assertive">
+                                    <span class="slds-checkbox_faux"></span>
+                                    <span class="slds-checkbox_on">Yes</span>
+                                    <span class="slds-checkbox_off">No</span>
+                                </span>
+                            </label>
+                        </div>
+
                         <button id="saveRestore" class="slds-button slds-button_brand">Save</button>
                         <button id="cancelRestore" class="slds-button slds-button_neutral" data-toggle="modal" data-target="#restoreModal">Cancel</button>
                     </footer>

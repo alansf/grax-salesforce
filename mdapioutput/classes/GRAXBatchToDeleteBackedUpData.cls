@@ -5,13 +5,14 @@ Revision History  :
 Created/Modified by   Created/Modified Date     Requested by          Related Task/Issue             
 ----------------------------------------------------------------------------------------
 1. Ariel Yankelevich       05/09/2018           David Mackey        GRAX Archiving -- Salesforce Delete (https://app.asana.com/0/326600806074978/628249897265165/f)
+2. Ariel Yankelevich       06/05/2018           David Mackey        Backup and Restore Notes & Attachments (https://app.asana.com/0/326600806074978/692982800286805/f)
 ******************************************************************************************/
 global class GRAXBatchToDeleteBackedUpData implements Database.Batchable<sObject>, Database.Stateful{
     public String query = '';
     
     public GRAXBatchToDeleteBackedUpData(){
         // Define the main query to retrieve GRAX_Data_Record_Id__c records that have been successfully sent to GRAX
-        query = 'SELECT Id, SFDC_Id__c, GRAX_Data_Record__r.Salesforce_Object__c FROM GRAX_Data_Record_Id__c WHERE GRAX_Data_Record__r.Status__c = \'Sent Successful\' AND Status__c = \'To be Deleted\'';
+        query = 'SELECT Id, SFDC_Id__c, GRAX_Data_Record__r.Salesforce_Object__c FROM GRAX_Data_Record_Id__c WHERE GRAX_Data_Record__r.GRAX_Archive_Process__r.Status__c = \'Ready to Delete\'';
     }
         
     global Database.querylocator start(Database.BatchableContext BC) {

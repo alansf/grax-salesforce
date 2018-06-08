@@ -89,4 +89,44 @@ public class GRAXBatchToProcessSchedJobTest {
         System.assertEquals(2, [SELECT Id FROM GRAX_Data_Record_Id__c].size());
     }
 
+    @isTest
+    static void GRAXBatchToProcessSchedJobTestAttachmentArchive() {
+        Account acc = new Account(Name='TestAccount');
+        insert acc;
+    	
+    	Attachment att = new Attachment();
+    	att.ParentId = acc.Id;
+    	att.Name = 'Test Attachment for TestAccount';
+    	att.Body = Blob.valueOf('Test Data');
+    	insert att;
+
+        GRAX_Schedule_Process__c gsp = new GRAX_Schedule_Process__c();
+        gsp.Object_Name__c = 'Account';
+        gsp.Date_Field__c = 'LastModifiedDate';
+        gsp.Target_Date__c = Date.today().addDays(1);
+        gsp.Select_Criteria__c = 'Main Object not modified';
+        gsp.Schedule_Type__c = 'Once';
+        gsp.Schedule_Start_Date__c = Date.today();
+        gsp.Schedule_Start_Time__c = '23:00';
+        gsp.Next_Run_Date__c = Datetime.now();
+        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"Account_Attachments","parentUniqueKey":"Account","relatedFieldName":"ParentId","name":"Attachment","childObjRelStructure":[]}';
+        gsp.Archive__c = true;
+        insert gsp;
+
+        Test.startTest();
+
+        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null);
+        Id jobId = Database.executebatch(b);
+
+        Test.stopTest();
+
+        Attachment att2 = [SELECT Id, Body FROM Attachment ORDER BY CreatedDate DESC LIMIT 1];
+        String att2BodyString = att2.Body.toString();
+
+        System.assertNotEquals(null, att2);
+
+        System.assert(att2BodyString.contains('GRAX_Data_Record_Id'));
+        System.assert(att2BodyString.contains('Ready to Process'));
+    }
+
 }

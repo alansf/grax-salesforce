@@ -76,6 +76,19 @@
         <visibleLines>3</visibleLines>
     </fields>
     <fields>
+        <fullName>GRAX_Archive_Process__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <externalId>false</externalId>
+        <label>GRAX Archive Process</label>
+        <referenceTo>GRAX_Archive_Process__c</referenceTo>
+        <relationshipLabel>GRAX Data Records</relationshipLabel>
+        <relationshipName>GRAX_Data_Records</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
         <fullName>GRAX_Schedule_Process__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>
         <description>GRAX_Schedule_Process</description>
@@ -98,6 +111,31 @@
         <trackHistory>false</trackHistory>
         <trackTrending>false</trackTrending>
         <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Records_Sent_to_GRAX__c</fullName>
+        <externalId>false</externalId>
+        <label># Records Sent to GRAX</label>
+        <summaryFilterItems>
+            <field>GRAX_Data_Record_Id__c.Status__c</field>
+            <operation>equals</operation>
+            <value>Sent to GRAX</value>
+        </summaryFilterItems>
+        <summaryForeignKey>GRAX_Data_Record_Id__c.GRAX_Data_Record__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Records_To_Process__c</fullName>
+        <externalId>false</externalId>
+        <label># Records To Process</label>
+        <summaryForeignKey>GRAX_Data_Record_Id__c.GRAX_Data_Record__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Summary</type>
     </fields>
     <fields>
         <fullName>Salesforce_ID__c</fullName>

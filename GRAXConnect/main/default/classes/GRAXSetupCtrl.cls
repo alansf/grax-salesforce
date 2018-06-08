@@ -162,8 +162,11 @@ public with sharing class GRAXSetupCtrl {
    		 
     public pagereference UpdateCustomSettings(){
     		if (actionbuttontext=='Save'){
+                if(String.isBlank(gxs.graxConfig.GRAX_API_Url__c)) {
+                    gxs.graxConfig.GRAX_API_Url__c = 'https://' + gxs.graxConfig.Heroku_App_Name__c + '.herokuapp.com/graxproxy/api';
+                }
     			if (gxs.graxConfig.ApiToken__c!='' && gxs.graxConfig.GatewayToken__c!='' && gxs.graxConfig.LicenseToken__c!='' && gxs.graxConfig.graphdburl__c!=''){
-	    			gxs.UpdateSettings();
+                    gxs.UpdateSettings();
 				ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Saved GRAX Settings.'));
 	    		}
 	    		LockSettings(true);
@@ -284,10 +287,11 @@ public with sharing class GRAXSetupCtrl {
 			    gxs.graxConfig.LicenseToken__c = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
 			    gxs.graxConfig.Postgres_URL__c = GetAppConfig('DATABASE_URL');
 			    gxs.graxConfig.GRAX_Flow_URL__c = 'https://' + appName + '.herokuapp.com';
+                gxs.graxConfig.GRAX_API_Url__c = 'https://' + appName + '.herokuapp.com/graxproxy/api';
 			    
 			    // Move API to Proxy
-			    //gxs.graxConfig.GRAX_API_Url__c = 'https://' + appName + '.herokuapp.com/graxproxy/api';
-			    //gxs.ApiURL = 'https://' + appName + '.herokuapp.com/graxproxy/api';
+			    // gxs.graxConfig.GRAX_API_Url__c = 'https://' + appName + '.herokuapp.com/graxproxy/api';
+			    // gxs.ApiURL = 'https://' + appName + '.herokuapp.com/graxproxy/api';
 			    
 			} catch (Exception e) {
 			     //Generic exception handling code here
