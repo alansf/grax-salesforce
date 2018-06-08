@@ -141,6 +141,11 @@
                     <default>false</default>
                     <label>Delete Error</label>
                 </value>
+                <value>
+                    <fullName>Sent to GRAX</fullName>
+                    <default>false</default>
+                    <label>Sent to GRAX</label>
+                </value>
             </valueSetDefinition>
         </valueSet>
     </fields>
