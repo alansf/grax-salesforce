@@ -140,7 +140,7 @@ public class GRAXBatchToProcessSchedJobTest {
 
     @isTest
     static void GRAXBatchToProcessSchedJobExecuteNowTest() {
-        Datetime today = Datetime.now();
+        Datetime now = Datetime.now();
 
         Account acc = new Account(Name='TestAccount');
         insert acc;
@@ -156,7 +156,7 @@ public class GRAXBatchToProcessSchedJobTest {
         gsp.Schedule_Type__c = 'Once';
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
-        gsp.Next_Run_Date__c = today;
+        gsp.Next_Run_Date__c = now;
         gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"Account_ChildAccounts","parentUniqueKey":"Account","relatedFieldName":"ParentId","name":"Account","childObjRelStructure":[]}';
         gsp.Archive__c = true;
         insert gsp;
@@ -171,7 +171,8 @@ public class GRAXBatchToProcessSchedJobTest {
 
         Test.stopTest();
 
-        System.assertEquals(1, [SELECT Id FROM GRAX_Schedule_Process__c WHERE Id = :gsp.Id AND Next_Run_Date__c = :today].size());
+        System.assertEquals(1, [SELECT Id FROM GRAX_Schedule_Process__c WHERE Id = :gsp.Id AND Next_Run_Date__c = :now].size());
+        System.assertEquals(2, [SELECT Id FROM GRAX_Data_Record_Id__c WHERE Status__c = 'Successfully Deleted'].size());
         System.assertEquals(0, [SELECT Id FROM Account].size());
     }
 

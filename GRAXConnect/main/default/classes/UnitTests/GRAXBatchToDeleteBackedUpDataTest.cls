@@ -19,14 +19,34 @@ public class GRAXBatchToDeleteBackedUpDataTest {
 
         insert accList;
 
-        for(Account acc : accList) {
-            System.assertNotEquals(null, acc.Id);
+        GRAX_Schedule_Process__c gsp = new GRAX_Schedule_Process__c();
+        gsp.Object_Name__c = 'Account';
+        gsp.Date_Field__c = 'LastModifiedDate';
+        gsp.Target_Date__c = Date.today().addDays(1);
+        gsp.Select_Criteria__c = 'Main Object not modified';
+        gsp.Schedule_Type__c = 'Once';
+        gsp.Schedule_Start_Date__c = Date.today();
+        gsp.Schedule_Start_Time__c = '23:00';
+        gsp.Next_Run_Date__c = Datetime.now();
+        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"Account","parentUniqueKey":"null","relatedFieldName":"null","name":"Account","childObjRelStructure":[]}';
+        gsp.Archive__c = true;
+        insert gsp;
 
+        GRAX_Archive_Process__c archiveProc = new GRAX_Archive_Process__c();
+        archiveProc.GRAX_Schedule_Process__c = gsp.Id;
+        archiveProc.Async_Records_Successfully_Sent__c = 0;
+        archiveProc.Async_Records_to_Process__c = 0;
+        archiveProc.Records_Successfully_Sent__c = 3;
+        archiveProc.Records_To_Process__c = 0;
+        insert archiveProc;
+
+        for(Account acc : accList) {
             GRAX_Data_Record__c dr = new GRAX_Data_Record__c();
             dr.Salesforce_Object__c = 'Account';
             dr.Status__c = 'Sent Successful';
-            dr.of_Times_Sent__c = 0;
+            dr.of_Times_Sent__c = 1;
             dr.Error_Message__c = null;
+            dr.GRAX_Archive_Process__c = archiveProc.Id;
             insert dr;
 
             System.assertNotEquals(null, dr.Id);
@@ -56,7 +76,7 @@ public class GRAXBatchToDeleteBackedUpDataTest {
 
         Test.stopTest();
 
-        System.assertEquals(3, [SELECT Id FROM GRAX_Data_Record_Id__c WHERE Status__c = 'Successfully Deleted' LIMIT 3].size());
+        System.assertEquals(1, [SELECT Id FROM GRAX_Archive_Process__c WHERE Id = :archiveProc.Id AND Status__c = 'Ready to Delete' LIMIT 3].size());
         System.assertEquals(0, [SELECT Id FROM Account LIMIT 3].size());
     }
 }
