@@ -157,7 +157,7 @@ public class GRAXBatchToProcessSchedJobTest {
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
         gsp.Next_Run_Date__c = today;
-        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"Account","parentUniqueKey":null,"relatedFieldName":null,"name":"Account","childObjRelStructure":[{"uniqueKey":"Account_ChildAccounts","parentUniqueKey":"Account","relatedFieldName":"ParentId","name":"Account","childObjRelStructure":[]}]}';
+        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"Account_ChildAccounts","parentUniqueKey":"Account","relatedFieldName":"ParentId","name":"Account","childObjRelStructure":[]}';
         gsp.Archive__c = true;
         insert gsp;
 

@@ -31,29 +31,32 @@ global class GRAXBatchToDeleteBackedUpData implements Database.Batchable<sObject
         List<GRAX_Data_Record_Id__c> dataRecIds2Up= new List<GRAX_Data_Record_Id__c>();
 		Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
 		Integer currentRecIndex = 0;
+        Integer totalNumberOfRecs = scope.size();
 		
-		while(currentRecIndex < scope.size()){
+		while(currentRecIndex < totalNumberOfRecs){
 			Map<Id, SObject> recs2DelByDataRecId = new Map<Id, SObject>();
 			Integer numberOfObjects = 0;
 			String currentObjectName = '';
 			
-			for(Integer i = currentRecIndex; i < scope.size() && numberOfObjects < 10; i++){
-				GRAX_Data_Record_Id__c dataRecId = (GRAX_Data_Record_Id__c)scope[i];
-				
-				// Set the current process flags to start over the 'while' iteration when there are 10 different object types in the list
-				if(currentObjectName <> dataRecId.GRAX_Data_Record__r.Salesforce_Object__c){
-					currentObjectName = dataRecId.GRAX_Data_Record__r.Salesforce_Object__c;
-					numberOfObjects++;
-				}
-				
-				if(numberOfObjects < 10){
-					// Create a new instance of the SObject
-					SObject sObj2Del = globalDescribe.get(dataRecId.GRAX_Data_Record__r.Salesforce_Object__c).newSObject(dataRecId.SFDC_Id__c);
-					
-					recs2DelByDataRecId.put(dataRecId.Id, sObj2Del);					
-					
-					currentRecIndex = i;
-				}
+			for(Integer i = currentRecIndex; i <= totalNumberOfRecs && numberOfObjects <= 10; i++){
+                if(i < totalNumberOfRecs){
+                    GRAX_Data_Record_Id__c dataRecId = (GRAX_Data_Record_Id__c)scope[i];
+                    
+                    // Set the current process flags to start over the 'while' iteration when there are 10 different object types in the list
+                    if(currentObjectName <> dataRecId.GRAX_Data_Record__r.Salesforce_Object__c){
+                        currentObjectName = dataRecId.GRAX_Data_Record__r.Salesforce_Object__c;
+                        numberOfObjects++;
+                    }
+                    
+                    if(numberOfObjects <= 10){
+                        // Create a new instance of the SObject
+                        SObject sObj2Del = globalDescribe.get(dataRecId.GRAX_Data_Record__r.Salesforce_Object__c).newSObject(dataRecId.SFDC_Id__c);
+                        
+                        recs2DelByDataRecId.put(dataRecId.Id, sObj2Del);
+                    }
+                }
+                
+                currentRecIndex = i;
 			}
 			
 			// Delete all the identified records

@@ -60,6 +60,6 @@
     </nameField>
     <pluralLabel>GRAX Archive Processes</pluralLabel>
     <searchLayouts/>
-    <sharingModel>ReadWrite</sharingModel>
+    <sharingModel>Read</sharingModel>
     <visibility>Public</visibility>
 </CustomObject>
