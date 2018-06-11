@@ -19,8 +19,9 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
     public List<Id> parentIds2ProcessForChild;
     public List<Id> graxDataRecIds2ProcessForChild;
     public Boolean isArchive;
+    public Boolean isExecuteNow;
     
-    public GRAXBatchToProcessSchedJob(String jobId, List<GRAXBackupCtrl.ObjRelStructure> objects2Process, Integer elementIndex, String selectCriteria){
+    public GRAXBatchToProcessSchedJob(String jobId, List<GRAXBackupCtrl.ObjRelStructure> objects2Process, Integer elementIndex, String selectCriteria, Boolean isExecuteNow){
         this.objects2Process = objects2Process;
         this.currentElementIndex = elementIndex;
         this.currentJobId = jobId;
@@ -28,6 +29,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         this.parentIds2ProcessForChild = new List<Id>();
         this.graxDataRecIds2ProcessForChild = new List<Id>();
         this.isArchive = isArchive;
+        this.isExecuteNow = isExecuteNow <> null ? isExecuteNow : false;
         
         if(objects2Process == null){
             // If this is the first time the batch is firing for the current Schedule Process
@@ -223,9 +225,10 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         
         if(this.currentElementIndex < this.objects2Process.size()){
             // Now we have to call the batch again based on the current parameters
-            GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(this.currentJobId, this.objects2Process, this.currentElementIndex, this.currentSelectCriteria);
+            GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(this.currentJobId, this.objects2Process, this.currentElementIndex, this.currentSelectCriteria, this.isExecuteNow);
             b.isArchive = this.isArchive;
             b.currentArchiveProcessId = this.currentArchiveProcessId;
+            b.isExecuteNow = this.isExecuteNow;
             
             if(!Test.isRunningTest()){
                 database.executebatch(b, 1000);
@@ -233,10 +236,21 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         }else{
             // Update the Last Run Date and Next Run Date on the current Schedule Process record
             GRAX_Schedule_Process__c schedProcess = [SELECT Id, Schedule_Type__c, Next_Run_Date__c FROM GRAX_Schedule_Process__c WHERE Id =: this.currentJobId];
-            schedProcess.Next_Run_Date__c = getNextRunDate(schedProcess.Next_Run_Date__c, schedProcess.Schedule_Type__c);
+            if(!this.isExecuteNow) {
+                schedProcess.Next_Run_Date__c = getNextRunDate(schedProcess.Next_Run_Date__c, schedProcess.Schedule_Type__c);
+            }
             schedProcess.Last_Run_Date__c = System.now();
             schedProcess.Status__c = 'Completed';
             update schedProcess;
+
+            if(this.isExecuteNow) {
+                GRAXBatchToResendDataRecords batchToResendDataRecords = new GRAXBatchToResendDataRecords();
+                batchToResendDataRecords.currentJobId = this.currentJobId;
+                batchToResendDataRecords.isExecuteNow = this.isExecuteNow;
+                batchToResendDataRecords.isArchive = this.isArchive;
+
+                database.executebatch(batchToResendDataRecords, 10);
+            }
         }
     }
     

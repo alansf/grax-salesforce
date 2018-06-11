@@ -13,7 +13,7 @@ global class GRAXSchedulerToProcessSchedJobs implements Schedulable {
 		// Find any Schedule Process Job that is supposed to run at the current GMT time, 
 		// or that it hasn't been executed on the previous Schedule run and it's not currently executing
 		for(GRAX_Schedule_Process__c schedProcess : [SELECT Id, Status__c FROM GRAX_Schedule_Process__c WHERE Next_Run_Date__c <=: System.now() AND Status__c <> 'Running']){
-            GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(schedProcess.Id, null, 0, null);
+            GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(schedProcess.Id, null, 0, null, null);
             
             try{
 				// Check if the call to "executebatch" failed to acquire an Apex flex queue lock

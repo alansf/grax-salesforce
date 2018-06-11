@@ -9,10 +9,16 @@ Created/Modified by   Created/Modified Date     Requested by          Related Ta
 ******************************************************************************************/
 global class GRAXBatchToDeleteBackedUpData implements Database.Batchable<sObject>, Database.Stateful{
     public String query = '';
+    public Boolean isExecuteNow = false;
+    public Id currentJobId;
     
     public GRAXBatchToDeleteBackedUpData(){
         // Define the main query to retrieve GRAX_Data_Record_Id__c records that have been successfully sent to GRAX
         query = 'SELECT Id, SFDC_Id__c, GRAX_Data_Record__r.Salesforce_Object__c FROM GRAX_Data_Record_Id__c WHERE GRAX_Data_Record__r.GRAX_Archive_Process__r.Status__c = \'Ready to Delete\'';
+    
+        if(isExecuteNow && currentJobId <> null) {
+            query += ' AND GRAX_Data_Record__r.GRAX_Archive_Process__r = :currentJobId';
+        }
     }
         
     global Database.querylocator start(Database.BatchableContext BC) {

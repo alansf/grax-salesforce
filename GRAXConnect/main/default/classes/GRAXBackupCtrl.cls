@@ -365,6 +365,18 @@ public with sharing class GRAXBackupCtrl {
         }
     }
 
+    public Pagereference execScheduledProcess() {
+        // Get Id of the Scheduled Process to execute.
+        Id spId = Apexpages.currentPage().getParameters().get('spId');
+
+        // Check if the Scheduled Process exist.
+        if(scheduledProcessMap.containsKey(spId)) {
+            Id jobId = Database.executebatch(new GRAXBatchToProcessSchedJob(spId, null, 0, null, true), 1);
+        }
+
+        return null;
+    }
+
     // Get the list of ScheduledProcess from scheduledProcessMap, to show in a DataTable.
     public List<ScheduledProcess> getScheduledProcesses() {
         return scheduledProcessMap.values();
