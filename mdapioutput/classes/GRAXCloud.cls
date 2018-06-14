@@ -39,6 +39,15 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
 			headers.put('authorizationToken', gx.ApiToken);
 			headers.put('x-api-key', gx.GatewayToken);
 			headers.put('sfdcorgid', UserInfo.getOrganizationId());
+			
+			// Set up the Username and Password to authenticate on the server
+	        String username = gx.GatewayToken;
+	        String password = gx.ApiToken;
+	        
+	        String token = EncodingUtil.base64Encode(Blob.valueOf(username + ':' + password));
+	        
+	        // Add the Basic authorization header to the HTTP Call
+	        headers.put('Authorization', 'Basic ' + token);
 		}
 
 		// Call the method to execute the Callout
@@ -168,7 +177,7 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
 	
 	
 	// Generic method to do callouts via HTTP protocol
-	private static CallOutResponse doHTTP(String httpMethod, String parameters, String endpoint, Map<String, String> headers){
+	public static CallOutResponse doHTTP(String httpMethod, String parameters, String endpoint, Map<String, String> headers){
         CallOutResponse callOutRes = new CallOutResponse(false, '');
         
         if(string.isBlank(httpMethod)){
