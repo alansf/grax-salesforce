@@ -20,6 +20,8 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
     public List<Id> graxDataRecIds2ProcessForChild;
     public Boolean isArchive;
     public Boolean isExecuteNow;
+    public Boolean hasContentDocument;
+    private Set<String> asyncObjects2ProcessByGRAX = new Set<String>{'Attachment', 'ContentVersion'};
     
     public GRAXBatchToProcessSchedJob(String jobId, List<GRAXBackupCtrl.ObjRelStructure> objects2Process, Integer elementIndex, String selectCriteria, Boolean isExecuteNow){
         this.objects2Process = objects2Process;
@@ -30,6 +32,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         this.graxDataRecIds2ProcessForChild = new List<Id>();
         this.isArchive = isArchive;
         this.isExecuteNow = isExecuteNow <> null ? isExecuteNow : false;
+        this.hasContentDocument = false;
         
         if(objects2Process == null){
             // If this is the first time the batch is firing for the current Schedule Process
@@ -91,7 +94,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
             //    this.currentSelectCriteria = 'LastModifiedDate <= ' + schedProcess.Selected_Time_Frame__c;
             //}
                         
-            query = 'SELECT ' + getSObjectFields(objName);
+            query = 'SELECT ' + String.join(getSObjectFields(objName), ', ');
             query += ' FROM ' + objName;
             if(rootObjSelectCriteria <> ''){
                 query += ' WHERE ' + rootObjSelectCriteria;
@@ -110,7 +113,14 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
             
             String objName = sObjRelStruc.name;
             
-            query = 'SELECT ' + getSObjectFields(objName);
+            query = 'SELECT ' + String.join(getSObjectFields(objName), ', ');
+            
+            // If the current object is 'ContentDocumentLink', then add every field associated to the related Content Document, 
+            // as this is a special scenario of a junction object
+            if(objName.equalsIgnoreCase('ContentDocumentLink')){
+            	query += ', ContentDocument.' + String.join(getSObjectFields('ContentDocument'), ', ContentDocument.');
+            }
+            
             query += ' FROM ' + objName;
             query += ' WHERE ' + sObjRelStruc.relatedFieldName + ' IN :parentIds2ProcessForChild';
             
@@ -132,61 +142,48 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         
         // Get the SObject Name and the list of Ids being processed 
         String sobjectName = this.objects2Process[this.currentElementIndex].name;
-        String sfdcIds = '';
-
-        for(SObject sObj : scope){
-            sfdcIds += ';' + sObj.Id;
-        }
-        sfdcIds = sfdcIds.substring(1);
         
-        GRAX_Data_Record__c dr = new GRAX_Data_Record__c();
-        dr.Salesforce_ID__c = sfdcIds;
-        dr.Salesforce_Object__c = sobjectName;
-        dr.Status__c = 'Not Sent';
-        dr.of_Times_Sent__c = 0;
-        dr.Error_Message__c = null;
-        dr.GRAX_Schedule_Process__c = this.currentJobId;
-        dr.Sched_Proc_Hierarchy_Unique_Key__c = this.currentObjRelStrucUniqueKey;
-        dr.GRAX_Archive_Process__c = this.currentArchiveProcessId;
-        insert dr;
-
-        String dataRecIdStatus;
-        if(this.isArchive){
-            dataRecIdStatus = 'To be Deleted';
-        }
-        
-        // Iterate through the list of records to create a GRAX_Data_Record_Id__c instance for each one of them
-        Map<Id, GRAX_Data_Record_Id__c> dataRecIds2InsBySObjId = new Map<Id, GRAX_Data_Record_Id__c>();
-        for(SObject sObj : scope){
-            GRAX_Data_Record_Id__c dataRecId = new GRAX_Data_Record_Id__c();
-            dataRecId.SFDC_Id__c = sObj.Id;
-            dataRecId.GRAX_Data_Record__c = dr.Id;
-            dataRecId.Status__c = dataRecIdStatus;
+        // Check if the current object is 'ContentDocumentLink'
+        if(sobjectName.equalsIgnoreCase('ContentDocumentLink')){
+            List<SObject> relJunctionObjectList = new List<SObject>();
             
-            dataRecIds2InsBySObjId.put(sObj.Id, dataRecId);
-        }
-        
-        insert dataRecIds2InsBySObjId.values();
-        
-        // If the current object is "Attachment", then add the GRAX_Data_Record_Id__c Id to the JSON
-        if(this.isArchive && sobjectName == 'Attachment'){
-            Map<String, Object> m = (Map<String, Object>)JSON.deserializeUntyped(content);
+            // Store the ContentDocument records in their own List
+            for(SObject sObj : scope){
+                relJunctionObjectList.add(sObj.getSObject('ContentDocument'));
+            }
+            
+            // Generate the JSON Content for these records
+        	String relJunctionObjectContent = GRAXApi.jsonContentArchive(relJunctionObjectList);
+            
+            // Remove the relationship to 'ContentDocument' from the content JSON
+        	Map<String, Object> m = (Map<String, Object>)JSON.deserializeUntyped(content);
             List<Object> recsList = (List<Object>)m.get('new');
 
             for(Object recObj : recsList){
                 Map<String, Object> rec = (Map<String, Object>)recObj;
-                rec.put('GRAX_Data_Record_Id', dataRecIds2InsBySObjId.get((Id)rec.get('Id')).Id);
-                rec.put('GRAX_Status', 'Ready to Process');
+                rec.remove('ContentDocument');
             }
             content = JSON.serialize(m);
+            
+            
+            // Call the generate GRAX Data Record method for this middle object
+            generateGRAXDataRecord('ContentDocument', 'ContentDocument', relJunctionObjectContent, relJunctionObjectList);
+            
+            // If it wasn't added on a previous iteration, add the ContentVersion object to the end of the object hierarchy list to be evalueated last
+            if(!this.hasContentDocument){
+                String clonedStructure = JSON.serialize(this.objects2Process[this.currentElementIndex]);
+                GRAXBackupCtrl.ObjRelStructure sObjRelStruc = (GRAXBackupCtrl.ObjRelStructure)JSON.deserialize(clonedStructure, GRAXBackupCtrl.ObjRelStructure.class);
+                sObjRelStruc.name = 'ContentVersion';
+                sObjRelStruc.parentUniqueKey = 'ContentDocument';
+                sObjRelStruc.uniqueKey = 'ContentVersion';
+                
+                this.objects2Process.add(sObjRelStruc);
+                this.hasContentDocument = true;
+            }
         }
         
-        // Save the Attachment with the JSON content associated to the GRAX_Data_Record__c
-        Attachment req_att = new Attachment();
-        req_att.Name = 'request.txt';
-        req_att.Body = Blob.valueOf(content);
-        req_att.ParentId = dr.Id;
-        insert req_att;
+        // Call the generate GRAX Data Record method for this object
+		generateGRAXDataRecord(sobjectName, this.currentObjRelStrucUniqueKey, content, scope);
     }
     
     global void finish(Database.BatchableContext BC){
@@ -229,6 +226,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
             b.isArchive = this.isArchive;
             b.currentArchiveProcessId = this.currentArchiveProcessId;
             b.isExecuteNow = this.isExecuteNow;
+            b.hasContentDocument = this.hasContentDocument;
             
             if(!Test.isRunningTest()){
                 database.executebatch(b, 1000);
@@ -254,20 +252,77 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         }
     }
     
-    private String getSObjectFields(String objName){
+    private void generateGRAXDataRecord(String sobjectName, String objRelStrucUniqueKey, String jsonContent, List<SObject> sObjRecs){
+        String sfdcIds = '';
+
+        for(SObject sObj : sObjRecs){
+            sfdcIds += ';' + sObj.Id;
+        }
+        sfdcIds = sfdcIds.substring(1);
+        
+        GRAX_Data_Record__c dr = new GRAX_Data_Record__c();
+        dr.Salesforce_ID__c = sfdcIds;
+        dr.Salesforce_Object__c = sobjectName;
+        dr.Status__c = 'Not Sent';
+        dr.of_Times_Sent__c = 0;
+        dr.Error_Message__c = null;
+        dr.GRAX_Schedule_Process__c = this.currentJobId;
+        dr.Sched_Proc_Hierarchy_Unique_Key__c = objRelStrucUniqueKey;
+        dr.GRAX_Archive_Process__c = this.currentArchiveProcessId;
+        insert dr;
+
+        String dataRecIdStatus;
+        if(this.isArchive){
+            dataRecIdStatus = 'To be Deleted';
+        }
+        
+        // Iterate through the list of records to create a GRAX_Data_Record_Id__c instance for each one of them
+        Map<Id, GRAX_Data_Record_Id__c> dataRecIds2InsBySObjId = new Map<Id, GRAX_Data_Record_Id__c>();
+        for(SObject sObj : sObjRecs){
+            GRAX_Data_Record_Id__c dataRecId = new GRAX_Data_Record_Id__c();
+            dataRecId.SFDC_Id__c = sObj.Id;
+            dataRecId.GRAX_Data_Record__c = dr.Id;
+            dataRecId.Status__c = dataRecIdStatus;
+            
+            dataRecIds2InsBySObjId.put(sObj.Id, dataRecId);
+        }
+        
+        insert dataRecIds2InsBySObjId.values();
+        
+        // If the current object is "Attachment" or "Salesforce File", then add the GRAX_Data_Record_Id__c Id to the JSON
+        if(this.isArchive && asyncObjects2ProcessByGRAX.contains(sobjectName)){
+            Map<String, Object> m = (Map<String, Object>)JSON.deserializeUntyped(jsonContent);
+            List<Object> recsList = (List<Object>)m.get('new');
+
+            for(Object recObj : recsList){
+                Map<String, Object> rec = (Map<String, Object>)recObj;
+                rec.put('GRAX_Data_Record_Id', dataRecIds2InsBySObjId.get((Id)rec.get('Id')).Id);
+                rec.put('GRAX_Status', 'Ready to Process');
+            }
+            jsonContent = JSON.serialize(m);
+        }
+        
+        // Save the Attachment with the JSON content associated to the GRAX_Data_Record__c
+        Attachment req_att = new Attachment();
+        req_att.Name = 'request.txt';
+        req_att.Body = Blob.valueOf(jsonContent);
+        req_att.ParentId = dr.Id;
+        insert req_att;
+    }
+    
+    private List<String> getSObjectFields(String objName){
         // Get a map of field name and field token
         Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
         Map<String, Schema.SObjectField> fMap = globalDescribe.get(objName).getDescribe().Fields.getMap();
-        String selectFields = '';
+        List<String> selectFields = new List<String>();
         
         if(fMap != null){
             for(Schema.SObjectField ft : fMap.values()){ // loop through all field tokens (ft)
                 Schema.DescribeFieldResult fd = ft.getDescribe(); // describe each field (fd)
                 if(!fd.getType().name().equalsIgnoreCase('base64')){
-                	selectFields += ',' + fd.getName();
+                	selectFields.add(fd.getName());
             	}
             }
-            selectFields = selectFields.substring(1);
         }
         
         return selectFields;

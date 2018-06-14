@@ -1,5 +1,3 @@
-
-
 /*****************************************************************************************
 Name              : GRAXBackupCtrl
 Description       : Implementation of the tab "Back Up" in GRAXSetupUI.
@@ -16,7 +14,7 @@ public with sharing class GRAXBackupCtrl {
     public String sObjectDateFieldDefault {get;set;}
 
     public Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
-    private Set<String> excludedStandardObjects = new Set<String>{'AccountCleanInfo','ContentDistribution','ContentDocumentLink','DuplicateRecordItem','EntitySubscription','ProcessInstance','TopicAssignment','AccountPartner','ContactCleanInfo','EmailMessageRelation','EventRelation','OpportunityPartner','Partner','CollaborationGroupRecord','CaseTeamMember','CaseTeamTemplateRecord','FlowRecordRelation','NetworkUserHistoryRecent'};
+    private Set<String> excludedStandardObjects = new Set<String>{'AccountCleanInfo','ContentDistribution','DuplicateRecordItem','EntitySubscription','ProcessInstance','TopicAssignment','AccountPartner','ContactCleanInfo','EmailMessageRelation','EventRelation','OpportunityPartner','Partner','CollaborationGroupRecord','CaseTeamMember','CaseTeamTemplateRecord','FlowRecordRelation','NetworkUserHistoryRecent'};
     private Set<String> excludedStandardObjectSufixes = new Set<String>{'Share','History','Feed'};
 
     public String targetDate {get;set;}
@@ -405,4 +403,3 @@ public with sharing class GRAXBackupCtrl {
     }
 
 }
-
