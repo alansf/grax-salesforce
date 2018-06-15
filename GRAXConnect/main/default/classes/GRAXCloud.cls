@@ -185,7 +185,7 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
 
 		if(auth <> null && auth) {
 			GRAXCloud gx = new GRAXCloud();
-			
+
 			// Set up the Username and Password to authenticate on the server
 	        String username = gx.GatewayToken;
 	        String password = gx.ApiToken;
@@ -227,6 +227,6 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
     }
 
 	public static CallOutResponse doHTTP(String httpMethod, String parameters, String endpoint, Map<String, String> headers) {
-		return doHTTP(httpMethod, parameters, endpoint, headers, false);
+		return doHTTP(httpMethod, parameters, endpoint, headers, true);
 	}
 }
