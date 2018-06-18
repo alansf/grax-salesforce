@@ -124,7 +124,7 @@ public with sharing class GRAXSetupCtrl {
     }
     
     public pagereference AuthorizeHeroku(){
-		pagereference p = new pagereference(GetUrl('/platforms/heroku/oauth/authorize'));
+		pagereference p = new pagereference(GetUrl('/platforms/heroku/oauth/authorize','https://api.grax.io/test/api'));
 		return p;
     }
    	
@@ -212,7 +212,7 @@ public with sharing class GRAXSetupCtrl {
     
     public String GetConfig(){
         if(!Test.isRunningTest()){
-            GRAXCloud.CallOutResponse callout = GRAXCloud.doHTTP('GET', null, GetUrl('/platforms/heroku/getconfig'), null);
+            GRAXCloud.CallOutResponse callout = GRAXCloud.doHTTP('GET', null, GetUrl('/platforms/heroku/getconfig','https://api.grax.io/test/api'), null);
 
             if(callout.success) {
                 return callout.response;
@@ -222,29 +222,32 @@ public with sharing class GRAXSetupCtrl {
         return graxconfig;
     }
     
+ 	private String GetUrl(string path,string apiurl){
+        String Url = apiurl + path + '?';
+        if (!Test.isRunningTest()){
+        		Url += 'orgid=' + EncodingUtil.urlEncode(UserInfo.getOrganizationId(),'UTF-8');
+            Url += '&userid=' + EncodingUtil.urlEncode(UserInfo.getUserId(),'UTF-8');
+                
+            if (ApexPages.currentPage().getHeaders().get('Host')!=null)
+                 Url += '&host=' + EncodingUtil.urlEncode(ApexPages.currentPage().getHeaders().get('Host'),'UTF-8');
+                
+            if (UserInfo.getOrganizationName()!=null)
+            		Url += '&companyname=' + EncodingUtil.urlEncode(UserInfo.getOrganizationName(),'UTF-8');
+                    
+            	if (UserInfo.getFirstName()!=null)
+            		Url += '&firstname=' + EncodingUtil.urlEncode(UserInfo.getFirstName(),'UTF-8');
+                    
+            	if (UserInfo.getLastName()!=null)   
+            		Url += '&lastname=' + EncodingUtil.urlEncode(UserInfo.getLastName(),'UTF-8');
+                    
+            	if (UserInfo.getUserEmail()!=null)  
+            		Url += '&email=' + EncodingUtil.urlEncode(UserInfo.getUserEmail(),'UTF-8');
+       }
+       return Url;
+    }
+    
     private String GetUrl(string path){
-    		String Url = gxs.ApiURL + path + '?';
-    		
-    		if (!Test.isRunningTest()){
-	    		Url += 'orgid=' + EncodingUtil.urlEncode(UserInfo.getOrganizationId(),'UTF-8');
-	    		Url += '&userid=' + EncodingUtil.urlEncode(UserInfo.getUserId(),'UTF-8');
-	    		
-	    		if (ApexPages.currentPage().getHeaders().get('Host')!=null)
-	    			Url += '&host=' + EncodingUtil.urlEncode(ApexPages.currentPage().getHeaders().get('Host'),'UTF-8');
-	    		
-	    		if (UserInfo.getOrganizationName()!=null)
-	    			Url += '&companyname=' + EncodingUtil.urlEncode(UserInfo.getOrganizationName(),'UTF-8');
-	    			
-	    		if (UserInfo.getFirstName()!=null)
-	    			Url += '&firstname=' + EncodingUtil.urlEncode(UserInfo.getFirstName(),'UTF-8');
-	    			
-	    		if (UserInfo.getLastName()!=null)	
-	    			Url += '&lastname=' + EncodingUtil.urlEncode(UserInfo.getLastName(),'UTF-8');
-	    			
-	    		if (UserInfo.getUserEmail()!=null)	
-	    			Url += '&email=' + EncodingUtil.urlEncode(UserInfo.getUserEmail(),'UTF-8');
-    		}
-    		return Url;
+        return GetUrl(path,gxs.ApiURL);
     }
 
     public string getGRAXAppConfig(){

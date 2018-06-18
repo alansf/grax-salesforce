@@ -19,6 +19,8 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
     //public GRAXCloud() {	
     //}
 
+	
+
 	public static CallOutResponse calloutnow(String url, String content) {
 		CallOutResponse response;
 		
@@ -39,19 +41,10 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
 			headers.put('authorizationToken', gx.ApiToken);
 			headers.put('x-api-key', gx.GatewayToken);
 			headers.put('sfdcorgid', UserInfo.getOrganizationId());
-			
-			// Set up the Username and Password to authenticate on the server
-	        String username = gx.GatewayToken;
-	        String password = gx.ApiToken;
-	        
-	        String token = EncodingUtil.base64Encode(Blob.valueOf(username + ':' + password));
-	        
-	        // Add the Basic authorization header to the HTTP Call
-	        headers.put('Authorization', 'Basic ' + token);
 		}
 
 		// Call the method to execute the Callout
-		response = doHTTP(httpMethod, requestBody, apiURL, headers);
+		response = doHTTP(httpMethod, requestBody, apiURL, headers, true);
 			
 		return response;
 	}
@@ -177,7 +170,7 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
 	
 	
 	// Generic method to do callouts via HTTP protocol
-	public static CallOutResponse doHTTP(String httpMethod, String parameters, String endpoint, Map<String, String> headers){
+	public static CallOutResponse doHTTP(String httpMethod, String parameters, String endpoint, Map<String, String> headers, Boolean auth){
         CallOutResponse callOutRes = new CallOutResponse(false, '');
         
         if(string.isBlank(httpMethod)){
@@ -189,11 +182,26 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
         HttpResponse res;
         req.setTimeout(120000);
         req.setMethod(httpMethod);
+
+		if(auth <> null && auth) {
+			GRAXCloud gx = new GRAXCloud();
+
+			// Set up the Username and Password to authenticate on the server
+	        String username = gx.GatewayToken;
+	        String password = gx.ApiToken;
+	        
+	        String token = EncodingUtil.base64Encode(Blob.valueOf(username + ':' + password));
+	        
+	        // Add the Basic authorization header to the HTTP Call
+	        req.setHeader('Authorization', 'Basic ' + token);
+		}
+
         if(headers <> null){
         	for(String headerName : headers.keySet()){ 
        			req.setHeader(headerName, headers.get(headerName));
         	}
         }
+
         if(string.isNotBlank(parameters)){
         	req.setBody(parameters);
         }
@@ -217,4 +225,8 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
         
         return callOutRes;
     }
+
+	public static CallOutResponse doHTTP(String httpMethod, String parameters, String endpoint, Map<String, String> headers) {
+		return doHTTP(httpMethod, parameters, endpoint, headers, true);
+	}
 }
