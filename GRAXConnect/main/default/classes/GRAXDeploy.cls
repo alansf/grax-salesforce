@@ -148,16 +148,15 @@ public with sharing class GRAXDeploy {
     }
     
     public String GetConfig(){
-	    Http h = new Http();
-	    HttpRequest req = new HttpRequest();
-	    	req.setEndpoint(GetUrl('/platforms/heroku/getconfig'));
-	    	req.setMethod('GET');
-	    	if(!Test.isRunningTest()){
-	    		HttpResponse res = h.send(req);
-	    		return res.getBody();
-	    } else {
-	    		return graxconfig;
-	    }
+		if(!Test.isRunningTest()) {
+			GRAXCloud.CallOutResponse callout = GRAXCloud.doHTTP('GET', null, GetUrl('/platforms/heroku/getconfig'), null);
+
+			if(callout.success) {
+				return callout.response;	
+			}
+		}
+
+		return graxconfig;
     }
     
     private String GetUrl(string path){
@@ -195,19 +194,15 @@ public with sharing class GRAXDeploy {
     	}
     
     public String queryAppConfig(String appName){
-    		graxappJSON = '';
-    		if (appName!='' && appName != LastAppName && appName!=null){
-    			try{
-	    			Http h = new Http();
-			    HttpRequest req = new HttpRequest();
-			    req.setMethod('GET');
-			    if(!Test.isRunningTest()){
-			    		req.setEndpoint(GetUrl('/platforms/heroku/getappconfig') + '&appname=' + appName);
-			    		HttpResponse res = h.send(req);
-			    		graxappJSON = res.getBody();
-			    	}
-			    		
-			    LastAppName = appName;
+		graxappJSON = '';
+
+		if (appName!='' && appName != LastAppName && appName!=null && !Test.isRunningTest()) {
+			GRAXCloud.CallOutResponse callout = GRAXCloud.doHTTP('GET', null, GetUrl('/platforms/heroku/getappconfig') + '&appname=' + appName, null);
+
+			if(callout.success) {
+				graxappJSON = callout.response;
+
+				LastAppName = appName;
 			    graxsetting_graxapp = appName;
 			    graxsetting_apitoken = GetAppConfig('ENGAGEMENTGRAPH_APITOKEN');
 			    graxsetting_gatewaytoken = GetAppConfig('ENGAGEMENTGRAPH_GATEWAYTOKEN');
@@ -215,15 +210,10 @@ public with sharing class GRAXDeploy {
 			    graxsetting_licensetoken = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
 			    graxsetting_flowurl = 'https://' + appName + '.herokuapp.com';
 			    graxsetting_apiurl = ''; // Let it default to code base
-			    
-			} catch (Exception e) {
-			     //Generic exception handling code here
-			} finally {
-			     //optional finally block
-			     //code to run whether there is an exception or not
 			}
-    		}
-    		return graxappJSON;
+		}
+		
+		return graxappJSON;
     }
     
     public String GetAppConfig(String fieldName){

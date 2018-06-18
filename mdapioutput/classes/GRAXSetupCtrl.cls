@@ -124,7 +124,7 @@ public with sharing class GRAXSetupCtrl {
     }
     
     public pagereference AuthorizeHeroku(){
-		pagereference p = new pagereference(GetUrl('/platforms/heroku/oauth/authorize'));
+		pagereference p = new pagereference(GetUrl('/platforms/heroku/oauth/authorize','https://api.grax.io/test/api'));
 		return p;
     }
    	
@@ -211,47 +211,43 @@ public with sharing class GRAXSetupCtrl {
     }
     
     public String GetConfig(){
-	    Http h = new Http();
-	    HttpRequest req = new HttpRequest();
-        req.setEndpoint(GetUrl('/platforms/heroku/getconfig'));
-        req.setMethod('GET');
-
         if(!Test.isRunningTest()){
-            HttpResponse res = h.send(req);
+            GRAXCloud.CallOutResponse callout = GRAXCloud.doHTTP('GET', null, GetUrl('/platforms/heroku/getconfig','https://api.grax.io/test/api'), null);
 
-            if(res != null && String.valueOf(res.getStatusCode()).startsWith('2')) {
-                return res.getBody();
+            if(callout.success) {
+                return callout.response;
             }
+        }
 
-            return null;
-	    } else {
-            return graxconfig;
-	    }
+        return graxconfig;
+    }
+    
+ 	private String GetUrl(string path,string apiurl){
+        String Url = apiurl + path + '?';
+        if (!Test.isRunningTest()){
+        		Url += 'orgid=' + EncodingUtil.urlEncode(UserInfo.getOrganizationId(),'UTF-8');
+            Url += '&userid=' + EncodingUtil.urlEncode(UserInfo.getUserId(),'UTF-8');
+                
+            if (ApexPages.currentPage().getHeaders().get('Host')!=null)
+                 Url += '&host=' + EncodingUtil.urlEncode(ApexPages.currentPage().getHeaders().get('Host'),'UTF-8');
+                
+            if (UserInfo.getOrganizationName()!=null)
+            		Url += '&companyname=' + EncodingUtil.urlEncode(UserInfo.getOrganizationName(),'UTF-8');
+                    
+            	if (UserInfo.getFirstName()!=null)
+            		Url += '&firstname=' + EncodingUtil.urlEncode(UserInfo.getFirstName(),'UTF-8');
+                    
+            	if (UserInfo.getLastName()!=null)   
+            		Url += '&lastname=' + EncodingUtil.urlEncode(UserInfo.getLastName(),'UTF-8');
+                    
+            	if (UserInfo.getUserEmail()!=null)  
+            		Url += '&email=' + EncodingUtil.urlEncode(UserInfo.getUserEmail(),'UTF-8');
+       }
+       return Url;
     }
     
     private String GetUrl(string path){
-    		String Url = gxs.ApiURL + path + '?';
-    		
-    		if (!Test.isRunningTest()){
-	    		Url += 'orgid=' + EncodingUtil.urlEncode(UserInfo.getOrganizationId(),'UTF-8');
-	    		Url += '&userid=' + EncodingUtil.urlEncode(UserInfo.getUserId(),'UTF-8');
-	    		
-	    		if (ApexPages.currentPage().getHeaders().get('Host')!=null)
-	    			Url += '&host=' + EncodingUtil.urlEncode(ApexPages.currentPage().getHeaders().get('Host'),'UTF-8');
-	    		
-	    		if (UserInfo.getOrganizationName()!=null)
-	    			Url += '&companyname=' + EncodingUtil.urlEncode(UserInfo.getOrganizationName(),'UTF-8');
-	    			
-	    		if (UserInfo.getFirstName()!=null)
-	    			Url += '&firstname=' + EncodingUtil.urlEncode(UserInfo.getFirstName(),'UTF-8');
-	    			
-	    		if (UserInfo.getLastName()!=null)	
-	    			Url += '&lastname=' + EncodingUtil.urlEncode(UserInfo.getLastName(),'UTF-8');
-	    			
-	    		if (UserInfo.getUserEmail()!=null)	
-	    			Url += '&email=' + EncodingUtil.urlEncode(UserInfo.getUserEmail(),'UTF-8');
-    		}
-    		return Url;
+        return GetUrl(path,gxs.ApiURL);
     }
 
     public string getGRAXAppConfig(){
@@ -264,39 +260,26 @@ public with sharing class GRAXSetupCtrl {
     	}
     
     public String queryAppConfig(String appName){
-    		graxappJSON = '';
-    		if (appName!='' && appName != LastAppName && appName!=null){
-    			try{
-	    			Http h = new Http();
-			    HttpRequest req = new HttpRequest();
-			    req.setMethod('GET');
-			    if(!Test.isRunningTest()){
-			    		req.setEndpoint(GetUrl('/platforms/heroku/getappconfig') + '&appname=' + appName);
-			    		HttpResponse res = h.send(req);
-			    		graxappJSON = res.getBody();
-			    	}
-			    	
-			    LastAppName = appName;
-			    gxs.graxConfig.Heroku_App_Name__c = appName;
-			    gxs.graxConfig.ApiToken__c = GetAppConfig('ENGAGEMENTGRAPH_APITOKEN');
-			    gxs.graxConfig.GatewayToken__c = GetAppConfig('ENGAGEMENTGRAPH_GATEWAYTOKEN');
-			    gxs.graxConfig.graphdburl__c = GetAppConfig('GRAPHCONNECT_URL');
-			    gxs.graxConfig.LicenseToken__c = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
-			    gxs.graxConfig.Postgres_URL__c = GetAppConfig('DATABASE_URL');
-			    gxs.graxConfig.GRAX_Flow_URL__c = 'https://' + appName + '.herokuapp.com';
-			    
-			    // Move API to Proxy
-			    //gxs.graxConfig.GRAX_API_Url__c = 'https://' + appName + '.herokuapp.com/graxproxy/api';
-			    //gxs.ApiURL = 'https://' + appName + '.herokuapp.com/graxproxy/api';
-			    
-			} catch (Exception e) {
-			     //Generic exception handling code here
-			} finally {
-			     //optional finally block
-			     //code to run whether there is an exception or not
-			}
-    		}
-    		return graxappJSON;
+        graxappJSON = '';
+
+        if(appName!='' && appName != LastAppName && appName != null && !Test.isRunningTest()) {
+            GRAXCloud.CallOutResponse callout = GRAXCloud.doHTTP('GET', null, GetUrl('/platforms/heroku/getappconfig') + '&appname=' + appName, null);
+
+            if(callout.success) {
+                graxappJSON = callout.response;
+            }
+        }
+
+        LastAppName = appName;
+        gxs.graxConfig.Heroku_App_Name__c = appName;
+        gxs.graxConfig.ApiToken__c = GetAppConfig('ENGAGEMENTGRAPH_APITOKEN');
+        gxs.graxConfig.GatewayToken__c = GetAppConfig('ENGAGEMENTGRAPH_GATEWAYTOKEN');
+        gxs.graxConfig.graphdburl__c = GetAppConfig('GRAPHCONNECT_URL');
+        gxs.graxConfig.LicenseToken__c = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
+        gxs.graxConfig.Postgres_URL__c = GetAppConfig('DATABASE_URL');
+        gxs.graxConfig.GRAX_Flow_URL__c = 'https://' + appName + '.herokuapp.com';
+
+        return graxappJSON;
     }
     
     public String GetAppConfig(String fieldName){
