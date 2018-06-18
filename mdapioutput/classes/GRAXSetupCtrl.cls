@@ -263,7 +263,7 @@ public with sharing class GRAXSetupCtrl {
         graxappJSON = '';
 
         if(appName!='' && appName != LastAppName && appName != null && !Test.isRunningTest()) {
-            GRAXCloud.CallOutResponse callout = GRAXCloud.doHTTP('GET', null, GetUrl('/platforms/heroku/getappconfig','https://api.grax.io/test') + '&appname=' + appName, null);
+            GRAXCloud.CallOutResponse callout = GRAXCloud.doHTTP('GET', null, GetUrl('/platforms/heroku/getappconfig','https://api.grax.io/test/api') + '&appname=' + appName, null);
 
             if(callout.success) {
                 graxappJSON = callout.response;
