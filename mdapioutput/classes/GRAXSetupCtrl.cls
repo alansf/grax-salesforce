@@ -45,6 +45,7 @@ public with sharing class GRAXSetupCtrl {
         // DEPLOY
  
         gxs = new GRAXSettings();
+        System.Debug('[GRAX.io] Saved GRAX App: ' + gxs.graxConfig.Heroku_App_Name__c);
         
         actiontext = 'Save';
         actionbuttontext = 'Save GRAX Settings';
@@ -159,17 +160,26 @@ public with sharing class GRAXSetupCtrl {
 		LoadAuditTrail();
 		return null;
     } 		 
+    
    		 
     public pagereference UpdateCustomSettings(){
+    		System.Debug('[GRAX.io] Saving Configuration gxs.graxConfig.ApiToken__c!: ' + gxs.graxConfig.ApiToken__c);
+    		System.Debug('[GRAX.io] Saving Configuration gxs.graxConfig.LicenseToken__c!: ' + gxs.graxConfig.LicenseToken__c);
+    		System.Debug('[GRAX.io] Saving Configuration gxs.graxConfig.graphdburl__c!: ' + gxs.graxConfig.graphdburl__c);
     		if (actionbuttontext=='Save'){
-    			if (gxs.graxConfig.ApiToken__c!='' && gxs.graxConfig.GatewayToken__c!='' && gxs.graxConfig.LicenseToken__c!='' && gxs.graxConfig.graphdburl__c!=''){
+    			if (gxs.graxConfig.ApiToken__c!='' && gxs.graxConfig.GatewayToken__c!='' && gxs.graxConfig.LicenseToken__c!=''){
+	    			System.Debug('[GRAX.io] Saving Configuration: ' + gxs.graxConfig.Heroku_App_Name__c);
 	    			gxs.UpdateSettings();
 				ApexPages.addmessage(new ApexPages.message(ApexPages.severity.INFO, 'Saved GRAX Settings.'));
-	    		}
+	    		}else
+	    			System.Debug('[GRAX.io] Saving Configuration SKIPPED: ' + gxs.graxConfig.Heroku_App_Name__c);
 	    		LockSettings(true);
     		}
-    		else
+    		else{
     			LockSettings(false);
+    			System.Debug('[GRAX.io] Saving Configuration SKIPPED: ' + gxs.graxConfig.Heroku_App_Name__c);
+    		}
+    			
     		
 		return null;
     }
@@ -213,7 +223,6 @@ public with sharing class GRAXSetupCtrl {
     public String GetConfig(){
         if(!Test.isRunningTest()){
             GRAXCloud.CallOutResponse callout = GRAXCloud.doHTTP('GET', null, GetUrl('/platforms/heroku/getconfig','https://api.grax.io/test/api'), null);
-
             if(callout.success) {
                 return callout.response;
             }
@@ -261,24 +270,25 @@ public with sharing class GRAXSetupCtrl {
     
     public String queryAppConfig(String appName){
         graxappJSON = '';
-
         if(appName!='' && appName != LastAppName && appName != null && !Test.isRunningTest()) {
+        		System.Debug('[GRAX.io] Getting App Configuration: ' + appName);
             GRAXCloud.CallOutResponse callout = GRAXCloud.doHTTP('GET', null, GetUrl('/platforms/heroku/getappconfig','https://api.grax.io/test/api') + '&appname=' + appName, null);
-
+            System.Debug('[GRAX.io] callout.response: ' + callout.response);
             if(callout.success) {
                 graxappJSON = callout.response;
             }
-        }
-
-        LastAppName = appName;
-        gxs.graxConfig.Heroku_App_Name__c = appName;
-        gxs.graxConfig.ApiToken__c = GetAppConfig('ENGAGEMENTGRAPH_APITOKEN');
-        gxs.graxConfig.GatewayToken__c = GetAppConfig('ENGAGEMENTGRAPH_GATEWAYTOKEN');
-        gxs.graxConfig.graphdburl__c = GetAppConfig('GRAPHCONNECT_URL');
-        gxs.graxConfig.LicenseToken__c = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
-        gxs.graxConfig.Postgres_URL__c = GetAppConfig('DATABASE_URL');
-        gxs.graxConfig.GRAX_Flow_URL__c = 'https://' + appName + '.herokuapp.com';
-
+            LastAppName = appName;
+	        gxs.graxConfig.Heroku_App_Name__c = appName;
+	        gxs.graxConfig.ApiToken__c = GetAppConfig('ENGAGEMENTGRAPH_APITOKEN');
+	        gxs.graxConfig.GatewayToken__c = GetAppConfig('ENGAGEMENTGRAPH_GATEWAYTOKEN');
+	        gxs.graxConfig.graphdburl__c = GetAppConfig('GRAPHCONNECT_URL');
+	        gxs.graxConfig.LicenseToken__c = GetAppConfig('ENGAGEMENTGRAPH_LICENSETOKEN');
+	        gxs.graxConfig.Postgres_URL__c = GetAppConfig('DATABASE_URL');
+	        gxs.graxConfig.GRAX_Flow_URL__c = 'https://' + appName + '.herokuapp.com';
+	        gxs.graxConfig.GRAX_API_Url__c = 'https://' + appName + '.herokuapp.com/graxproxy/api';
+        }else
+        		System.Debug('[GRAX.io] Already Have App Configuration: ' + appName);
+        		
         return graxappJSON;
     }
     
