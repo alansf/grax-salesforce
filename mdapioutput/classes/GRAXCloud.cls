@@ -183,17 +183,16 @@ public virtual with sharing class GRAXCloud extends GRAXSettings{
         req.setTimeout(120000);
         req.setMethod(httpMethod);
 
-		if(auth <> null && auth) {
+		if(auth <> null && auth && endpoint.indexOf('grax.io')==-1) {
 			GRAXCloud gx = new GRAXCloud();
-
 			// Set up the Username and Password to authenticate on the server
 	        String username = gx.GatewayToken;
-	        String password = gx.ApiToken;
-	        
-	        String token = EncodingUtil.base64Encode(Blob.valueOf(username + ':' + password));
-	        
-	        // Add the Basic authorization header to the HTTP Call
-	        req.setHeader('Authorization', 'Basic ' + token);
+	        String password = gx.ApiToken;        
+	        if (username!='' && password!=''){
+	        	    String token = EncodingUtil.base64Encode(Blob.valueOf(username + ':' + password));
+	        		// Add the Basic authorization header to the HTTP Call
+	        		req.setHeader('Authorization', 'Basic ' + token);
+	        }
 		}
 
         if(headers <> null){
