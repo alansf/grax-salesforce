@@ -14,6 +14,10 @@
   <apex:slds />
 
   <style type="text/css">
+    body {
+        height: 100vh;
+    }
+    
     .unlock_button:disabled,
     .cancel_button:disabled,
     .authorizeotherheroku:disabled {
@@ -21,7 +25,8 @@
     }
     #authorize_help,
     #selectapp_help,
-    #audit_help {
+    #audit_help,
+    #remote_site {
         position: absolute;
         margin-top: 1rem;
     }
@@ -35,6 +40,10 @@
     select.objectlist > option:disabled {
         display: none;
         visibility: hidden;
+    }
+
+    .deploy_button:disabled + #remote_site_warning {
+        display: none;
     }
 
     #flowIframe {
@@ -162,7 +171,11 @@
                             </div>
                             
                             <div class="slds-col slds-grow-none">
-                                <apex:commandButton id="deploy" value="Create New GRAX App" action="{!DeployGraxApp}" styleClass="slds-button slds-button_brand _blank" disabled="{!disableeverything}"/>
+                                <apex:commandButton id="deploy" value="Create New GRAX App" action="{!DeployGraxApp}" styleClass="slds-button slds-button_brand _blank deploy_button" disabled="{!disableeverything}"/>
+                                <button id="remote_site_warning" class="slds-button slds-button_icon slds-button slds-button_icon" aria-describedby="remote_site" title="Warning!">
+                                    <i class="slds-button__icon slds-icon-text-warning slds-icon_small" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#warning')}"></i>
+                                    <span class="slds-assistive-text">Warning!</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -308,6 +321,12 @@
                         <apex:outputPanel layout="inline" styleClass="slds-text-color_weak" rendered="{!disableeverything}"> here</apex:outputPanel>
                         <apex:commandLink action="{!DeployGraxApp}" rendered="{!!disableeverything}">here</apex:commandLink>. Once complete with Heroku application wizard,
                         select your new application here.
+                    </div>
+                </div>
+
+                <div class="slds-popover slds-popover_tooltip slds-nubbin_top-left slds-rise-from-ground slds-hide" role="tooltip" id="remote_site" aria-hidden="true">
+                    <div class="slds-popover__body">
+                        Please ensure that a Remote Site Setting record matching the API Url value is created before using the app.
                     </div>
                 </div>
             </apex:form>
