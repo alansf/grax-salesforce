@@ -71,7 +71,7 @@
   </apex:form>
   
   <script>window.setTimeout(verifySchedules, 0);</script>
-
+  <apex:pageMessages escape="false"/>
   <div class="slds-scope">
     <div class="slds-tabs_scoped">
         <ul class="slds-tabs_scoped__nav" role="tablist" id="tabs">

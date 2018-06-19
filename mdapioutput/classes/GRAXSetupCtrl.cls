@@ -148,6 +148,10 @@ public with sharing class GRAXSetupCtrl {
    		if (gxs.graxConfig.Postgres_URL__c!=''){
 				GRAXAuditTrail audittrail = new GRAXAuditTrail();
         			String auditsettings = audittrail.GetAuditSettings(gxs.graxConfig.Postgres_URL__c);
+        			if (auditsettings.indexOf('Unauthorized endpoint')!=-1){
+        				System.Debug('[GRAX.io] auditsettings: ' + auditsettings);
+        				ApexPages.addmessage(new ApexPages.message(ApexPages.severity.FATAL,'Please Add Remote Site: ' + gxs.graxConfig.GRAX_API_Url__c));
+        			}
         			if (audittrail.numberoftables == 0)
         				disablefielauditddeploy = false;
         			else
