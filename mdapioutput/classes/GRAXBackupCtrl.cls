@@ -1,5 +1,3 @@
-
-
 /*****************************************************************************************
 Name              : GRAXBackupCtrl
 Description       : Implementation of the tab "Back Up" in GRAXSetupUI.
@@ -16,10 +14,12 @@ public with sharing class GRAXBackupCtrl {
     public String sObjectDateFieldDefault {get;set;}
 
     public Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
-    private Set<String> excludedStandardObjects = new Set<String>{'AccountCleanInfo','ContentDistribution','ContentDocumentLink','DuplicateRecordItem','EntitySubscription','ProcessInstance','TopicAssignment','AccountPartner','ContactCleanInfo','EmailMessageRelation','EventRelation','OpportunityPartner','Partner','CollaborationGroupRecord','CaseTeamMember','CaseTeamTemplateRecord','FlowRecordRelation','NetworkUserHistoryRecent'};
+    private Set<String> excludedStandardObjects = new Set<String>{'AccountCleanInfo','ContentDistribution','DuplicateRecordItem','EntitySubscription','ProcessInstance','TopicAssignment','AccountPartner','ContactCleanInfo','EmailMessageRelation','EventRelation','OpportunityPartner','Partner','CollaborationGroupRecord','CaseTeamMember','CaseTeamTemplateRecord','FlowRecordRelation','NetworkUserHistoryRecent'};
     private Set<String> excludedStandardObjectSufixes = new Set<String>{'Share','History','Feed'};
 
+    public String filterCriteriaType {get;set;}
     public String targetDate {get;set;}
+    public String targetReport {get;set;}
     public String criteria {get;set;}
     public String schedule {get;set;}
     public String scheduleStartDate {get;set;}
@@ -44,6 +44,7 @@ public with sharing class GRAXBackupCtrl {
     public GRAXBackupCtrl() {
         userTimeZone = UserInfo.getTimeZone().getID();
         selectedObject = '';
+        targetReport = '';
         sObjectDateFieldDefault = 'LastModifiedDate';
         criteria = 'Main Object not modified';
         archive = false;
@@ -211,7 +212,8 @@ public with sharing class GRAXBackupCtrl {
         Boolean condition = true;
         condition = condition && selectedObject <> null;
         condition = condition && sObjectDateField <> null;
-        condition = condition && targetDate <> null;
+        condition = condition && (filterCriteriaType == 'Date' || targetDate <> null);
+        condition = condition && (filterCriteriaType == 'Report' || targetReport <> null);
         condition = condition && criteria <> null;
         condition = condition && schedule <> null;
         condition = condition && scheduleStartDate <> null;
@@ -222,7 +224,12 @@ public with sharing class GRAXBackupCtrl {
         if(condition) {
             gsp.Object_Name__c = selectedObject;
             gsp.Date_Field__c = sObjectDateField;
-            gsp.Target_Date__c = createDate(targetDate);
+            if(filterCriteriaType == 'Date') {
+                gsp.Target_Date__c = createDate(targetDate);
+            }
+            if(filterCriteriaType == 'Report') {
+                gsp.Target_Report__c = targetReport;
+            }
             gsp.Select_Criteria__c = criteria;
             gsp.Schedule_Type__c = schedule;
             gsp.Schedule_Start_Date__c = createDate(scheduleStartDate);
@@ -273,7 +280,9 @@ public with sharing class GRAXBackupCtrl {
     public void cleanFormData() {
         gsp = new GRAX_Schedule_Process__c();
         selectedObject = '';
+        filterCriteriaType = 'Date';
         targetDate = null;
+        targetReport = '';
         criteria = 'Main Object not modified';
         schedule = null;
         scheduleStartDate = null;
@@ -303,6 +312,13 @@ public with sharing class GRAXBackupCtrl {
             selectedObject = gsp.Object_Name__c;
             sObjectDateField = gsp.Date_Field__c;
             targetDate = String.valueOf(gsp.Target_Date__c);
+            targetReport = gsp.Target_Report__c;
+            if(targetDate <> null) {
+                filterCriteriaType = 'Date';
+            }
+            if(targetReport <> null) {
+                filterCriteriaType = 'Report';
+            }
             criteria = gsp.Select_Criteria__c;
             schedule = gsp.Schedule_Type__c;
             scheduleStartDate = gsp.Schedule_Start_Date__c.format();
@@ -338,7 +354,7 @@ public with sharing class GRAXBackupCtrl {
     // Update scheduledProcessMap with the latest data.
     public void updateScheduledProcessMap() {
         // Get the Map of GRAX_Schedule_Process__c
-        Map<ID, GRAX_Schedule_Process__c> GRAXScheduledProcessMap = new Map<ID, GRAX_Schedule_Process__c>([SELECT Id, Selected_Object_Hierarchy_JSON__c, Select_Criteria__c, Object_Name__c, Target_Date__c, Schedule_Start_Date__c, Schedule_Start_Time__c, Last_Run_Date__c, Next_Run_Date__c, Date_Field__c, Schedule_Type__c, Archive__c, CreatedDate, CreatedBy.Name FROM GRAX_Schedule_Process__c WHERE isDeleted = false ORDER BY Object_Name__c, Last_Run_Date__c]);
+        Map<ID, GRAX_Schedule_Process__c> GRAXScheduledProcessMap = new Map<ID, GRAX_Schedule_Process__c>([SELECT Id, Selected_Object_Hierarchy_JSON__c, Select_Criteria__c, Object_Name__c, Target_Date__c, Target_Report__c, Schedule_Start_Date__c, Schedule_Start_Time__c, Last_Run_Date__c, Next_Run_Date__c, Date_Field__c, Schedule_Type__c, Archive__c, CreatedDate, CreatedBy.Name FROM GRAX_Schedule_Process__c WHERE isDeleted = false ORDER BY Object_Name__c, Last_Run_Date__c]);
 
         scheduledProcessMap.clear();
 
@@ -363,6 +379,37 @@ public with sharing class GRAXBackupCtrl {
                 scheduledProcessMap.put(gsp.Id, sp);
             }
         }
+    }
+
+    public Pagereference execScheduledProcess() {
+        // Get Id of the Scheduled Process to execute.
+        Id spId = Apexpages.currentPage().getParameters().get('spId');
+
+        // Check if the Scheduled Process exist.
+        if(scheduledProcessMap.containsKey(spId)) {
+            GRAX_Schedule_Process__c gsp = scheduledProcessMap.get(spId).GRAXScheduleProcess;
+
+            try{
+                if(gsp.Target_Date__c <> null) {
+                    Database.executebatch(new GRAXBatchToProcessSchedJobMainObject(gsp.Id, true), 1000);
+                }
+
+                if(gsp.Target_Report__c <> null) {
+                    GRAXBatchToProcessSchedJobFromReport b = new GRAXBatchToProcessSchedJobFromReport(gsp.Id, null, null, 100);
+                    b.isExecuteNow = true;
+                    
+                    Database.executeBatch(b, 100);
+                }
+
+                gsp.Status__c = 'Running';
+            } catch(System.AsyncException e){
+                gsp.Status__c = 'Error';
+            }
+
+            update gsp;
+        }
+
+        return null;
     }
 
     // Get the list of ScheduledProcess from scheduledProcessMap, to show in a DataTable.
@@ -392,5 +439,15 @@ public with sharing class GRAXBackupCtrl {
         return options;
     }
 
-}
+    public List<SelectOption> getReports() {   
+        List<SelectOption> options = new List<SelectOption>();
+        options.add(new SelectOption('' ,'-- SELECT REPORT --', true));
 
+        for (Report r : [SELECT Id, Name FROM Report WHERE OwnerId = :UserInfo.getUserId() AND Format = 'Tabular' ORDER BY CreatedDate DESC]) {
+            options.add(new SelectOption(r.Id, r.Name));
+        }
+        
+        return options;
+    }
+
+}

@@ -70,8 +70,7 @@ public virtual class GRAXSettings {
 			if (graxConfig.GRAX_API_Url__c != '' && graxConfig.GRAX_API_Url__c != null)
 				ApiURL=graxConfig.GRAX_API_Url__c;
 			
-    			if ((graphdburl != null && graphdburl != '')&&			
-    				(LicenseToken != null && LicenseToken != '')&&
+    			if (	(LicenseToken != null && LicenseToken != '')&&
     				(GatewayToken != null && GatewayToken != '')&&
     				(ApiToken != null && ApiToken != ''))
     				ProperlyConfigured = true;

@@ -30,9 +30,12 @@ public class GRAXBatchToProcessSchedJobTest {
         gsp.Archive__c = false;
         insert gsp;
 
+        GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{"message": "Test successful"}', 'http://test.grax.io/applications/neo4j/configure', null);
+        Test.setMock(HttpCalloutMock.class, fakeResponse);
+
         Test.startTest();
 
-        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null);
+        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, null);
         Id jobId = Database.executebatch(b);
 
         Test.stopTest();
@@ -77,11 +80,14 @@ public class GRAXBatchToProcessSchedJobTest {
             i++;
         }
 
+        GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{"message": "Test successful"}', 'http://test.grax.io/applications/neo4j/configure', null);
+        Test.setMock(HttpCalloutMock.class, fakeResponse);
+
         Test.startTest();
 
-        Database.executebatch(new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null));
+        Database.executebatch(new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, null));
 
-        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, objects2Process, 1, '');
+        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, objects2Process, 1, '', null);
         Id jobId = Database.executebatch(b);
 
         Test.stopTest();
@@ -115,7 +121,10 @@ public class GRAXBatchToProcessSchedJobTest {
 
         Test.startTest();
 
-        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null);
+        GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{"message": "Test successful"}', 'http://test.grax.io/applications/neo4j/configure', null);
+        Test.setMock(HttpCalloutMock.class, fakeResponse);
+
+        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, null);
         Id jobId = Database.executebatch(b);
 
         Test.stopTest();
@@ -127,6 +136,44 @@ public class GRAXBatchToProcessSchedJobTest {
 
         System.assert(att2BodyString.contains('GRAX_Data_Record_Id'));
         System.assert(att2BodyString.contains('Ready to Process'));
+    }
+
+    @isTest
+    static void GRAXBatchToProcessSchedJobExecuteNowTest() {
+        Datetime now = Datetime.now();
+
+        Account acc = new Account(Name='TestAccount');
+        insert acc;
+    	
+    	Account pacc = new Account(Name='TestAccount2', ParentId=acc.Id);
+        insert pacc;
+
+        GRAX_Schedule_Process__c gsp = new GRAX_Schedule_Process__c();
+        gsp.Object_Name__c = 'Account';
+        gsp.Date_Field__c = 'LastModifiedDate';
+        gsp.Target_Date__c = Date.today().addDays(1);
+        gsp.Select_Criteria__c = 'Main Object not modified';
+        gsp.Schedule_Type__c = 'Once';
+        gsp.Schedule_Start_Date__c = Date.today();
+        gsp.Schedule_Start_Time__c = '23:00';
+        gsp.Next_Run_Date__c = now;
+        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"Account_ChildAccounts","parentUniqueKey":"Account","relatedFieldName":"ParentId","name":"Account","childObjRelStructure":[]}';
+        gsp.Archive__c = true;
+        insert gsp;
+
+        Test.startTest();
+
+        GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{"message": "Test successful"}', 'http://test.grax.io/applications/neo4j/configure', null);
+        Test.setMock(HttpCalloutMock.class, fakeResponse);
+
+        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, true);
+        Id jobId = Database.executebatch(b);
+
+        Test.stopTest();
+
+        System.assertEquals(1, [SELECT Id FROM GRAX_Schedule_Process__c WHERE Id = :gsp.Id AND Next_Run_Date__c = :now].size());
+        System.assertEquals(2, [SELECT Id FROM GRAX_Data_Record_Id__c WHERE Status__c = 'Successfully Deleted'].size());
+        System.assertEquals(0, [SELECT Id FROM Account].size());
     }
 
 }

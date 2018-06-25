@@ -28,7 +28,7 @@ public with sharing class GRAXDataRecordTriggerHandler {
     }
     
     public static Set<String> GRAXArchiveProcRollupFields = new Set<String>();
-    private static Set<String> asyncObjects2ProcessByGRAX = new Set<String>{'Attachment'};
+    private static Set<String> asyncObjects2ProcessByGRAX = new Set<String>{'Attachment', 'ContentVersion'};
     
     /*******************************************************************************
     Name              : rollUpTotalRecordsToProcess

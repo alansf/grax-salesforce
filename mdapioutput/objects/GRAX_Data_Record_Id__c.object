@@ -43,7 +43,6 @@
     <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
-    <description>GRAX Data Record Id</description>
     <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableChangeDataCapture>false</enableChangeDataCapture>
@@ -74,7 +73,6 @@
     </fields>
     <fields>
         <fullName>GRAX_Data_Record__c</fullName>
-        <description>GRAX_Data_Record</description>
         <externalId>false</externalId>
         <label>GRAX Data Record</label>
         <referenceTo>GRAX_Data_Record__c</referenceTo>

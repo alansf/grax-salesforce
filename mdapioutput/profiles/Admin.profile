@@ -11,6 +11,10 @@
         <visible>true</visible>
     </applicationVisibilities>
     <classAccesses>
+        <apexClass>CSVReader</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>GRAXApi</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -59,6 +63,14 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>GRAXBatchToProcessSchedJobFromReport</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXBatchToProcessSchedJobMainObject</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>GRAXBatchToProcessSchedJobTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -100,6 +112,10 @@
     </classAccesses>
     <classAccesses>
         <apexClass>GRAXDataRecordTriggerHandler</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXDataRecordTriggerTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -188,6 +204,10 @@
     </classAccesses>
     <classAccesses>
         <apexClass>GRAXSetupCtrlTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXSplitIterator</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -409,6 +429,11 @@
         <field>GRAX_Schedule_Process__c.Target_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Schedule_Process__c.Target_Report__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <layoutAssignments>
         <layout>GRAXQuery__c-GRAXQueries Layout</layout>
     </layoutAssignments>
@@ -505,6 +530,10 @@
         <apexPage>GRAXSupport</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
+    <tabVisibilities>
+        <tab>GRAX_Schedule_Process__c</tab>
+        <visibility>DefaultOn</visibility>
+    </tabVisibilities>
     <userLicense>Salesforce</userLicense>
     <userPermissions>
         <enabled>true</enabled>
@@ -956,6 +985,10 @@
     </userPermissions>
     <userPermissions>
         <enabled>true</enabled>
+        <name>ModifyMetadata</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
         <name>NewReportBuilder</name>
     </userPermissions>
     <userPermissions>
@@ -1005,6 +1038,10 @@
     <userPermissions>
         <enabled>true</enabled>
         <name>SubmitMacrosAllowed</name>
+    </userPermissions>
+    <userPermissions>
+        <enabled>true</enabled>
+        <name>SubscribeDashboardToOtherUsers</name>
     </userPermissions>
     <userPermissions>
         <enabled>true</enabled>

@@ -80,7 +80,7 @@
   </apex:form>
   
   <script>window.setTimeout(verifySchedules, 0);</script>
-
+  <apex:pageMessages escape="false"/>
   <div class="slds-scope">
     <div class="slds-tabs_scoped">
         <ul class="slds-tabs_scoped__nav" role="tablist" id="tabs">
@@ -99,11 +99,13 @@
                     Audit Trail
                 </a>
             </li>
+            <!-- 
             <li class="slds-tabs_scoped__item" title="Flow" role="presentation">
                 <a class="slds-tabs_scoped__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected="false" aria-controls="tab-flow" id="tab-flow__item">
                     Flow
                 </a>
             </li>
+            -->
             <li class="slds-tabs_scoped__item" title="Back Up" role="presentation">
                 <a class="slds-tabs_scoped__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected="false" aria-controls="tab-archiving" id="tab-archiving__item">
                     Back Up
@@ -163,7 +165,7 @@
                                         <div class="slds-select_container">
                                             <apex:selectList id="objectlist" styleClass="slds-select" value="{!graxapp}" multiselect="false" size="1" disabled="{!appselectdisabled || disableeverything}">
                                                 <apex:selectOptions value="{!graxapps}"/>
-                                                <apex:actionSupport reRender="deploy" event="onchange"/>
+                                                <apex:actionSupport reRender="deploy,apitoken,appname,gatewaytoken,apiurl,licensetoken,graphdburl,postgresurl,flowurl,graxconfig,graxappconfig" event="onchange"/>
                                             </apex:selectList>
                                         </div>
                                     </div>
@@ -231,7 +233,7 @@
                                         </div>
         
                                         <div class="slds-form-element">
-                                            <apex:outputLabel for="graphdburl" value="URL" styleClass="slds-form-element__label"/>
+                                            <apex:outputLabel for="graphdburl" value="Graph Database URL (Optional)" styleClass="slds-form-element__label"/>
                                             <div class="slds-form-element__control">
                                                 <apex:inputText id="graphdburl" value="{!gxs.graxConfig.graphdburl__c}" size="150" styleClass="slds-input" disabled="true"/>
                                             </div>
@@ -243,16 +245,16 @@
                                     				<apex:inputText id="postgresurl" value="{!gxs.graxConfig.Postgres_URL__c}" size="150" styleClass="slds-input" disabled="true"/>
                                     			</div>
                                     	   </div>         
-        
+<!--       
                                         <div class="slds-form-element">
                                             <apex:outputLabel for="flowurl" value="Flow" styleClass="slds-form-element__label"/>
                                             <div class="slds-form-element__control">
                                                 <apex:inputText id="flowurl" value="{!gxs.graxConfig.GRAX_Flow_URL__c}" size="150" styleClass="slds-input" disabled="true"/>
                                             </div>
                                         </div>
-
+ -->  
                                         <div class="slds-form-element">
-                                            <apex:outputLabel for="apiurl" value="API Url" styleClass="slds-form-element__label"/>
+                                            <apex:outputLabel for="apiurl" value="GRAX API Url" styleClass="slds-form-element__label"/>
                                             <div class="slds-form-element__control">
                                                 <apex:inputText id="apiurl" value="{!gxs.graxConfig.GRAX_API_Url__c}" size="150" styleClass="slds-input"/>
                                             </div>

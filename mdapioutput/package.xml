@@ -19,10 +19,15 @@
     <members>GRAXBatchToDeleteBackedUpData</members>
     <members>GRAXBatchToDeleteBackedUpDataTest</members>
     <members>GRAXBatchToProcessSchedJob</members>
+    <members>GRAXBatchToProcessSchedJobFromReport</members>
+    <members>GRAXBatchToProcessSchedJobFromReportTest</members>
+    <members>GRAXBatchToProcessSchedJobMainObject</members>
     <members>GRAXBatchToProcessSchedJobTest</members>
     <members>GRAXBatchToResendDataRecords</members>
     <members>GRAXBatchToResendDataRecordsTest</members>
     <members>GRAXBatchUT</members>
+    <members>GRAXCSVIterator</members>
+    <members>GRAXCSVIteratorTest</members>
     <members>GRAXCloud</members>
     <members>GRAXCloudUT</members>
     <members>GRAXConfiguration</members>
@@ -148,6 +153,7 @@
     <members>GRAX_Schedule_Process__c.Selected_Object_Hierarchy_JSON__c</members>
     <members>GRAX_Schedule_Process__c.Status__c</members>
     <members>GRAX_Schedule_Process__c.Target_Date__c</members>
+    <members>GRAX_Schedule_Process__c.Target_Report__c</members>
   </types>
   <types>
     <name>ListView</name>
@@ -169,9 +175,6 @@
   <types>
     <name>Profile</name>
     <members>Admin</members>
-    <members>Custom: Marketing Profile</members>
-    <members>Custom: Sales Profile</members>
-    <members>Custom: Support Profile</members>
   </types>
   <types>
     <name>RemoteSiteSetting</name>
@@ -190,6 +193,7 @@
     <members>GRAX_DEPLOY</members>
     <members>GRAX_Data_Record__c</members>
     <members>GRAX_Intro</members>
+    <members>GRAX_Schedule_Process__c</members>
     <members>GRAX_Support</members>
   </types>
   <types>

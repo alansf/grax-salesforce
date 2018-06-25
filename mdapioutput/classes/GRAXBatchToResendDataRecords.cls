@@ -6,9 +6,19 @@ Created/Modified by   Created/Modified Date     Requested by        Related Task
 ----------------------------------------------------------------------------------------
 1. Leandro Brunner       04/17/2018				David Mackey        https://app.asana.com/0/326600806074978/633149554508924/f
 ******************************************************************************************/
-global class GRAXBatchToResendDataRecords implements Database.Batchable<sObject>, Database.AllowsCallouts {
+global class GRAXBatchToResendDataRecords implements Database.Batchable<sObject>, Database.AllowsCallouts, Database.Stateful {
+    public Boolean isExecuteNow = false;
+    public Boolean isArchive = false;
+    public Id currentJobId;
+
     global Database.querylocator start(Database.BatchableContext BC) {
-        return Database.getQueryLocator('SELECT Id, Salesforce_Object__c, of_Times_Sent__c FROM GRAX_Data_Record__c WHERE Status__c <> \'Sent Successful\' AND of_Times_Sent__c < 5');
+        String query = 'SELECT Id, Salesforce_Object__c, of_Times_Sent__c FROM GRAX_Data_Record__c WHERE Status__c <> \'Sent Successful\' AND of_Times_Sent__c < 5';
+
+        if(isExecuteNow && currentJobId <> null) {
+            query += ' AND GRAX_Schedule_Process__c = :currentJobId';
+        }
+
+        return Database.getQueryLocator(query);
     }
 
     global void execute(Database.BatchableContext BC, List<GRAX_Data_Record__c> scope) {
@@ -38,5 +48,12 @@ global class GRAXBatchToResendDataRecords implements Database.Batchable<sObject>
         }
     }
 
-    global void finish(Database.BatchableContext BC) {}
+    global void finish(Database.BatchableContext BC) {
+        if(this.isExecuteNow && this.isArchive) {
+            GRAXBatchToDeleteBackedUpData batchToDeleteBackedUpData = new GRAXBatchToDeleteBackedUpData();
+            batchToDeleteBackedUpData.currentJobId = this.currentJobId;
+
+            Database.executebatch(batchToDeleteBackedUpData, 1000);
+        }
+    }
 }

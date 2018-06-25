@@ -60,7 +60,7 @@
     </nameField>
     <pluralLabel>GRAX Archive Processes</pluralLabel>
     <searchLayouts/>
-    <sharingModel>ReadWrite</sharingModel>
+    <sharingModel>ControlledByParent</sharingModel>
     <visibility>Public</visibility>
     <fields>
         <fullName>Async_Records_Successfully_Sent__c</fullName>
