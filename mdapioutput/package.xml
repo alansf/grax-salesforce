@@ -9,6 +9,7 @@
     <name>ApexClass</name>
     <members>GRAXApi</members>
     <members>GRAXApiUT</members>
+    <members>GRAXArchiveProcessTriggerHandler</members>
     <members>GRAXAuditTrail</members>
     <members>GRAXBackupCtrl</members>
     <members>GRAXBackupCtrlTest</members>
@@ -18,16 +19,23 @@
     <members>GRAXBatchToDeleteBackedUpData</members>
     <members>GRAXBatchToDeleteBackedUpDataTest</members>
     <members>GRAXBatchToProcessSchedJob</members>
+    <members>GRAXBatchToProcessSchedJobFromReport</members>
+    <members>GRAXBatchToProcessSchedJobFromReportTest</members>
+    <members>GRAXBatchToProcessSchedJobMainObject</members>
     <members>GRAXBatchToProcessSchedJobTest</members>
     <members>GRAXBatchToResendDataRecords</members>
     <members>GRAXBatchToResendDataRecordsTest</members>
     <members>GRAXBatchUT</members>
+    <members>GRAXCSVIterator</members>
+    <members>GRAXCSVIteratorTest</members>
     <members>GRAXCloud</members>
     <members>GRAXCloudUT</members>
     <members>GRAXConfiguration</members>
     <members>GRAXConfigurationUT</members>
     <members>GRAXConnect</members>
     <members>GRAXConnectUT</members>
+    <members>GRAXDataRecordTriggerHandler</members>
+    <members>GRAXDataRecordTriggerTest</members>
     <members>GRAXDeploy</members>
     <members>GRAXDeployUT</members>
     <members>GRAXException</members>
@@ -64,7 +72,9 @@
   <types>
     <name>Layout</name>
     <members>GRAXQuery__c-GRAXQueries Layout</members>
+    <members>GRAX_Archive_Process__c-GRAX Archive Process Layout</members>
     <members>GRAX_Data_Record_Id__c-Formato GRAX Data Record Id</members>
+    <members>GRAX_Data_Record__c-GRAX Data Record Layout</members>
     <members>GRAX_Schedule_Process__c-GRAX Schedule Process Layout</members>
   </types>
   <types>
@@ -75,6 +85,7 @@
     <name>CustomObject</name>
     <members>GRAXQuery__c</members>
     <members>GRAXSettings__c</members>
+    <members>GRAX_Archive_Process__c</members>
     <members>GRAX_Data_Record_Id__c</members>
     <members>GRAX_Data_Record__c</members>
     <members>GRAX_Schedule_Process__c</members>
@@ -108,14 +119,23 @@
     <members>GRAXSettings__c.s3bucket__c</members>
     <members>GRAXSettings__c.s3region__c</members>
     <members>GRAXSettings__c.s3secretaccesskey__c</members>
+    <members>GRAX_Archive_Process__c.Async_Records_Successfully_Sent__c</members>
+    <members>GRAX_Archive_Process__c.Async_Records_to_Process__c</members>
+    <members>GRAX_Archive_Process__c.GRAX_Schedule_Process__c</members>
+    <members>GRAX_Archive_Process__c.Records_Successfully_Sent__c</members>
+    <members>GRAX_Archive_Process__c.Records_To_Process__c</members>
+    <members>GRAX_Archive_Process__c.Status__c</members>
     <members>GRAX_Data_Record_Id__c.Error_Description__c</members>
     <members>GRAX_Data_Record_Id__c.GRAX_Data_Record__c</members>
     <members>GRAX_Data_Record_Id__c.Processed_Child_Index__c</members>
     <members>GRAX_Data_Record_Id__c.SFDC_Id__c</members>
     <members>GRAX_Data_Record_Id__c.Status__c</members>
     <members>GRAX_Data_Record__c.Error_Message__c</members>
+    <members>GRAX_Data_Record__c.GRAX_Archive_Process__c</members>
     <members>GRAX_Data_Record__c.GRAX_Schedule_Process__c</members>
     <members>GRAX_Data_Record__c.Last_Sent_Date__c</members>
+    <members>GRAX_Data_Record__c.Records_Sent_to_GRAX__c</members>
+    <members>GRAX_Data_Record__c.Records_To_Process__c</members>
     <members>GRAX_Data_Record__c.Salesforce_ID__c</members>
     <members>GRAX_Data_Record__c.Salesforce_Object__c</members>
     <members>GRAX_Data_Record__c.Sched_Proc_Hierarchy_Unique_Key__c</members>
@@ -133,6 +153,7 @@
     <members>GRAX_Schedule_Process__c.Selected_Object_Hierarchy_JSON__c</members>
     <members>GRAX_Schedule_Process__c.Status__c</members>
     <members>GRAX_Schedule_Process__c.Target_Date__c</members>
+    <members>GRAX_Schedule_Process__c.Target_Report__c</members>
   </types>
   <types>
     <name>ListView</name>
@@ -159,6 +180,7 @@
     <name>RemoteSiteSetting</name>
     <members>grax_API</members>
     <members>grax_GraphConnect</members>
+    <members>grax_sales_demo</members>
   </types>
   <types>
     <name>StaticResource</name>
@@ -171,7 +193,13 @@
     <members>GRAX_DEPLOY</members>
     <members>GRAX_Data_Record__c</members>
     <members>GRAX_Intro</members>
+    <members>GRAX_Schedule_Process__c</members>
     <members>GRAX_Support</members>
+  </types>
+  <types>
+    <name>ApexTrigger</name>
+    <members>GRAXArchiveProcessTrigger</members>
+    <members>GRAXDataRecordTrigger</members>
   </types>
   <version>41.0</version>
 </Package>

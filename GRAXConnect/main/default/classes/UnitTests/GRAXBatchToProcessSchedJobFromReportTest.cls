@@ -1,0 +1,57 @@
+/*****************************************************************************************
+Name              : GRAXBatchToProcessSchedJobFromReportTest
+Description       : 
+Revision History  :
+Created/Modified by   Created/Modified Date     Requested by          Related Task/Issue             
+----------------------------------------------------------------------------------------
+2. Leandro Brunner          06/25/2018
+******************************************************************************************/
+@isTest
+public with sharing class GRAXBatchToProcessSchedJobFromReportTest {
+
+    @isTest
+    public static void GRAXBatchToProcessSchedJobFromReportTest1() {
+        GRAX_Data_Record__c dr = new GRAX_Data_Record__c();
+        dr.Status__c = 'Sent Successful';
+        dr.of_Times_Sent__c = 1;
+        insert dr;
+
+        
+        GRAX_Schedule_Process__c gsp = new GRAX_Schedule_Process__c();
+        gsp.Object_Name__c = 'GRAX_Data_Record__c';
+        gsp.Date_Field__c = 'LastModifiedDate';
+        gsp.Target_Report__c = '00OZ0000000he4iMAA';
+        gsp.Select_Criteria__c = 'Main Object not modified';
+        gsp.Schedule_Type__c = 'Once';
+        gsp.Schedule_Start_Date__c = Date.today();
+        gsp.Schedule_Start_Time__c = '23:00';
+        gsp.Next_Run_Date__c = Datetime.now();
+        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"GRAX_Data_Record__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAX_Data_Record__c","childObjRelStructure":[{"uniqueKey":"GRAX_Data_Record__c_Attachments","parentUniqueKey":"GRAX_Data_Record__c","relatedFieldName":"ParentId","name":"Attachment","childObjRelStructure":[]}]}';
+        gsp.Archive__c = true;
+        insert gsp;
+
+        GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{"message": "Test successful"}', 'http://test.grax.io/applications/neo4j/configure', null);
+        Test.setMock(HttpCalloutMock.class, fakeResponse);
+
+
+        String csvTest = '';
+        csvTest += '"GRAX Data Record ID","Object Name"\r\n';
+        csvTest += '"' + dr.Id + '","GRAX_Data_Record__c"\r\n';
+
+        Test.startTest();
+
+        GRAXBatchToProcessSchedJobFromReport b = new GRAXBatchToProcessSchedJobFromReport(gsp.Id, null, null, 100, csvTest);
+        b.isExecuteNow = true;
+
+        Id jobId = Database.executebatch(b);
+
+        Test.stopTest();
+
+        for(GRAX_Schedule_Process__c schedProcess : [SELECT Id, Next_Run_Date__c, Last_Run_Date__c, Status__c FROM GRAX_Schedule_Process__c WHERE Id = :gsp.Id]) {
+            System.assertEquals('Completed', schedProcess.Status__c);
+        }
+
+        System.assertEquals(1, [SELECT Id FROM GRAX_Data_Record_Id__c].size());
+    }
+
+}

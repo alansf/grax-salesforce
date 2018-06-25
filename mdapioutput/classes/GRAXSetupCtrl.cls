@@ -89,8 +89,8 @@ public with sharing class GRAXSetupCtrl {
 	1. Leandro Brunner       04/18/2018				David Mackey		https://app.asana.com/0/326600806074978/633149554508924/f
 	******************************************************************************************/
     public static void verifySchedules() {
-        String schedulerToCleanDataRecords = 'schedulerToCleanDataRecords';
-        String schedulerToResendDataRecords = 'schedulerToResendDataRecords';
+        String schedulerToCleanDataRecords = 'GRAXSchedulerToCleanDataRecords';
+        String schedulerToResendDataRecords = 'GRAXSchedulerToResendDataRecords';
 
         Set<String> crons = new Set<String>();
 

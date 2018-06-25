@@ -19,6 +19,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>GRAXArchiveProcessTriggerHandler</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>GRAXAuditTrail</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -52,6 +56,14 @@
     </classAccesses>
     <classAccesses>
         <apexClass>GRAXBatchToProcessSchedJob</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXBatchToProcessSchedJobFromReport</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXBatchToProcessSchedJobMainObject</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -95,6 +107,14 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>GRAXDataRecordTriggerHandler</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXDataRecordTriggerTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>GRAXDeploy</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -128,6 +148,10 @@
     </classAccesses>
     <classAccesses>
         <apexClass>GRAXRestoreCtrl</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>GRAXRestoreCtrlTest</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -239,6 +263,36 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>GRAX_Archive_Process__c.Async_Records_Successfully_Sent__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Archive_Process__c.Async_Records_to_Process__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Archive_Process__c.Records_Successfully_Sent__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Archive_Process__c.Records_To_Process__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>GRAX_Archive_Process__c.Status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>GRAX_Data_Record_Id__c.Error_Description__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>GRAX_Data_Record_Id__c.Processed_Child_Index__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -259,12 +313,27 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>GRAX_Data_Record__c.GRAX_Archive_Process__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>GRAX_Data_Record__c.GRAX_Schedule_Process__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>GRAX_Data_Record__c.Last_Sent_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>GRAX_Data_Record__c.Records_Sent_to_GRAX__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>GRAX_Data_Record__c.Records_To_Process__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -352,8 +421,22 @@
         <field>GRAX_Schedule_Process__c.Target_Date__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Schedule_Process__c.Target_Report__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <layoutAssignments>
         <layout>GRAXQuery__c-GRAXQueries Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>GRAX_Archive_Process__c-GRAX Archive Process Layout</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>GRAX_Data_Record_Id__c-Formato GRAX Data Record Id</layout>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>GRAX_Data_Record__c-GRAX Data Record Layout</layout>
     </layoutAssignments>
     <layoutAssignments>
         <layout>GRAX_Schedule_Process__c-GRAX Schedule Process Layout</layout>
@@ -365,6 +448,15 @@
         <allowRead>true</allowRead>
         <modifyAllRecords>true</modifyAllRecords>
         <object>GRAXQuery__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>GRAX_Archive_Process__c</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
