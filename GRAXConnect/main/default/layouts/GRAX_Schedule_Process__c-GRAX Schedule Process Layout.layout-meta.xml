@@ -43,6 +43,10 @@
                 <behavior>Edit</behavior>
                 <field>Archive__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Target_Report__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
@@ -97,13 +101,27 @@
         <layoutColumns/>
         <style>CustomLinks</style>
     </layoutSections>
+    <relatedLists>
+        <fields>NAME</fields>
+        <fields>Sched_Proc_Hierarchy_Unique_Key__c</fields>
+        <fields>Status__c</fields>
+        <fields>GRAX_Archive_Process__c</fields>
+        <fields>Records_Sent_to_GRAX__c</fields>
+        <fields>Records_To_Process__c</fields>
+        <fields>of_Times_Sent__c</fields>
+        <relatedList>GRAX_Data_Record__c.GRAX_Schedule_Process__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>NAME</fields>
+        <relatedList>GRAX_Archive_Process__c.GRAX_Schedule_Process__c</relatedList>
+    </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>
     <showInteractionLogPanel>false</showInteractionLogPanel>
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
     <summaryLayout>
-        <masterLabel>00h11000000oqem</masterLabel>
+        <masterLabel>00h0R000000VLqJ</masterLabel>
         <sizeX>4</sizeX>
         <sizeY>0</sizeY>
         <summaryLayoutStyle>Default</summaryLayoutStyle>

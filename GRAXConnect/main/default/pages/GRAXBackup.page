@@ -22,7 +22,7 @@
         
         <apex:actionFunction action="{!cleanFormDataHandler}" name="cleanFormData" immediate="true" reRender="sObjectDateFieldsList, fillInputs" oncomplete="reRendered();showGlobalSpinner(false);"></apex:actionFunction>
 
-        <apex:actionFunction action="{!selectScheduledProcess}" name="selectScheduledProcess" immediate="true" reRender="sObjectDateFieldsList, fillInputs, relStructureOutput" oncomplete="renderObjectHierarchy();showScheduledProcessModal(true);showGlobalSpinner(false);">
+        <apex:actionFunction action="{!selectScheduledProcess}" name="selectScheduledProcess" immediate="true" reRender="sObjectDateFieldsList, fillInputs, relStructureOutput" oncomplete="showScheduledProcessModal(true);showGlobalSpinner(false);">
             <apex:param name="spId" value="" />
         </apex:actionFunction>
 
@@ -157,89 +157,129 @@
     
                     <div class="slds-section slds-is-open slds-p-top_large">
                         <h3 class="slds-section__title slds-theme_shade">
-                            <span class="slds-truncate slds-p-horizontal_small" title="Select Filter Date Criteria">Select Filter Date Criteria</span>
+                            <span class="slds-truncate slds-p-horizontal_small" title="Select Filter Criteria">Select Filter Criteria</span>
                         </h3>
+                        
                         <div aria-hidden="false" class="slds-section__content">
-                            <div class="slds-grid slds-grid_vertical-align-center">
-                                <div class="slds-col slds-grow-none slds-m-right_small">
-                                    <div class="slds-form-element">
-                                        <label class="slds-form-element__label">Select your Date Field</label>
-                                        <div class="slds-form-element__control">
-                                            <div class="slds-select_container">
-                                                <apex:selectList id="sObjectDateFieldsList" value="{!sObjectDateField}" multiselect="false" size="1" styleClass="slds-select sObjectDateFieldsList">
-                                                    <apex:selectOptions value="{!sObjectDateFields}"/>
-                                                </apex:selectList>
+                            <fieldset class="slds-form-element">
+                                <apex:inputHidden id="filterCriteriaType" value="{!filterCriteriaType}" required="true"></apex:inputHidden>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-radio_button-group">
+                                        <span class="slds-button slds-radio_button">
+                                            <input id="filterCriteriaTypeDate" name="filterCriteriaTypeOptions" value="Date" type="radio" onchange="radioChange(this,'{!$Component.filterCriteriaType}');" required="required" checked="checked" />
+                                            <label class="slds-radio_button__label" for="filterCriteriaTypeDate">
+                                                <span class="slds-radio_faux">Date</span>
+                                            </label>
+                                        </span>
+                                        <span class="slds-button slds-radio_button">
+                                            <input id="filterCriteriaTypeReport" name="filterCriteriaTypeOptions" value="Report" type="radio" onchange="radioChange(this,'{!$Component.filterCriteriaType}');" required="required" />
+                                            <label class="slds-radio_button__label" for="filterCriteriaTypeReport">
+                                                <span class="slds-radio_faux">Report</span>
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <section data-filterCriteriaType="Date" class="slds-p-top_small">
+                                <div class="slds-grid slds-grid_vertical-align-center">
+                                    <div class="slds-col slds-grow-none slds-m-right_small">
+                                        <div class="slds-form-element">
+                                            <label class="slds-form-element__label">Select your Date Field</label>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-select_container">
+                                                    <apex:selectList id="sObjectDateFieldsList" value="{!sObjectDateField}" multiselect="false" size="1" styleClass="slds-select sObjectDateFieldsList">
+                                                        <apex:selectOptions value="{!sObjectDateFields}"/>
+                                                    </apex:selectList>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-    
-                            <div class="slds-grid slds-grid_vertical-align-center slds-p-top_small">
-                                <div class="slds-col slds-grow-none slds-m-right_small">
-                                    <div class="slds-form-element">
-                                        <label class="slds-form-element__label" for="colDt_q">Select the Date from when this field value is applicable on the record</label>
-                                        <div class="slds-form-element__control">
-                                            <div class="slds-select_container">
-                                                <select id="colDt_q" name="colDt_q" onchange="window.changecolDt(this.options[this.selectedIndex].value)" class="slds-select">
-                                                    <option value="custom">Custom</option>
-                                                
-                                                    <optgroup label="Calendar Year">
-                                                        <option value="cury">Current CY</option>
-                                                        <option value="prevy">Previous CY</option>
-                                                        <option value="prev2y">Previous 2 CY</option>
-                                                        <option value="ago2y">2 CY Ago</option>
-                                                        <option value="prevcury">Current and Previous CY</option>
-                                                        <option value="prevcur2y">Current and Previous 2 CY</option>
-                                                    </optgroup>
-                                                
-                                                    <optgroup label="Calendar Quarter">
-                                                        <option value="currentq">Current CQ</option>
-                                                        <option value="curprevq">Current and Previous CQ</option>
-                                                        <option value="prevq">Previous CQ</option>
-                                                    </optgroup>
-                                                
-                                                    <optgroup label="Calendar Month">
-                                                        <option value="lastmonth">Last Month</option>
-                                                        <option value="thismonth">This Month</option>
-                                                        <option value="lastthismonth">Current and Previous Month</option>
-                                                    </optgroup>
-                                                
-                                                    <optgroup label="Calendar Week">
-                                                        <option value="lastweek">Last Week</option>
-                                                        <option value="thisweek">This Week</option>
-                                                    </optgroup>
-                                                
-                                                    <optgroup label="Day">
-                                                        <option value="yesterday">Yesterday</option>
-                                                        <option value="today">Today</option>
-                                                        <option value="tomorrow">Tomorrow</option>
-                                                        <option value="last7">Last 7 Days</option>
-                                                        <option value="last30">Last 30 Days</option>
-                                                        <option value="last60">Last 60 Days</option>
-                                                        <option value="last90">Last 90 Days</option>
-                                                        <option value="last120">Last 120 Days</option>                                    
-                                                    </optgroup>
-                                                </select>
+        
+                                <div class="slds-grid slds-grid_vertical-align-center slds-p-top_small">
+                                    <div class="slds-col slds-grow-none slds-m-right_small">
+                                        <div class="slds-form-element">
+                                            <label class="slds-form-element__label" for="colDt_q">Select the Date from when this field value is applicable on the record</label>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-select_container">
+                                                    <select id="colDt_q" name="colDt_q" onchange="window.changecolDt(this.options[this.selectedIndex].value)" class="slds-select">
+                                                        <option value="custom">Custom</option>
+                                                    
+                                                        <optgroup label="Calendar Year">
+                                                            <option value="cury">Current CY</option>
+                                                            <option value="prevy">Previous CY</option>
+                                                            <option value="prev2y">Previous 2 CY</option>
+                                                            <option value="ago2y">2 CY Ago</option>
+                                                            <option value="prevcury">Current and Previous CY</option>
+                                                            <option value="prevcur2y">Current and Previous 2 CY</option>
+                                                        </optgroup>
+                                                    
+                                                        <optgroup label="Calendar Quarter">
+                                                            <option value="currentq">Current CQ</option>
+                                                            <option value="curprevq">Current and Previous CQ</option>
+                                                            <option value="prevq">Previous CQ</option>
+                                                        </optgroup>
+                                                    
+                                                        <optgroup label="Calendar Month">
+                                                            <option value="lastmonth">Last Month</option>
+                                                            <option value="thismonth">This Month</option>
+                                                            <option value="lastthismonth">Current and Previous Month</option>
+                                                        </optgroup>
+                                                    
+                                                        <optgroup label="Calendar Week">
+                                                            <option value="lastweek">Last Week</option>
+                                                            <option value="thisweek">This Week</option>
+                                                        </optgroup>
+                                                    
+                                                        <optgroup label="Day">
+                                                            <option value="yesterday">Yesterday</option>
+                                                            <option value="today">Today</option>
+                                                            <option value="tomorrow">Tomorrow</option>
+                                                            <option value="last7">Last 7 Days</option>
+                                                            <option value="last30">Last 30 Days</option>
+                                                            <option value="last60">Last 60 Days</option>
+                                                            <option value="last90">Last 90 Days</option>
+                                                            <option value="last120">Last 120 Days</option>                                    
+                                                        </optgroup>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-    
-                            <div class="slds-grid slds-grid_vertical-align-center slds-p-top_small">
-                                <div class="slds-col slds-grow-none slds-m-right_small">
-                                    <div class="slds-form-element">
-                                        <label class="slds-form-element__label">Target Date</label>
-                                        <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right">
-                                            <svg aria-hidden="true" class="slds-input__icon slds-icon-text-default">
-                                                <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#event')}"></use>
-                                            </svg>
-                                            <apex:inputText id="targetDate" value="{!targetDate}" styleClass="slds-input targetDate" html-placeholder="00/00/0000"></apex:inputText>
+        
+                                <div class="slds-grid slds-grid_vertical-align-center slds-p-top_small">
+                                    <div class="slds-col slds-grow-none slds-m-right_small">
+                                        <div class="slds-form-element">
+                                            <label class="slds-form-element__label">Target Date</label>
+                                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right">
+                                                <svg aria-hidden="true" class="slds-input__icon slds-icon-text-default">
+                                                    <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#event')}"></use>
+                                                </svg>
+                                                <apex:inputText id="targetDate" value="{!targetDate}" styleClass="slds-input targetDate" html-placeholder="00/00/0000"></apex:inputText>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </section>
+
+                            <section data-filterCriteriaType="Report" class="slds-p-top_small slds-hide">
+                                <div class="slds-grid slds-grid_vertical-align-center">
+                                    <div class="slds-col slds-grow-none slds-m-right_small">
+                                        <div class="slds-form-element">
+                                            <label class="slds-form-element__label">Select your Report</label>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-select_container">
+                                                    <apex:selectList id="reportList" value="{!targetReport}" multiselect="false" size="1" styleClass="slds-select reportList">
+                                                        <apex:selectOptions value="{!reports}"/>
+                                                    </apex:selectList>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
                         </div>
                     </div>
     
@@ -440,7 +480,10 @@
             };
     
             var $objectList = $sf('{!$Component.objectList}');
+            var $filterCriteriaType = $sf('{!$Component.filterCriteriaType}');
+            var $filterCriteriaTypeOptions = $('[name="filterCriteriaTypeOptions"]');
             var $targetDate = $sf('{!$Component.targetDate}');
+            var $reportList = $sf('{!$Component.reportList}');
             var $schedule = $sf('{!$Component.schedule}');
             var $scheduleStartDate = $sf('{!$Component.scheduleStartDate}');
             var $scheduleStartTime = $sf('{!$Component.scheduleStartTime}');
@@ -452,16 +495,27 @@
             var $saveScheduledProcess = $('#saveScheduledProcess');
             var $cancelScheduledProcess = $('#cancelScheduledProcess, #scheduledProcessModal .slds-modal__close');
             var $globalSpinner = $('#globalSpinner');
+
+            var selectFilterCriteriaTypeOption = function(value, isEvent) {
+                if(!isEvent) {
+                    $filterCriteriaTypeOptions.filter(':checked').prop('checked', false);
+                    $filterCriteriaTypeOptions.filter('[value="' + value + '"]').prop('checked', true);
+                }
+                $('[data-filterCriteriaType]').addClass('slds-hide');
+                $('[data-filterCriteriaType="' + value + '"]').removeClass('slds-hide');
+            };
         </script>
 
         <apex:outputPanel id="fillInputs">
             <script>
                 var fillForm = function() {
                     var selectedObject = '{!selectedObject}';
+                    var targetReport = '{!targetReport}';
 
                     $("#colDt_q").val('today').trigger('change');
 
                     $objectList.val(!selectedObject ? null : selectedObject);
+                    $reportList.val(!targetReport ? null : targetReport);
                     $schedule.val('{!schedule}');
                     $targetDate.datepicker('setDate', selectedObject ? '{!targetDate}': moment());
                     $scheduleStartDate.datepicker('setDate', selectedObject ? '{!scheduleStartDate}' : moment());
@@ -477,9 +531,12 @@
                 
                     $('[name="criteriaOptions"], [name="scheduleOptions"]').prop('checked', false);
 
-                    var criteria = '{!criteria}'; var schedule = '{!schedule}';
+                    var criteriaType = '{!filterCriteriaType}'; var criteria = '{!criteria}'; var schedule = '{!schedule}';
                     if(criteria) $('[name="criteriaOptions"][value="' + criteria + '"]').prop('checked', true);
                     if(schedule) $('[name="scheduleOptions"][value="' + schedule + '"]').prop('checked', true);
+
+                    selectFilterCriteriaTypeOption(!criteriaType ? 'Date' : criteriaType);
+                    renderObjectHierarchy();
                 };
             </script>
         </apex:outputPanel>
@@ -545,6 +602,7 @@
                 $("#colDt_q").val('today').trigger('change');
 
                 $objectList.val(null);
+                $reportList.val(null);
                 $schedule.val(null);
                 $targetDate.datepicker('setDate', moment());
                 $scheduleStartDate.datepicker('setDate', moment());
@@ -562,6 +620,7 @@
 
                 var criteria = 'Main Object not modified';
                 $('[name="criteriaOptions"][value="' + criteria + '"]').prop('checked', true);
+                selectFilterCriteriaTypeOption('Date');
             };
             
             
@@ -582,6 +641,11 @@
                 showScheduledProcessModal(false);
 
                 e.preventDefault();
+            });
+
+            
+            $filterCriteriaTypeOptions.on('change', function(e) {
+                selectFilterCriteriaTypeOption(e.target.value, true);
             });
 
 
@@ -750,6 +814,8 @@
                                     .closest('[role="treeitem"]').attr({'aria-expanded': 'true'});
                             } else if(parent && item[settings.items.childs] && item[settings.items.childs].length > 1) { // PARENT
                                 $root.on('change', '#' + item[settings.items.id], function(e) {
+                                    item.isSelected = e.target.checked;
+                                    
                                     callNested(settings, item[settings.items.childs], function(item) {
                                         item.isSelected = item.isCascadeDelete || e.target.checked;
 
@@ -759,7 +825,7 @@
                                                 'disabled': item.isCascadeDelete
                                             });
                                     });
-
+                                    
                                     setObjectHierarchyJSON();
                                 });
                             } else  { // CHILD

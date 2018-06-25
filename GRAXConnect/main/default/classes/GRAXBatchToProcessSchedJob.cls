@@ -20,6 +20,8 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
     public List<Id> graxDataRecIds2ProcessForChild;
     public Boolean isArchive;
     public Boolean isExecuteNow;
+    public Boolean hasContentDocument;
+    private Set<String> asyncObjects2ProcessByGRAX = new Set<String>{'Attachment', 'ContentVersion'};
     
     public GRAXBatchToProcessSchedJob(String jobId, List<GRAXBackupCtrl.ObjRelStructure> objects2Process, Integer elementIndex, String selectCriteria, Boolean isExecuteNow){
         this.objects2Process = objects2Process;
@@ -30,6 +32,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         this.graxDataRecIds2ProcessForChild = new List<Id>();
         this.isArchive = isArchive;
         this.isExecuteNow = isExecuteNow <> null ? isExecuteNow : false;
+        this.hasContentDocument = false;
         
         if(objects2Process == null){
             // If this is the first time the batch is firing for the current Schedule Process
@@ -91,7 +94,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
             //    this.currentSelectCriteria = 'LastModifiedDate <= ' + schedProcess.Selected_Time_Frame__c;
             //}
                         
-            query = 'SELECT ' + getSObjectFields(objName);
+            query = 'SELECT ' + String.join(getSObjectFields(objName), ', ');
             query += ' FROM ' + objName;
             if(rootObjSelectCriteria <> ''){
                 query += ' WHERE ' + rootObjSelectCriteria;
@@ -110,7 +113,14 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
             
             String objName = sObjRelStruc.name;
             
-            query = 'SELECT ' + getSObjectFields(objName);
+            query = 'SELECT ' + String.join(getSObjectFields(objName), ', ');
+            
+            // If the current object is 'ContentDocumentLink', then add every field associated to the related Content Document, 
+            // as this is a special scenario of a junction object
+            if(objName.equalsIgnoreCase('ContentDocumentLink')){
+            	query += ', ContentDocument.' + String.join(getSObjectFields('ContentDocument'), ', ContentDocument.');
+            }
+            
             query += ' FROM ' + objName;
             query += ' WHERE ' + sObjRelStruc.relatedFieldName + ' IN :parentIds2ProcessForChild';
             
@@ -122,19 +132,73 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         System.debug('The object Query is: ' + query);
     }
     
-    global Database.querylocator start(Database.BatchableContext BC) {
-        return Database.getQueryLocator(query);
+    global Iterable<SObject> start(Database.BatchableContext BC) {
+        return Database.query(query);
     }
 
     global void execute(Database.BatchableContext BC, List<SObject> scope) {
+        executeMethod(scope);
+    }
+    
+    global void finish(Database.BatchableContext BC){
+        finishMethod();
+    }
+    
+    public void executeMethod(List<SObject> scope){
         // Generate the JSON Content for these records
         String content = GRAXApi.jsonContentArchive(scope);
         
         // Get the SObject Name and the list of Ids being processed 
         String sobjectName = this.objects2Process[this.currentElementIndex].name;
+        
+        // Check if the current object is 'ContentDocumentLink'
+        if(sobjectName.equalsIgnoreCase('ContentDocumentLink')){
+            List<SObject> relJunctionObjectList = new List<SObject>();
+            
+            // Store the ContentDocument records in their own List
+            for(SObject sObj : scope){
+                relJunctionObjectList.add(sObj.getSObject('ContentDocument'));
+            }
+            
+            // Generate the JSON Content for these records
+        	String relJunctionObjectContent = GRAXApi.jsonContentArchive(relJunctionObjectList);
+            
+            // Remove the relationship to 'ContentDocument' from the content JSON
+        	Map<String, Object> m = (Map<String, Object>)JSON.deserializeUntyped(content);
+            List<Object> recsList = (List<Object>)m.get('new');
+
+            for(Object recObj : recsList){
+                Map<String, Object> rec = (Map<String, Object>)recObj;
+                rec.remove('ContentDocument');
+            }
+            content = JSON.serialize(m);
+            
+            
+            // Call the generate GRAX Data Record method for this middle object
+            generateGRAXDataRecord('ContentDocument', 'ContentDocument', relJunctionObjectContent, relJunctionObjectList);
+            
+            // If it wasn't added on a previous iteration, add the ContentVersion object to the end of the object hierarchy list to be evalueated last
+            if(!this.hasContentDocument){
+                String clonedStructure = JSON.serialize(this.objects2Process[this.currentElementIndex]);
+                GRAXBackupCtrl.ObjRelStructure sObjRelStruc = (GRAXBackupCtrl.ObjRelStructure)JSON.deserialize(clonedStructure, GRAXBackupCtrl.ObjRelStructure.class);
+                sObjRelStruc.name = 'ContentVersion';
+                sObjRelStruc.parentUniqueKey = 'ContentDocument';
+                sObjRelStruc.uniqueKey = 'ContentVersion';
+                sObjRelStruc.relatedFieldName = 'ContentDocumentId';
+                
+                this.objects2Process.add(sObjRelStruc);
+                this.hasContentDocument = true;
+            }
+        }
+        
+        // Call the generate GRAX Data Record method for this object
+		generateGRAXDataRecord(sobjectName, this.currentObjRelStrucUniqueKey, content, scope);
+    }
+    
+    private void generateGRAXDataRecord(String sobjectName, String objRelStrucUniqueKey, String jsonContent, List<SObject> sObjRecs){
         String sfdcIds = '';
 
-        for(SObject sObj : scope){
+        for(SObject sObj : sObjRecs){
             sfdcIds += ';' + sObj.Id;
         }
         sfdcIds = sfdcIds.substring(1);
@@ -146,7 +210,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         dr.of_Times_Sent__c = 0;
         dr.Error_Message__c = null;
         dr.GRAX_Schedule_Process__c = this.currentJobId;
-        dr.Sched_Proc_Hierarchy_Unique_Key__c = this.currentObjRelStrucUniqueKey;
+        dr.Sched_Proc_Hierarchy_Unique_Key__c = objRelStrucUniqueKey;
         dr.GRAX_Archive_Process__c = this.currentArchiveProcessId;
         insert dr;
 
@@ -157,7 +221,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         
         // Iterate through the list of records to create a GRAX_Data_Record_Id__c instance for each one of them
         Map<Id, GRAX_Data_Record_Id__c> dataRecIds2InsBySObjId = new Map<Id, GRAX_Data_Record_Id__c>();
-        for(SObject sObj : scope){
+        for(SObject sObj : sObjRecs){
             GRAX_Data_Record_Id__c dataRecId = new GRAX_Data_Record_Id__c();
             dataRecId.SFDC_Id__c = sObj.Id;
             dataRecId.GRAX_Data_Record__c = dr.Id;
@@ -168,9 +232,9 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         
         insert dataRecIds2InsBySObjId.values();
         
-        // If the current object is "Attachment", then add the GRAX_Data_Record_Id__c Id to the JSON
-        if(this.isArchive && sobjectName == 'Attachment'){
-            Map<String, Object> m = (Map<String, Object>)JSON.deserializeUntyped(content);
+        // If the current object is "Attachment" or "Salesforce File", then add the GRAX_Data_Record_Id__c Id to the JSON
+        if(this.isArchive && asyncObjects2ProcessByGRAX.contains(sobjectName)){
+            Map<String, Object> m = (Map<String, Object>)JSON.deserializeUntyped(jsonContent);
             List<Object> recsList = (List<Object>)m.get('new');
 
             for(Object recObj : recsList){
@@ -178,18 +242,18 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
                 rec.put('GRAX_Data_Record_Id', dataRecIds2InsBySObjId.get((Id)rec.get('Id')).Id);
                 rec.put('GRAX_Status', 'Ready to Process');
             }
-            content = JSON.serialize(m);
+            jsonContent = JSON.serialize(m);
         }
         
         // Save the Attachment with the JSON content associated to the GRAX_Data_Record__c
         Attachment req_att = new Attachment();
         req_att.Name = 'request.txt';
-        req_att.Body = Blob.valueOf(content);
+        req_att.Body = Blob.valueOf(jsonContent);
         req_att.ParentId = dr.Id;
         insert req_att;
     }
     
-    global void finish(Database.BatchableContext BC){
+    public void finishMethod(){
         Boolean continue2NextChildObject = true;
         
         // Check if this is a Child object being evaluated
@@ -223,12 +287,32 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
             this.currentElementIndex = this.currentElementIndex + 1;
         }
         
-        if(this.currentElementIndex < this.objects2Process.size()){
+        Boolean isBatchCompleted = this.currentElementIndex >= this.objects2Process.size();
+        GRAXBatchToProcessSchedJob b;
+        
+        if(!isBatchCompleted){
             // Now we have to call the batch again based on the current parameters
-            GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(this.currentJobId, this.objects2Process, this.currentElementIndex, this.currentSelectCriteria, this.isExecuteNow);
+            b = new GRAXBatchToProcessSchedJob(this.currentJobId, this.objects2Process, this.currentElementIndex, this.currentSelectCriteria, this.isExecuteNow);
+            
+            // Check if there are parentIds identified to process for the following Child object
+            // Only iterate up to 100 times
+            for(Integer i = 0; i < 100 && b.parentIds2ProcessForChild.size() == 0 && this.currentElementIndex < this.objects2Process.size(); i++){
+                this.currentElementIndex = this.currentElementIndex + 1;
+                
+                isBatchCompleted = this.currentElementIndex >= this.objects2Process.size();
+                
+                if(!isBatchCompleted){
+                    // Create a new instance of the batch for this Child object
+                    b = new GRAXBatchToProcessSchedJob(this.currentJobId, this.objects2Process, this.currentElementIndex, this.currentSelectCriteria, this.isExecuteNow);
+                }
+            }
+        }
+        
+        if(!isBatchCompleted){
             b.isArchive = this.isArchive;
             b.currentArchiveProcessId = this.currentArchiveProcessId;
             b.isExecuteNow = this.isExecuteNow;
+            b.hasContentDocument = this.hasContentDocument;
             
             if(!Test.isRunningTest()){
                 database.executebatch(b, 1000);
@@ -254,20 +338,19 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         }
     }
     
-    private String getSObjectFields(String objName){
+    public static List<String> getSObjectFields(String objName){
         // Get a map of field name and field token
         Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
         Map<String, Schema.SObjectField> fMap = globalDescribe.get(objName).getDescribe().Fields.getMap();
-        String selectFields = '';
+        List<String> selectFields = new List<String>();
         
         if(fMap != null){
             for(Schema.SObjectField ft : fMap.values()){ // loop through all field tokens (ft)
                 Schema.DescribeFieldResult fd = ft.getDescribe(); // describe each field (fd)
                 if(!fd.getType().name().equalsIgnoreCase('base64')){
-                	selectFields += ',' + fd.getName();
+                	selectFields.add(fd.getName());
             	}
             }
-            selectFields = selectFields.substring(1);
         }
         
         return selectFields;
