@@ -46,13 +46,27 @@
 				 	 	 	<apex:facet name="stop">
 				 	 	 	 	<apex:outputPanel>
 				 	 	 	 		<br/>
-				 	 	 	 	 	<p><b>Time Machine Location:</b></p>
-				 	 	 	 	 	{!fileSelected}
-				 	 	 	 	 	<br/>
-				 	 	 	 	 	<br/>
-				 	 	 	 	 	<p><b>Raw Before &amp; After:</b></p>
-				 	 	 	 	 	<br/>
-				 	 	 	 	 	{!fileContents}
+				 	 	 	 		<table>
+				 	 	 	 			<tr>
+				 	 	 	 				<th>Location:</th>
+				 	 	 	 				<td>{!fileSelected}</td>
+				 	 	 	 			</tr>
+				 	 	 	 			<tr>
+				 	 	 	 				<th colspan="2">
+				 	 	 	 					<hr/>
+				 	 	 	 				</th>
+				 	 	 	 			</tr>
+				 	 	 	 			<tr>
+				 	 	 	 				<th colspan="2">
+				 	 	 	 					Raw Before &amp; After:
+				 	 	 	 				</th>
+				 	 	 	 			</tr>
+				 	 	 	 			<tr>
+				 	 	 	 				<Td colspan="2">
+				 	 	 	 					{!fileContents}
+				 	 	 	 				</td>
+				 	 	 	 			</tr>
+				 	 	 	 		</table>			 	 	 	 	 	
 				 	 	 	 	</apex:outputPanel>
 				 	 	 	</apex:facet>
 				 	 	</apex:actionstatus>

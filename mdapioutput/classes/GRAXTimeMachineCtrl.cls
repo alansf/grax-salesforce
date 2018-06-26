@@ -51,10 +51,8 @@ public with sharing class GRAXTimeMachineCtrl {
 	        				FieldName = parser.getText();
 	        				parser.nextToken();
 	        				FieldValue = parser.getText();
-	        		
 	        				if (FieldName=='Key')
 	        					S3Key = FieldValue;
-	        				
 	        				if (FieldName=='LastModified'){
 	        					fileSelect.add(new SelectOption(S3Key,FieldValue));
 	        				}	        				
