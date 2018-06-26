@@ -29,7 +29,9 @@ public with sharing class GRAXTimeMachineCtrl {
     public String getfileSelected() {
         return fileSelected;
     }
-                    
+    
+    
+    // TODO : We should parse the JSON display the differences between NEW and OLD in JSON                
     public void setfileSelected(String currentFile) { 
     		this.fileSelected = currentFile; 
     		String fileName = currentFile.split('/')[currentFile.split('/').size()-1];
