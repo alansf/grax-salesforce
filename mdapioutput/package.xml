@@ -182,7 +182,6 @@
     <name>RemoteSiteSetting</name>
     <members>grax_API</members>
     <members>grax_GraphConnect</members>
-    <members>graxproxy</members>
   </types>
   <types>
     <name>StaticResource</name>
