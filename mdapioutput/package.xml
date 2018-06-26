@@ -59,6 +59,7 @@
     <members>GRAXSetupCtrl</members>
     <members>GRAXSetupCtrlTest</members>
     <members>GRAXSupportCtrl</members>
+    <members>GRAXTimeMachineCtrl</members>
     <members>GRAXUnitTest</members>
   </types>
   <types>
@@ -171,6 +172,7 @@
     <members>GRAXRestore</members>
     <members>GRAXSetup</members>
     <members>GRAXSupport</members>
+    <members>GRAXTimeMachine</members>
   </types>
   <types>
     <name>Profile</name>
@@ -180,7 +182,7 @@
     <name>RemoteSiteSetting</name>
     <members>grax_API</members>
     <members>grax_GraphConnect</members>
-    <members>grax_sales_demo</members>
+    <members>graxproxy</members>
   </types>
   <types>
     <name>StaticResource</name>

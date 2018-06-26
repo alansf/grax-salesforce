@@ -1,0 +1,66 @@
+<apex:page controller="GRAXTimeMachineCtrl" cache="false" showChat="false" showHeader="true" standardStylesheets="true" sidebar="true" applyHtmlTag="true" applyBodyTag="false" docType="html-5.0">
+
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" type="text/javascript"></script>
+    <script src="{!URLFOR($Resource.grax, '/jquery.slds.js')}"></script>
+    <script src="{!URLFOR($Resource.grax, '/jquery.sldsTree.js')}"></script>
+    <!-- Import the Design System style sheet -->
+    <apex:slds />
+</head>
+<body>
+    <div class="slds-scope">
+    		<table>
+    			<tr>
+    				<td>
+    					<b>{!parentType}: </b>&nbsp;&nbsp;&nbsp; {!parentId}
+    				</td>
+    			</tr>
+    			<tr>
+    				<td>
+    					&nbsp;
+    				</td>
+    			</tr>
+    			<tr>
+    				<td>
+    					<apex:form id="form-timemachine">
+						<div style="float:center">
+				        		<apex:selectRadio value="{!fileSelected}" layout="pageDirection">
+								<apex:selectOptions value="{!fileSelect}" />
+							</apex:selectRadio>
+						 	<br/>
+						 	<apex:commandButton value="Display Before & After" action="{!test}" rerender="out" status="status"/>&nbsp;&nbsp;&nbsp;
+						 	<apex:commandButton value="Restore After Version" action="{!test}" rerender="out" status="status"/>&nbsp;&nbsp;&nbsp;
+						 	<apex:commandButton value="Restore Before Version" action="{!test}" rerender="out" status="status"/>
+					 	</div>
+			        </apex:form>
+    				</td>
+    			</tr>
+    			<tr>
+    				<td>
+    					<apex:outputPanel id="out">
+				 	 	<apex:actionstatus id="status" startText="testing...">
+				 	 	 	<apex:facet name="stop">
+				 	 	 	 	<apex:outputPanel>
+				 	 	 	 		<br/>
+				 	 	 	 	 	<p><b>Time Machine Location:</b></p>
+				 	 	 	 	 	{!fileSelected}
+				 	 	 	 	 	<br/>
+				 	 	 	 	 	<br/>
+				 	 	 	 	 	<p><b>Raw Before &amp; After:</b></p>
+				 	 	 	 	 	<br/>
+				 	 	 	 	 	{!fileContents}
+				 	 	 	 	</apex:outputPanel>
+				 	 	 	</apex:facet>
+				 	 	</apex:actionstatus>
+				 	</apex:outputPanel>
+    				</td>
+    			</tr>
+    		</table>
+    </div>
+</body>
+</html>
+</apex:page>

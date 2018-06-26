@@ -7,6 +7,49 @@ public class GRAXAuditTrail extends GRAXCloud {
 	public String query = '';
 	public String prefix = '';
 	
+	public Static String GetTimeMachine(String ObjectType, String ObjectId){
+		String retValue = '';
+		GRAXSettings gxcSettings = new GRAXSettings();
+		String Params = '{"orgid":"' + UserInfo.getOrganizationId() + '",' +
+						'"objecttype":\"' + ObjectType + '",' +
+						'"objectid":"' +  ObjectId + '",' + 
+	        			 	'"s3accesskeyid":"' + gxcSettings.graxConfig.s3accesskeyid__c + '",' + 
+	        			 	'"s3secretaccesskey":"' + gxcSettings.graxConfig.s3secretaccesskey__c + '",' + 
+	        		     	'"s3bucket":"' + gxcSettings.graxConfig.s3bucket__c + '",' + 
+	        			 	'"s3region":"' + gxcSettings.graxConfig.s3region__c + '"}';
+	        			 	
+		String url = gxcSettings.ApiURL + '/platforms/amazon/s3/getdirectory';
+		if(!Test.isRunningTest()){
+	        GRAXCloud.CallOutResponse callout  = GRAXCloud.calloutnow(url,Params);
+	        if(callout.success) {
+	        		retValue = callout.response;
+	        }
+        }
+        return retValue;
+	}
+	
+	public Static String GetTimeMachineFile(String ObjectType, String ObjectId,String FileName){
+		String retValue = '';
+		GRAXSettings gxcSettings = new GRAXSettings();
+		String Params = '{"orgid":"' + UserInfo.getOrganizationId() + '",' +
+						'"objecttype":\"' + ObjectType + '",' +
+						'"objectid":"' +  ObjectId + '",' + 
+						'"filename":"' +  FileName + '",' + 
+	        			 	'"s3accesskeyid":"' + gxcSettings.graxConfig.s3accesskeyid__c + '",' + 
+	        			 	'"s3secretaccesskey":"' + gxcSettings.graxConfig.s3secretaccesskey__c + '",' + 
+	        		     	'"s3bucket":"' + gxcSettings.graxConfig.s3bucket__c + '",' + 
+	        			 	'"s3region":"' + gxcSettings.graxConfig.s3region__c + '"}';
+	        			 	
+		String url = gxcSettings.ApiURL + '/platforms/amazon/s3/getfile';
+		if(!Test.isRunningTest()){
+	        GRAXCloud.CallOutResponse callout  = GRAXCloud.calloutnow(url,Params);
+	        if(callout.success) {
+	        		retValue = callout.response;
+	        }
+        }
+        return retValue;
+	}
+	
     public String GetAuditSettings(String ConnString){
     		ConnectionString = ConnString;
     		String content = '{"connectionstring" : "' + ConnectionString + '"}';
