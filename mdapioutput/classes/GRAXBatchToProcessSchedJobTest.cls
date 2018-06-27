@@ -11,14 +11,13 @@ public class GRAXBatchToProcessSchedJobTest {
 
     @isTest
     static void GRAXBatchToProcessSchedJobTest1() {
-        Account acc = new Account(Name='TestAccount');
-        insert acc;
-
-        Account pacc = new Account(Name='TestAccount2', ParentId=acc.Id);
-        insert pacc;
+        GRAX_Data_Record__c dr = new GRAX_Data_Record__c();
+        dr.Status__c = 'Sent Successful';
+        dr.of_Times_Sent__c = 1;
+        insert dr;
 
         GRAX_Schedule_Process__c gsp = new GRAX_Schedule_Process__c();
-        gsp.Object_Name__c = 'Account';
+        gsp.Object_Name__c = 'GRAX_Data_Record__c';
         gsp.Date_Field__c = 'LastModifiedDate';
         gsp.Target_Date__c = Date.today().addDays(1);
         gsp.Select_Criteria__c = 'Main Object not modified';
@@ -26,7 +25,7 @@ public class GRAXBatchToProcessSchedJobTest {
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
         gsp.Next_Run_Date__c = Datetime.now();
-        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"Account","parentUniqueKey":null,"relatedFieldName":null,"name":"Account","childObjRelStructure":[]}';
+        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"GRAX_Data_Record__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAX_Data_Record__c","childObjRelStructure":[]}';
         gsp.Archive__c = false;
         insert gsp;
 
@@ -44,19 +43,24 @@ public class GRAXBatchToProcessSchedJobTest {
             System.assertEquals('Completed', schedProcess.Status__c);
         }
 
-        System.assertEquals(2, [SELECT Id FROM GRAX_Data_Record_Id__c].size());
+        System.assertEquals(1, [SELECT Id FROM GRAX_Data_Record_Id__c].size());
     }
 
     @isTest
     static void GRAXBatchToProcessSchedJobTest2() {
-        Account acc = new Account(Name='TestAccount');
-        insert acc;
+        GRAX_Data_Record__c dr = new GRAX_Data_Record__c();
+        dr.Status__c = 'Sent Successful';
+        dr.of_Times_Sent__c = 1;
+        insert dr;
 
-        Account pacc = new Account(Name='TestAccount2', ParentId=acc.Id);
-        insert pacc;
+        Attachment att = new Attachment();   	
+    	att.Name = 'Test';
+    	att.body = Blob.valueOf('Test');
+        att.parentId = dr.id;
+        insert att;
 
         GRAX_Schedule_Process__c gsp = new GRAX_Schedule_Process__c();
-        gsp.Object_Name__c = 'Account';
+        gsp.Object_Name__c = 'GRAX_Data_Record__c';
         gsp.Date_Field__c = 'LastModifiedDate';
         gsp.Target_Date__c = Date.today().addDays(1);
         gsp.Select_Criteria__c = 'Main Object not modified';
@@ -64,7 +68,7 @@ public class GRAXBatchToProcessSchedJobTest {
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
         gsp.Next_Run_Date__c = Datetime.now();
-        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"Account","parentUniqueKey":null,"relatedFieldName":null,"name":"Account","childObjRelStructure":[{"uniqueKey":"Account_ChildAccounts","parentUniqueKey":"Account","relatedFieldName":"ParentId","name":"Account","childObjRelStructure":[]}]}';
+        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"GRAX_Data_Record__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAX_Data_Record__c","childObjRelStructure":[{"uniqueKey":"GRAX_Data_Record__c_Attachments","parentUniqueKey":"GRAX_Data_Record__c","relatedFieldName":"ParentId","name":"Attachment","childObjRelStructure":[]}]}';
         gsp.Archive__c = true;
         insert gsp;
 
@@ -92,22 +96,24 @@ public class GRAXBatchToProcessSchedJobTest {
 
         Test.stopTest();
 
-        System.assertEquals(2, [SELECT Id FROM GRAX_Data_Record_Id__c].size());
+        System.assertEquals(1, [SELECT Id FROM GRAX_Data_Record_Id__c].size());
     }
 
     @isTest
     static void GRAXBatchToProcessSchedJobTestAttachmentArchive() {
-        Account acc = new Account(Name='TestAccount');
-        insert acc;
-    	
-    	Attachment att = new Attachment();
-    	att.ParentId = acc.Id;
-    	att.Name = 'Test Attachment for TestAccount';
-    	att.Body = Blob.valueOf('Test Data');
-    	insert att;
+        GRAX_Data_Record__c dr = new GRAX_Data_Record__c();
+        dr.Status__c = 'Sent Successful';
+        dr.of_Times_Sent__c = 1;
+        insert dr;
+
+        Attachment att = new Attachment();   	
+    	att.Name = 'Test';
+    	att.body = Blob.valueOf('Test');
+        att.parentId = dr.id;
+        insert att;
 
         GRAX_Schedule_Process__c gsp = new GRAX_Schedule_Process__c();
-        gsp.Object_Name__c = 'Account';
+        gsp.Object_Name__c = 'GRAX_Data_Record__c';
         gsp.Date_Field__c = 'LastModifiedDate';
         gsp.Target_Date__c = Date.today().addDays(1);
         gsp.Select_Criteria__c = 'Main Object not modified';
@@ -115,7 +121,7 @@ public class GRAXBatchToProcessSchedJobTest {
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
         gsp.Next_Run_Date__c = Datetime.now();
-        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"Account_Attachments","parentUniqueKey":"Account","relatedFieldName":"ParentId","name":"Attachment","childObjRelStructure":[]}';
+        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"GRAX_Data_Record__c_Attachments","parentUniqueKey":"GRAX_Data_Record__c","relatedFieldName":"ParentId","name":"Attachment","childObjRelStructure":[]}';
         gsp.Archive__c = true;
         insert gsp;
 
@@ -142,14 +148,19 @@ public class GRAXBatchToProcessSchedJobTest {
     static void GRAXBatchToProcessSchedJobExecuteNowTest() {
         Datetime now = Datetime.now();
 
-        Account acc = new Account(Name='TestAccount');
-        insert acc;
-    	
-    	Account pacc = new Account(Name='TestAccount2', ParentId=acc.Id);
-        insert pacc;
+        GRAX_Data_Record__c dr = new GRAX_Data_Record__c();
+        dr.Status__c = 'Sent Successful';
+        dr.of_Times_Sent__c = 1;
+        insert dr;
+
+        Attachment att = new Attachment();   	
+    	att.Name = 'Test';
+    	att.body = Blob.valueOf('Test');
+        att.parentId = dr.id;
+        insert att;
 
         GRAX_Schedule_Process__c gsp = new GRAX_Schedule_Process__c();
-        gsp.Object_Name__c = 'Account';
+        gsp.Object_Name__c = 'GRAX_Data_Record__c';
         gsp.Date_Field__c = 'LastModifiedDate';
         gsp.Target_Date__c = Date.today().addDays(1);
         gsp.Select_Criteria__c = 'Main Object not modified';
@@ -157,13 +168,13 @@ public class GRAXBatchToProcessSchedJobTest {
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
         gsp.Next_Run_Date__c = now;
-        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"Account_ChildAccounts","parentUniqueKey":"Account","relatedFieldName":"ParentId","name":"Account","childObjRelStructure":[]}';
+        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"GRAX_Data_Record__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAX_Data_Record__c","childObjRelStructure":[]}';
         gsp.Archive__c = true;
         insert gsp;
 
         Test.startTest();
 
-        GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{"message": "Test successful"}', 'http://test.grax.io/applications/neo4j/configure', null);
+        GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, 'OK', '{"message": "Test successful"}', null);
         Test.setMock(HttpCalloutMock.class, fakeResponse);
 
         GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, true);
@@ -172,8 +183,8 @@ public class GRAXBatchToProcessSchedJobTest {
         Test.stopTest();
 
         System.assertEquals(1, [SELECT Id FROM GRAX_Schedule_Process__c WHERE Id = :gsp.Id AND Next_Run_Date__c = :now].size());
-        System.assertEquals(2, [SELECT Id FROM GRAX_Data_Record_Id__c WHERE Status__c = 'Successfully Deleted'].size());
-        System.assertEquals(0, [SELECT Id FROM Account].size());
+        System.assertEquals(1, [SELECT Id FROM GRAX_Data_Record_Id__c WHERE Status__c = 'Successfully Deleted'].size());
+        System.assertEquals(0, [SELECT Id FROM GRAX_Data_Record__c WHERE Id = :dr.Id].size());
     }
 
 }
