@@ -11,16 +11,20 @@ public class GRAXBatchToDeleteBackedUpDataTest {
 
     @isTest
     static void GRAXBatchToProcessSchedJobTest1() {
-        List<Account> accList = new List<Account>{
-            new Account(Name='TestAccount1'),
-            new Account(Name='TestAccount2'),
-            new Account(Name='TestAccount3')
-        };
+        List<GRAX_Data_Record__c> drList = new List<GRAX_Data_Record__c>();
 
-        insert accList;
+        for(Integer i=0; i < 3; i++) {
+            GRAX_Data_Record__c dr = new GRAX_Data_Record__c();
+            dr.Status__c = 'Sent Successful';
+            dr.of_Times_Sent__c = 1;
+
+            drList.add(dr);
+        }
+
+        insert drList;
 
         GRAX_Schedule_Process__c gsp = new GRAX_Schedule_Process__c();
-        gsp.Object_Name__c = 'Account';
+        gsp.Object_Name__c = 'GRAX_Data_Record__c';
         gsp.Date_Field__c = 'LastModifiedDate';
         gsp.Target_Date__c = Date.today().addDays(1);
         gsp.Select_Criteria__c = 'Main Object not modified';
@@ -28,7 +32,7 @@ public class GRAXBatchToDeleteBackedUpDataTest {
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
         gsp.Next_Run_Date__c = Datetime.now();
-        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"Account","parentUniqueKey":"null","relatedFieldName":"null","name":"Account","childObjRelStructure":[]}';
+        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"GRAX_Data_Record__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAX_Data_Record__c","childObjRelStructure":[]}';
         gsp.Archive__c = true;
         insert gsp;
 
@@ -40,9 +44,9 @@ public class GRAXBatchToDeleteBackedUpDataTest {
         archiveProc.Records_To_Process__c = 0;
         insert archiveProc;
 
-        for(Account acc : accList) {
+        for(GRAX_Data_Record__c gdr : drList) {
             GRAX_Data_Record__c dr = new GRAX_Data_Record__c();
-            dr.Salesforce_Object__c = 'Account';
+            dr.Salesforce_Object__c = 'GRAX_Data_Record__c';
             dr.Status__c = 'Sent Successful';
             dr.of_Times_Sent__c = 1;
             dr.Error_Message__c = null;
@@ -60,7 +64,7 @@ public class GRAXBatchToDeleteBackedUpDataTest {
             System.assertNotEquals(null, req_att.Id);
             
             GRAX_Data_Record_Id__c dataRecId = new GRAX_Data_Record_Id__c();
-            dataRecId.SFDC_Id__c = acc.Id;
+            dataRecId.SFDC_Id__c = gdr.Id;
             dataRecId.GRAX_Data_Record__c = dr.Id;
             dataRecId.Status__c = 'To be Deleted';
             
@@ -77,6 +81,6 @@ public class GRAXBatchToDeleteBackedUpDataTest {
         Test.stopTest();
 
         System.assertEquals(1, [SELECT Id FROM GRAX_Archive_Process__c WHERE Id = :archiveProc.Id AND Status__c = 'Ready to Delete' LIMIT 3].size());
-        System.assertEquals(0, [SELECT Id FROM Account LIMIT 3].size());
+        System.assertEquals(3, [SELECT Id FROM GRAX_Data_Record__c LIMIT 6].size());
     }
 }
