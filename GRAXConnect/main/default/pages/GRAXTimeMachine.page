@@ -1,4 +1,4 @@
-<apex:page controller="GRAXTimeMachineCtrl" cache="false" showChat="false" showHeader="true" standardStylesheets="true" sidebar="true" applyHtmlTag="true" applyBodyTag="false" docType="html-5.0">
+<apex:page controller="GRAXTimeMachineCtrl" cache="false" showChat="false" showHeader="true" lightningStylesheets="true" sidebar="true" applyHtmlTag="true" applyBodyTag="false" docType="html-5.0">
 
 <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">
 <head>
@@ -9,72 +9,167 @@
     <script src="{!URLFOR($Resource.grax, '/jquery.slds.js')}"></script>
     <script src="{!URLFOR($Resource.grax, '/jquery.sldsTree.js')}"></script>
     <!-- Import the Design System style sheet -->
-    <apex:slds />
+	<apex:slds />
+	
+	<style>
+		.slds-form-element_separator {
+			border-bottom: 1px solid rgb(221, 219, 218);
+		}
+	</style>
 </head>
 <body>
     <div class="slds-scope">
-    		<table>
-    			<tr>
-    				<td>
-    					<b>{!parentType}: </b>&nbsp;&nbsp;&nbsp; {!parentId}
-    				</td>
-    			</tr>
-    			<tr>
-    				<td>
-    					&nbsp;
-    				</td>
-    			</tr>
-    			<tr>
-    				<td>
-    					<apex:form id="form-timemachine">
-						<div style="float:center">
-				        		<apex:selectRadio value="{!fileSelected}" layout="pageDirection">
-								<apex:selectOptions value="{!fileSelect}" />
-							</apex:selectRadio>
-						 	<br/>
-						 	<apex:commandButton value="Display Before & After" action="{!test}" rerender="out" status="status"/>&nbsp;&nbsp;&nbsp;
-						 	<apex:commandButton value="Restore After Version" action="{!test}" rerender="out" status="status"/>&nbsp;&nbsp;&nbsp;
-						 	<apex:commandButton value="Restore Before Version" action="{!test}" rerender="out" status="status"/>
-					 	</div>
-			        </apex:form>
-    				</td>
-    			</tr>
-    			<tr>
-    				<td>
-    					<apex:outputPanel id="out">
-				 	 	<apex:actionstatus id="status" startText="testing...">
-				 	 	 	<apex:facet name="stop">
-				 	 	 	 	<apex:outputPanel>
-				 	 	 	 		<br/>
-				 	 	 	 		<table>
-				 	 	 	 			<tr>
-				 	 	 	 				<th>Location:</th>
-				 	 	 	 				<td>{!fileSelected}</td>
-				 	 	 	 			</tr>
-				 	 	 	 			<tr>
-				 	 	 	 				<th colspan="2">
-				 	 	 	 					<hr/>
-				 	 	 	 				</th>
-				 	 	 	 			</tr>
-				 	 	 	 			<tr>
-				 	 	 	 				<th colspan="2">
-				 	 	 	 					Raw Before &amp; After:
-				 	 	 	 				</th>
-				 	 	 	 			</tr>
-				 	 	 	 			<tr>
-				 	 	 	 				<Td colspan="2">
-				 	 	 	 					{!fileContents}
-				 	 	 	 				</td>
-				 	 	 	 			</tr>
-				 	 	 	 		</table>			 	 	 	 	 	
-				 	 	 	 	</apex:outputPanel>
-				 	 	 	</apex:facet>
-				 	 	</apex:actionstatus>
-				 	</apex:outputPanel>
-    				</td>
-    			</tr>
-    		</table>
-    </div>
+		<apex:form id="form-timemachine">
+			<apex:actionFunction action="{!changeFileSelected}" name="changeFileSelected" immediate="true" rerender="out" oncomplete="showGlobalSpinner(false);">
+				<apex:param name="fileSelected" value="" />
+			</apex:actionFunction>
+
+			<apex:actionFunction action="{!restoreToOldVersion}" name="restoreToOldVersion" immediate="true" oncomplete="showRestoreToOldVersionModal(false);showGlobalSpinner(false);"></apex:actionFunction>
+
+			<apex:actionFunction action="{!updateToThisVersion}" name="updateToThisVersion" immediate="true" oncomplete="showUpdateToThisVersionModal(false);showGlobalSpinner(false);"></apex:actionFunction>
+		
+
+			<apex:outputPanel id="datatableOuput" layout="block">
+				<apex:dataTable value="{!fileSelect}" var="selectOption" id="fileSelectDataTable" styleClass="slds-table slds-table_bordered slds-table_cell-buffer" rendered="{!hasBackups}">
+					<apex:column headerValue="Updated Date">
+						<apex:outputText value="{!selectOption.label}" />
+					</apex:column>
+
+					<apex:column >
+						<apex:facet name="header">
+							<span class="slds-assistive-text">Actions</span>
+						</apex:facet>
+						<apex:outputPanel >
+							<a href="javascript:void(0);" onclick="showGlobalSpinner(true);changeFileSelected('{!selectOption.value}');return false;" class="slds-button">
+								<span class="slds-truncate">Load this Version</span>
+							</a>
+						</apex:outputPanel>
+					</apex:column>
+				</apex:dataTable>
+
+				<apex:outputPanel layout="block" rendered="{!!hasBackups}" styleClass="slds-text-align_center">
+					No records were found in GRAX
+				</apex:outputPanel>
+			</apex:outputPanel>
+
+
+			<apex:outputPanel id="out">
+				<apex:outputPanel rendered="{!isFileSelected}">
+					<div class="slds-section slds-is-open slds-is-relative slds-m-top_large">
+						<h3 class="slds-section__title slds-theme_shade">
+							<span class="slds-truncate slds-p-horizontal_small" title="Version Information">Version Information</span>
+						</h3>
+						<div aria-hidden="false" class="slds-section__content">
+							<div class="slds-form-element slds-form-element_separator slds-m-bottom_small">
+								<label lass="slds-form-element__label">Location</label>
+								<div class="slds-form-element__control">
+									<input readonly="readonly" class="slds-input" value="{!fileSelected}" type="text" />
+								</div>
+							</div>
+
+							<apex:dataTable value="{!diff}" var="fieldName" id="diffDataTable" styleClass="slds-table slds-table_bordered slds-table_cell-buffer">
+								<apex:column headerValue="Field">
+									<apex:outputText value="{!fieldName}" />
+								</apex:column>	
+
+								<apex:column headerValue="Old Value">
+									<apex:outputText value="{!diff[fieldName].oldValue}" />
+								</apex:column>
+
+								<apex:column headerValue="New Value">
+									<apex:outputText value="{!diff[fieldName].newValue}" />
+								</apex:column>
+							</apex:dataTable>
+						</div>
+					</div>
+					
+					<div class="slds-clearfix slds-p-vertical_large">
+						<div class="slds-clearfix">
+							<div class="slds-float_right">
+								<apex:commandButton id="restoreToOldVersionButton" html-data-toggle="modal" html-data-target="#restoreToOldVersionModal" value="Restore to Old Version" styleClass="slds-button slds-button_neutral" rendered="{!showRestoreToOldVersionButton}"/>
+								<apex:commandButton id="updateToThisVersionButton" html-data-toggle="modal" html-data-target="#updateToThisVersionModal" value="Update to this Version" styleClass="slds-button slds-button_neutral"/>
+							</div>
+						</div>
+					</div>
+				</apex:outputPanel>
+			</apex:outputPanel>
+
+			<section id="restoreToOldVersionModal" role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-hide">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button data-toggle="modal" data-target="#restoreToOldVersionModal" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+							<i class="slds-button__icon slds-button__icon_large" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></i>
+							<span class="slds-assistive-text">Close</span>
+						</button>
+
+						<h2 class="slds-text-heading_medium slds-hyphenate">Restore to Old Version</h2>
+					</header>
+
+					<div class="slds-modal__content slds-p-around_medium">
+						<p class="slds-text-heading_small">Are you sure that you would like to update this record with the values from the selected record?</p>
+						<p>Warning: This will update this record when you click "OK".</p>
+					</div>
+
+					<footer class="slds-modal__footer">
+						<span class="slds-button slds-button_neutral" data-toggle="modal" data-target="#restoreToOldVersionModal">Cancel</span>
+						<apex:commandButton value="OK" onclick="showGlobalSpinner(true);restoreToOldVersion();return false;" styleClass="slds-button slds-button_destructive _blank"/>
+					</footer>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-hide"></div>
+
+			<section id="updateToThisVersionModal" role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-hide">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button data-toggle="modal" data-target="#updateToThisVersionModal" class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+							<i class="slds-button__icon slds-button__icon_large" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></i>
+							<span class="slds-assistive-text">Close</span>
+						</button>
+
+						<h2 class="slds-text-heading_medium slds-hyphenate">Update to this Version</h2>
+					</header>
+
+					<div class="slds-modal__content slds-p-around_medium">
+						<p class="slds-text-heading_small">Are you sure that you would like to update this record with the values from the selected record?</p>
+						<p>Warning: This will update this record when you click "OK".</p>
+					</div>
+
+					<footer class="slds-modal__footer">
+						<span class="slds-button slds-button_neutral" data-toggle="modal" data-target="#updateToThisVersionModal">Cancel</span>
+						<apex:commandButton value="OK" onclick="showGlobalSpinner(true);updateToThisVersion();return false;" styleClass="slds-button slds-button_destructive _blank"/>
+					</footer>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-hide"></div>
+
+			<div id="globalSpinner" class="slds-spinner_container slds-is-fixed slds-hide">
+				<div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
+					<span class="slds-assistive-text">Loading</span>
+					<div class="slds-spinner__dot-a"></div>
+					<div class="slds-spinner__dot-b"></div>
+				</div>
+			</div>
+
+		</apex:form>
+	</div>
+	
+	<script>
+		$(function() {
+			var $globalSpinner = $('#globalSpinner');
+
+			window.showGlobalSpinner = function(state) {
+                $globalSpinner.toggleClass('slds-hide', !state);
+            };
+
+			window.showRestoreToOldVersionModal = function(state) {
+				$('#restoreToOldVersionModal').trigger('modaltoggle', [state]);
+			};
+
+			window.showUpdateToThisVersionModal = function(state) {
+				$('#updateToThisVersionModal').trigger('modaltoggle', [state]);
+			};
+		});
+	</script>
 </body>
 </html>
 </apex:page>

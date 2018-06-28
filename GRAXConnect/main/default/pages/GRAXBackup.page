@@ -795,12 +795,32 @@
                             return $objectJSON.val(JSON.stringify(selectedItems.length > 0 ? selectedItems[0] : {}));
                         };
 
+                        $archive.off('click').on('click', function(e) {
+                            callNested(settings, items, function(item, parent) {
+                                if(item.isCascadeDelete || item.isRoot) {
+                                    item.isSelected = true;
+
+                                    $root.find('#' + item[settings.items.id])
+                                        .prop({'checked': item.isSelected, 'disabled': e.target.checked});
+
+                                    if(parent && !parent.isSelected) {
+                                        parent.isSelected = true;
+
+                                        $root.find('#' + parent[settings.items.id])
+                                            .prop('checked', parent.isSelected);
+                                    }
+                                }
+                            });
+
+                            setObjectHierarchyJSON();
+                        });
+
                         callNested(settings, items, function(item, parent) {
                             if(item.isCascadeDelete) {
                                 item.isSelected = true;
 
                                 $root.find('#' + item[settings.items.id])
-                                    .prop({'checked': true, 'disabled': true});
+                                    .prop({'checked': true, 'disabled': $archive.prop('checked')});
                             }
 
                             if(item.isSelected && !item.isCascadeDelete) {
@@ -809,40 +829,103 @@
                             }
 
                             if(!parent && item[settings.items.childs] && item[settings.items.childs].length > 1) { // ROOT
+                                item.isRoot = true;
+                                item.isSelected = true;
+                                var isSelectedAll = false;
+                                
                                 $root.find('#' + item[settings.items.id])
-                                    .prop({'checked': true, 'disabled': true})
+                                    .prop({'checked': item.isSelected, 'disabled': $archive.prop('checked')})
                                     .closest('[role="treeitem"]').attr({'aria-expanded': 'true'});
-                            } else if(parent && item[settings.items.childs] && item[settings.items.childs].length > 1) { // PARENT
-                                $root.on('change', '#' + item[settings.items.id], function(e) {
-                                    item.isSelected = e.target.checked;
-                                    
-                                    callNested(settings, item[settings.items.childs], function(item) {
-                                        item.isSelected = item.isCascadeDelete || e.target.checked;
 
-                                        $root.find('#' + item[settings.items.id])
-                                            .prop({
-                                                'checked': item.isSelected,
-                                                'disabled': item.isCascadeDelete
-                                            });
-                                    });
-                                    
-                                    setObjectHierarchyJSON();
+                                $root.on('change', '#' + item[settings.items.id], function(e, newState) {
+                                    if(newState === undefined) {
+                                        isSelectedAll = !isSelectedAll;
+
+                                        callNested(settings, item[settings.items.childs], function(item) {
+                                            item.isSelected = isSelectedAll;
+
+                                            $root.find('#' + item[settings.items.id])
+                                                .prop({'checked': item.isSelected});
+                                        });
+
+                                        e.target.checked = true;
+
+                                        setObjectHierarchyJSON();
+                                    }
+                                });
+                            } else if(parent && item[settings.items.childs] && item[settings.items.childs].length > 1) { // PARENT
+                                $root.on('change', '#' + item[settings.items.id], function(e, newState) {
+                                    var isArchive = $archive.prop('checked');
+
+                                    if(item.isCascadeDelete && isArchive && newState !== undefined) return;
+
+                                    var oldState = item.isSelected;
+
+                                    var hasChildSelected = function() {
+                                        return $.grep(item[settings.items.childs], function(item, i) {
+                                            return item.isSelected;
+                                        }).length;
+                                    };
+
+                                    var hasCascadeDelete = function() {
+                                        return $.grep(item[settings.items.childs], function(item, i) {
+                                            return item.isCascadeDelete && isArchive;
+                                        }).length;
+                                    };
+
+                                    if(newState !== undefined && oldState != newState) {
+                                        item.isSelected = newState || hasChildSelected();
+
+                                        $root
+                                            .find('#' + item[settings.items.id])
+                                                .prop('checked', item.isSelected);
+
+                                        e.target.checked = item.isSelected;
+                                    } else if(e.target.checked != oldState) {
+                                        item.isSelected = e.target.checked || hasCascadeDelete();
+                                        
+                                        callNested(settings, item[settings.items.childs], function(item) {
+                                            if(item.isCascadeDelete && isArchive) return;
+                                            if(item.isSelected == e.target.checked) return;
+
+                                            item.isSelected = e.target.checked;
+
+                                            $root.find('#' + item[settings.items.id])
+                                                .prop('checked', item.isSelected);
+                                        });
+
+                                        e.target.checked = item.isSelected;
+                                    }
+
+                                    if(oldState != item.isSelected) {
+                                        $root
+                                            .find('#' + parent[settings.items.id])
+                                                .trigger('change', [item.isSelected]);
+                                        
+                                        setObjectHierarchyJSON();
+                                    }
                                 });
                             } else  { // CHILD
+                                if(item.isSelected && !parent.isSelected && !parent.isRoot) {
+                                    parent.isSelected = true;
+                                    $root.find('#' + parent[settings.items.id]).prop('checked', parent.isSelected);
+                                }
+                                
                                 $root.on('change', '#' + item[settings.items.id], function(e) {
                                     item.isSelected = e.target.checked;
-                                    parent.isSelected = parent.isCascadeDelete
-                                        || e.target.checked
-                                        || $.grep(parent[settings.items.childs], function(item, i) {
+                                    /*parent.isSelected = parent.isCascadeDelete
+                                        || e.target.checked;*/
+                                        /*|| $.grep(parent[settings.items.childs], function(item, i) {
                                                 return item.isSelected;
-                                            }).length;
+                                            }).length;*/
 
                                     $root
                                         .find('#' + parent[settings.items.id])
-                                        .prop({
+                                        /*.prop({
                                             'checked': parent.isSelected,
-                                            'disabled': parent.isSelected
-                                        });
+                                            'disabled': parent.isRoot || (parent.isCascadeDelete && $archive.prop('checked'))
+                                        })*/
+                                        .trigger('change', [item.isSelected]);
 
                                     setObjectHierarchyJSON();
                                 });
