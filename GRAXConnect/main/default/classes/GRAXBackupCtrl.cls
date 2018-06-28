@@ -47,6 +47,7 @@ public with sharing class GRAXBackupCtrl {
         targetReport = '';
         sObjectDateFieldDefault = 'LastModifiedDate';
         criteria = 'Main Object not modified';
+        filterCriteriaType = 'Date';
         archive = false;
         gsp = new GRAX_Schedule_Process__c();
         scheduledProcessMap = new Map<Id, ScheduledProcess>();
@@ -212,8 +213,8 @@ public with sharing class GRAXBackupCtrl {
         Boolean condition = true;
         condition = condition && selectedObject <> null;
         condition = condition && sObjectDateField <> null;
-        condition = condition && (filterCriteriaType == 'Date' || targetDate <> null);
-        condition = condition && (filterCriteriaType == 'Report' || targetReport <> null);
+        condition = condition && (targetDate <> null || targetReport <> null);
+        condition = condition && (filterCriteriaType == 'Date' || filterCriteriaType == 'Report');
         condition = condition && criteria <> null;
         condition = condition && schedule <> null;
         condition = condition && scheduleStartDate <> null;
