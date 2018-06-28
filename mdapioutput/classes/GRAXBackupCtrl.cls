@@ -213,8 +213,8 @@ public with sharing class GRAXBackupCtrl {
         Boolean condition = true;
         condition = condition && selectedObject <> null;
         condition = condition && sObjectDateField <> null;
-        condition = condition && (filterCriteriaType == 'Date' || targetDate <> null);
-        condition = condition && (filterCriteriaType == 'Report' || targetReport <> null);
+        condition = condition && (targetDate <> null || targetReport <> null);
+        condition = condition && (filterCriteriaType == 'Date' || filterCriteriaType == 'Report');
         condition = condition && criteria <> null;
         condition = condition && schedule <> null;
         condition = condition && scheduleStartDate <> null;
