@@ -741,6 +741,14 @@
                 });
             };
 
+            var hasItem = function(items, fn) {
+                for (var i = 0; i < items.length; i++) {
+                    if (fn(items[i], i)) return true;
+                }
+
+                return false;
+            };
+
             window.ObjectHierarchy = function(objRoot) {
                 if(Object.keys(objRoot).length == 0) return;
 
@@ -831,18 +839,24 @@
                             if(!parent && item[settings.items.childs] && item[settings.items.childs].length > 1) { // ROOT
                                 item.isRoot = true;
                                 item.isSelected = true;
-                                var isSelectedAll = false;
+
+                                var hasChildSelected = function(isArchive) {
+                                    return hasItem(item[settings.items.childs], function(item, i) {
+                                        return item.isSelected || (item.isCascadeDelete && isArchive);
+                                    });
+                                };
                                 
                                 $root.find('#' + item[settings.items.id])
                                     .prop({'checked': item.isSelected, 'disabled': $archive.prop('checked')})
                                     .closest('[role="treeitem"]').attr({'aria-expanded': 'true'});
 
+                                var isChildSelected;
                                 $root.on('change', '#' + item[settings.items.id], function(e, newState) {
                                     if(newState === undefined) {
-                                        isSelectedAll = !isSelectedAll;
+                                        isChildSelected = hasChildSelected($archive.prop('checked'));
 
                                         callNested(settings, item[settings.items.childs], function(item) {
-                                            item.isSelected = isSelectedAll;
+                                            item.isSelected = !isChildSelected;
 
                                             $root.find('#' + item[settings.items.id])
                                                 .prop({'checked': item.isSelected});
@@ -854,41 +868,53 @@
                                     }
                                 });
                             } else if(parent && item[settings.items.childs] && item[settings.items.childs].length > 1) { // PARENT
+                                var isSelectedAll = false;
+
+                                var hasCascadeDelete = function(isArchive) {
+                                    return hasItem(item[settings.items.childs], function(item, i) {
+                                        return item.isCascadeDelete && isArchive;
+                                    });
+                                };
+
+                                var hasChildSelected = function(isArchive) {
+                                    return hasItem(item[settings.items.childs], function(item, i) {
+                                        return item.isSelected && !(item.isCascadeDelete && isArchive);
+                                    });
+                                };
+
+                                var isChildSelected;
+
                                 $root.on('change', '#' + item[settings.items.id], function(e, newState) {
                                     var isArchive = $archive.prop('checked');
 
                                     if(item.isCascadeDelete && isArchive && newState !== undefined) return;
 
                                     var oldState = item.isSelected;
-
-                                    var hasChildSelected = function() {
-                                        return $.grep(item[settings.items.childs], function(item, i) {
-                                            return item.isSelected;
-                                        }).length;
-                                    };
-
-                                    var hasCascadeDelete = function() {
-                                        return $.grep(item[settings.items.childs], function(item, i) {
-                                            return item.isCascadeDelete && isArchive;
-                                        }).length;
-                                    };
-
+                                    
                                     if(newState !== undefined && oldState != newState) {
-                                        item.isSelected = newState || hasChildSelected();
+                                        item.isSelected = newState || hasChildSelected(isArchive);
 
                                         $root
                                             .find('#' + item[settings.items.id])
                                                 .prop('checked', item.isSelected);
 
+                                        item.isSelected = item.isSelected || hasCascadeDelete(isArchive);
+
                                         e.target.checked = item.isSelected;
                                     } else if(e.target.checked != oldState) {
-                                        item.isSelected = e.target.checked || hasCascadeDelete();
+                                        if(!isArchive) {
+                                            isChildSelected = e.target.checked;
+                                            item.isSelected = isChildSelected;
+                                        } else {
+                                            isChildSelected = !hasChildSelected(isArchive);
+                                            item.isSelected = isChildSelected || hasCascadeDelete(isArchive);
+                                        }
                                         
                                         callNested(settings, item[settings.items.childs], function(item) {
                                             if(item.isCascadeDelete && isArchive) return;
-                                            if(item.isSelected == e.target.checked) return;
+                                            if(item.isSelected == isChildSelected) return;
 
-                                            item.isSelected = e.target.checked;
+                                            item.isSelected = isChildSelected;
 
                                             $root.find('#' + item[settings.items.id])
                                                 .prop('checked', item.isSelected);
@@ -913,19 +939,10 @@
                                 
                                 $root.on('change', '#' + item[settings.items.id], function(e) {
                                     item.isSelected = e.target.checked;
-                                    /*parent.isSelected = parent.isCascadeDelete
-                                        || e.target.checked;*/
-                                        /*|| $.grep(parent[settings.items.childs], function(item, i) {
-                                                return item.isSelected;
-                                            }).length;*/
 
                                     $root
                                         .find('#' + parent[settings.items.id])
-                                        /*.prop({
-                                            'checked': parent.isSelected,
-                                            'disabled': parent.isRoot || (parent.isCascadeDelete && $archive.prop('checked'))
-                                        })*/
-                                        .trigger('change', [item.isSelected]);
+                                            .trigger('change', [item.isSelected]);
 
                                     setObjectHierarchyJSON();
                                 });

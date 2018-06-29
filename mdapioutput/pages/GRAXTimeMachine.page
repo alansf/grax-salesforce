@@ -15,6 +15,18 @@
 		.slds-form-element_separator {
 			border-bottom: 1px solid rgb(221, 219, 218);
 		}
+
+		.col-field-name {
+			max-width: 10vw;
+		}
+
+		.col-new-old {
+			max-width: 40vw;
+		}
+
+		span.slds-truncate {
+			display: inline-block;
+		}
 	</style>
 </head>
 <body>
@@ -67,17 +79,23 @@
 								</div>
 							</div>
 
-							<apex:dataTable value="{!diff}" var="fieldName" id="diffDataTable" styleClass="slds-table slds-table_bordered slds-table_cell-buffer">
-								<apex:column headerValue="Field">
-									<apex:outputText value="{!fieldName}" />
+							<apex:dataTable value="{!diff}" var="fieldName" id="diffDataTable" styleClass="slds-table slds-table_bordered slds-table_col-bordered slds-table_cell-buffer">
+								<apex:column headerValue="Field" styleClass="col-field-name">
+									<span class="slds-truncate">
+										<apex:outputText value="{!fieldName}" />
+									</span>
 								</apex:column>	
 
-								<apex:column headerValue="Old Value">
-									<apex:outputText value="{!diff[fieldName].oldValue}" />
+								<apex:column headerValue="New Value" styleClass="col-new-old">
+									<span class="slds-truncate">
+										<apex:outputText value="{!diff[fieldName].newValue}" />
+									</span>
 								</apex:column>
 
-								<apex:column headerValue="New Value">
-									<apex:outputText value="{!diff[fieldName].newValue}" />
+								<apex:column headerValue="Old Value" styleClass="col-new-old">
+									<span class="slds-truncate">
+										<apex:outputText value="{!diff[fieldName].oldValue}" />
+									</span>
 								</apex:column>
 							</apex:dataTable>
 						</div>

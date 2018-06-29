@@ -444,7 +444,7 @@ public with sharing class GRAXBackupCtrl {
         List<SelectOption> options = new List<SelectOption>();
         options.add(new SelectOption('' ,'-- SELECT REPORT --', true));
 
-        for (Report r : [SELECT Id, Name FROM Report WHERE OwnerId = :UserInfo.getUserId() AND Format = 'Tabular' ORDER BY CreatedDate DESC]) {
+        for (Report r : [SELECT Id, Name FROM Report WHERE Format = 'Tabular' ORDER BY CreatedDate DESC]) {
             options.add(new SelectOption(r.Id, r.Name));
         }
         

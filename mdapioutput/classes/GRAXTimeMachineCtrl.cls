@@ -85,7 +85,7 @@ public with sharing class GRAXTimeMachineCtrl {
 		this.fileSelected = currentFile; 
 		String fileName = currentFile.split('/')[currentFile.split('/').size()-1];
 		String GRAXFileData = GRAXAuditTrail.GetTimeMachineFile(parentType,strParentId,fileName);
-
+		//String GRAXFileData = '{"error":null,"data":{"old":[{"LastModifiedById":"0051I000000bfBQQAY","Channel__c":"_IM1_/servlet/servlet.ImageServer?id=0151I000001MHd6&oid=00D1I000003nRMa_IM2_ _IM3__22_IM4_22_IM5_","ClosedDate":"2015-06-02T12:56:34.000+0000","ContactEmail":"drose@example.com","EventsProcessedDate":"2012-05-17T14:17:59.000+0000","Quality_Score__c":6,"Type":"Account Support","SystemModstamp":"2018-05-19T10:49:32.000+0000","Subject":"Bill payment clarification.","Product_Name__c":"Product A","IsLocked":false,"IsVisibleInSelfService":true,"MayEdit":false,"DateTime_Opened_c__c":"2017-08-02T23:56:39.000+0000","LastModifiedByAlias":"JGask","HasSelfServiceComments":false,"Send_Email_Trigger__c":false,"ContactFax":"(575) 555-0199","CaseNumber":"00001167","Status_Indicator__c":"_IM1_/servlet/servlet.ImageServer?id=0151I000001MHcK&oid=00D1I000003nRMa_IM2_Status_IM3__24_IM4_24_IM5_","RecordTypeId":"0121I0000018KktQAE","Case_Survey_URL__c":"https://demohardingpoint200.my.salesforce.com/apex/DE_CustomerSurvey","OwnerId":"0051I000001fKLhQAM","ED_Leading_Causes__c":"- 3.135 because Origin is Phone and Offer Voucher is false<br>- 3.017 because Origin is Phone and Send Field Service is false<br>- 1.555 because Origin is Phone<br>- 5.009 because of other factors<br>from the baseline, + 40.587","Response_Time_mins__c":10,"ContactPhone":"(575) 555-2613","Reason":"New problem","ContactId":"0031I000007CNJiQAO","ED_Outcome__c":77.053,"IsClosed":true,"KB_Article_Attached__c":false,"Description":"I seem to have misplaced my last bill, and I want to be sure that it\'s paid. Can you please check this for me?","DB_Case_Duration_Hours__c":16,"Send_FieldService__c":false,"Custom_Date_Field__c":"2018-05-15","Cost__c":1.75,"Type_of_Support__c":"Standard","IsVisibleInCss":false,"Id":"5001I000003yey4QAA","CreatedDate":"2017-11-29T17:55:52.000+0000","IsEscalated":false,"IsStopped":false,"DateTime_Closed_c__c":"2017-08-03T15:56:39.000+0000","EDY_ORGCUSTOM__DB__c":false,"First_Contact_Close__c":false,"CreatedByAlias":"AUser","Community_Contact_Match__c":false,"Priority":"Critical","Duration__c":5.33,"HasCommentsUnreadByOwner":false,"IsDeleted":false,"ContactMobile":"(575) 555-0188","Status":"Closed","CSAT__c":95,"Volume__c":1140,"ED_Prescription__c":"+ 7.949 if you change Offer Voucher to true<br>+ 9.998 if you change Send Field Service to true","IsClosedOnCreate":false,"ClosedOnCreate":false,"Offer_Voucher__c":false,"CreatedById":"0051I000001fKKBQA2","Sub_Type__c":"Other","Urgency__c":"_IM1_/servlet/servlet.ImageServer?id=0151I000001MHcg&oid=00D1I000003nRMa_IM2_ _IM3__22_IM4_22_IM5_","BusinessHoursId":"01m1I000000qpUWQAY","IsSelfServiceClosed":false,"SLA_Compliant__c":true,"DB_Hours__c":-2800,"ProductId":"01t1I000001KKNRQA4","External_ID__c":"Case.076","AccountId":"0011I00000C3vFCQAZ","LastModifiedDate":"2018-05-18T19:17:13.000+0000","Origin":"Community","attributes":{"url":"/services/data/v43.0/sobjects/Case/5001I000003yey4QAA","type":"Case"}}],"new":[{"LastModifiedById":"0051I000000bfBQQAY","Channel__c":"_IM1_/servlet/servlet.ImageServer?id=0151I000001MHd6&oid=00D1I000003nRMa_IM2_ _IM3__22_IM4_22_IM5_","ClosedDate":"2015-06-02T12:56:34.000+0000","ContactEmail":"drose@example.com","EventsProcessedDate":"2012-05-17T14:17:59.000+0000","Quality_Score__c":6,"Type":"General","SystemModstamp":"2018-06-25T18:57:26.000+0000","Subject":"Bill payment clarification.","Product_Name__c":"Product A","IsLocked":false,"IsVisibleInSelfService":true,"MayEdit":false,"DateTime_Opened_c__c":"2017-08-02T23:56:39.000+0000","LastModifiedByAlias":"JGask","HasSelfServiceComments":false,"Send_Email_Trigger__c":false,"ContactFax":"(575) 555-0199","CaseNumber":"00001167","Status_Indicator__c":"_IM1_/servlet/servlet.ImageServer?id=0151I000001MHcK&oid=00D1I000003nRMa_IM2_Status_IM3__24_IM4_24_IM5_","RecordTypeId":"0121I0000018KktQAE","Case_Survey_URL__c":"https://demohardingpoint200.my.salesforce.com/apex/DE_CustomerSurvey","OwnerId":"0051I000001fKLhQAM","ED_Leading_Causes__c":"- 3.135 because Origin is Phone and Offer Voucher is false<br>- 3.017 because Origin is Phone and Send Field Service is false<br>- 1.555 because Origin is Phone<br>- 6.071 because of other factors<br>from the baseline, + 39.525","Response_Time_mins__c":10,"ContactPhone":"(575) 555-2613","Reason":"New problem","ContactId":"0031I000007CNJiQAO","ED_Outcome__c":77.053,"IsClosed":true,"KB_Article_Attached__c":false,"Description":"I seem to have misplaced my last bill, and I want to be sure that it\'s paid. Can you please check this for me?","DB_Case_Duration_Hours__c":16,"Send_FieldService__c":false,"Custom_Date_Field__c":"2018-05-15","Cost__c":1.75,"Type_of_Support__c":"Standard","IsVisibleInCss":false,"Id":"5001I000003yey4QAA","CreatedDate":"2017-11-29T17:55:52.000+0000","IsEscalated":false,"IsStopped":false,"DateTime_Closed_c__c":"2017-08-03T15:56:39.000+0000","EDY_ORGCUSTOM__DB__c":false,"First_Contact_Close__c":false,"CreatedByAlias":"AUser","Community_Contact_Match__c":false,"Priority":"High","Duration__c":5.33,"HasCommentsUnreadByOwner":false,"IsDeleted":false,"ContactMobile":"(575) 555-0188","Status":"Closed","CSAT__c":95,"Volume__c":1140,"ED_Prescription__c":"+ 7.949 if you change Offer Voucher to true<br>+ 9.998 if you change Send Field Service to true","IsClosedOnCreate":false,"ClosedOnCreate":false,"Offer_Voucher__c":false,"CreatedById":"0051I000001fKKBQA2","Sub_Type__c":"Other","Urgency__c":"_IM1_/servlet/servlet.ImageServer?id=0151I000001MHch&oid=00D1I000003nRMa_IM2_ _IM3__22_IM4_22_IM5_","BusinessHoursId":"01m1I000000qpUWQAY","IsSelfServiceClosed":false,"SLA_Compliant__c":true,"DB_Hours__c":-2800,"ProductId":"01t1I000001KKNRQA4","External_ID__c":"Case.076","AccountId":"0011I00000C3vFCQAZ","LastModifiedDate":"2018-06-25T18:57:26.000+0000","Origin":"Community","attributes":{"url":"/services/data/v43.0/sobjects/Case/5001I000003yey4QAA","type":"Case"}}]},"status":"success","source":"GetFile"}';
 		Map<String, Object> o = (Map<String, Object>)JSON.deserializeUntyped(GRAXFileData);
 		Map<String, Object> data = (Map<String, Object>)(o.get('data'));
 
@@ -104,6 +104,9 @@ public with sharing class GRAXTimeMachineCtrl {
             String FieldValue = '';
             String S3Key = '';
             fileSelect = new List<SelectOption>();
+
+			Map<String, SelectOption> fileSelectMap = new Map<String, SelectOption>();
+
             try{
                 if (String.isNotBlank(graxconfig)){
                     JSONParser parser = JSON.createParser(graxconfig);
@@ -118,11 +121,26 @@ public with sharing class GRAXTimeMachineCtrl {
                             if (FieldName=='LastModified'){
 								Datetime updatedDate = (Datetime)GRAXRestoreCtrl.castGenericObjectToType(FieldValue, 'datetime');
 
-                                fileSelect.add(new SelectOption(S3Key, updatedDate.format('MM/dd/yyyy HH:mm', userTimeZone)));
+								fileSelectMap.put(FieldValue, new SelectOption(S3Key, updatedDate.format('MM/dd/yyyy HH:mm', userTimeZone)));
                             }                           
                         }   
                     }
             }
+
+			/*
+			Datetime updatedDate = (Datetime)GRAXRestoreCtrl.castGenericObjectToType('2018-06-24T18:57:29.000Z', 'datetime');
+
+			fileSelectMap.put('2018-06-25T18:57:29.000Z', new SelectOption('grax/audittrail/salesforce/00D1I000003nRMaUAM/Case/5001I000003yey4QAA/2018-06-25T18-57-25-000-0000.json', '2018-06-25T18:57:29.000Z'));
+			fileSelectMap.put('2018-06-26T18:57:29.000Z', new SelectOption('grax/audittrail/salesforce/00D1I000003nRMaUAM/Case/5001I000003yey4QAA/2018-06-25T18-57-26-000-0000.json', '2018-06-26T18:57:29.000Z'));
+			fileSelectMap.put('2018-06-24T18:57:29.000Z', new SelectOption('grax/audittrail/salesforce/00D1I000003nRMaUAM/Case/5001I000003yey4QAA/2018-06-25T18-57-24-000-0000.json', updatedDate.format('MM/dd/yyyy HH:mm', userTimeZone)));
+			*/
+
+			List<String> keyList = new List<String>(fileSelectMap.keySet());
+			keyList.sort();
+
+			for(Integer i = keyList.size() - 1; i >= 0; i--) {
+				fileSelect.add(fileSelectMap.get(keyList[i]));
+			}
         } catch (Exception e) {
              //Generic exception handling code here
         } finally {
