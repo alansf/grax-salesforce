@@ -108,7 +108,7 @@
             -->
             <li class="slds-tabs_scoped__item" title="Back Up" role="presentation">
                 <a class="slds-tabs_scoped__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected="false" aria-controls="tab-archiving" id="tab-archiving__item">
-                    Back Up
+                    Schedule
                 </a>
             </li>
             <li class="slds-tabs_scoped__item" title="Help" role="presentation">
