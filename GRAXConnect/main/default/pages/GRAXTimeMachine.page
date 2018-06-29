@@ -53,7 +53,7 @@
 						</apex:facet>
 						<apex:outputPanel >
 							<a href="javascript:void(0);" onclick="showGlobalSpinner(true);changeFileSelected('{!selectOption.value}');return false;" class="slds-button">
-								<span class="slds-truncate">Load this Version</span>
+								<span>Load this Version</span>
 							</a>
 						</apex:outputPanel>
 					</apex:column>
