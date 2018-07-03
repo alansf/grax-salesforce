@@ -271,9 +271,10 @@
                                             <label class="slds-form-element__label">Select your Report</label>
                                             <div class="slds-form-element__control">
                                                 <div class="slds-select_container">
-                                                    <apex:selectList id="reportList" value="{!targetReport}" multiselect="false" size="1" styleClass="slds-select reportList">
-                                                        <apex:selectOptions value="{!reports}"/>
-                                                    </apex:selectList>
+                                                    <apex:inputHidden id="targetReport" value="{!targetReport}"></apex:inputHidden>
+                                                    <select id="reportList" class="slds-select reportList">
+                                                        <option value="" selected="selected" disabled="disabled">-- SELECT REPORT --</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
@@ -466,24 +467,13 @@
         </section>
         <div class="slds-backdrop slds-hide"></div>
 
-        <div id="globalSpinner" class="slds-spinner_container slds-is-fixed slds-hide">
-            <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
-                <span class="slds-assistive-text">Loading</span>
-                <div class="slds-spinner__dot-a"></div>
-                <div class="slds-spinner__dot-b"></div>
-            </div>
-        </div>
-
         <script>
-            var $sf = function(id) {
-                return $(document.getElementById(id));
-            };
-    
             var $objectList = $sf('{!$Component.objectList}');
             var $filterCriteriaType = $sf('{!$Component.filterCriteriaType}');
             var $filterCriteriaTypeOptions = $('[name="filterCriteriaTypeOptions"]');
             var $targetDate = $sf('{!$Component.targetDate}');
-            var $reportList = $sf('{!$Component.reportList}');
+            var $reportList = $('select#reportList');
+            var $targetReport = $sf('{!$Component.targetReport}');
             var $schedule = $sf('{!$Component.schedule}');
             var $scheduleStartDate = $sf('{!$Component.scheduleStartDate}');
             var $scheduleStartTime = $sf('{!$Component.scheduleStartTime}');
@@ -494,7 +484,7 @@
             var $createScheduledProcess = $('#createScheduledProcess');
             var $saveScheduledProcess = $('#saveScheduledProcess');
             var $cancelScheduledProcess = $('#cancelScheduledProcess, #scheduledProcessModal .slds-modal__close');
-            var $globalSpinner = $('#globalSpinner');
+            //var $globalSpinner = $('#globalSpinner');
 
             var selectFilterCriteriaTypeOption = function(value, isEvent) {
                 if(!isEvent) {
@@ -503,6 +493,17 @@
                 }
                 $('[data-filterCriteriaType]').addClass('slds-hide');
                 $('[data-filterCriteriaType="' + value + '"]').removeClass('slds-hide');
+                $filterCriteriaType.val(value);
+            };
+
+            var selectReport = function(value) {
+                if(value) {
+                    $reportList.val(value);
+                } else {
+                    $reportList.get(0).selectedIndex = 0;
+                }
+                
+                $targetReport.val(value).trigger('change');
             };
         </script>
 
@@ -515,7 +516,7 @@
                     $("#colDt_q").val('today').trigger('change');
 
                     $objectList.val(!selectedObject ? null : selectedObject);
-                    $reportList.val(!targetReport ? null : targetReport);
+                    selectReport(!targetReport ? null : targetReport);
                     $schedule.val('{!schedule}');
                     $targetDate.datepicker('setDate', selectedObject ? '{!targetDate}': moment());
                     $scheduleStartDate.datepicker('setDate', selectedObject ? '{!scheduleStartDate}' : moment());
@@ -588,7 +589,15 @@
                 var condition = false;
 
                 condition = $objectList.val() != null;
-                condition = condition && $targetDate.val() != '';
+
+                if($filterCriteriaType.val() == 'Date') {
+                    condition = condition && $targetDate.val() != '';
+                } else if($filterCriteriaType.val() == 'Report') {
+                    condition = condition && $reportList.val() && $targetReport.val() != '';
+                } else {
+                    condition = false;
+                }
+                
                 condition = condition && $scheduleStartDate.val() != '';
                 condition = condition && $('[name="criteriaOptions"]:checked, [name="scheduleOptions"]:checked').length == 2;
 
@@ -599,10 +608,12 @@
 
             
             var cleanForm = function() {
+                cleanFormData();
+                
                 $("#colDt_q").val('today').trigger('change');
 
                 $objectList.val(null);
-                $reportList.val(null);
+                selectReport(null);
                 $schedule.val(null);
                 $targetDate.datepicker('setDate', moment());
                 $scheduleStartDate.datepicker('setDate', moment());
@@ -780,7 +791,7 @@
                         <div class="slds-form-element">\
                             <div class="slds-form-element__control">\
                                 <span class="slds-checkbox">\
-                                <input name="' + item[settings.items.id] + '" id="' + item[settings.items.id] + '" type="checkbox" />\
+                                <input name="' + item[settings.items.id] + '" id="' + item[settings.items.id] + '" type="checkbox" ' + (item.isSelected ? 'checked' : '') + ' />\
                                 <label class="slds-checkbox__label" for="' + item[settings.items.id] + '">\
                                     <span class="slds-checkbox_faux"></span>\
                                     <span class="slds-form-element__label">'
@@ -824,11 +835,13 @@
                         });
 
                         callNested(settings, items, function(item, parent) {
-                            if(item.isCascadeDelete) {
+                            var isArchive = $archive.prop('checked');
+
+                            if(item.isCascadeDelete && (isArchive || selection == null)) {
                                 item.isSelected = true;
 
                                 $root.find('#' + item[settings.items.id])
-                                    .prop({'checked': true, 'disabled': $archive.prop('checked')});
+                                    .prop({'checked': true, 'disabled': isArchive});
                             }
 
                             if(item.isSelected && !item.isCascadeDelete) {
@@ -847,13 +860,15 @@
                                 };
                                 
                                 $root.find('#' + item[settings.items.id])
-                                    .prop({'checked': item.isSelected, 'disabled': $archive.prop('checked')})
+                                    .prop({'checked': item.isSelected, 'disabled': isArchive})
                                     .closest('[role="treeitem"]').attr({'aria-expanded': 'true'});
 
                                 var isChildSelected;
                                 $root.on('change', '#' + item[settings.items.id], function(e, newState) {
+                                    isArchive = $archive.prop('checked');
+
                                     if(newState === undefined) {
-                                        isChildSelected = hasChildSelected($archive.prop('checked'));
+                                        isChildSelected = hasChildSelected(isArchive);
 
                                         callNested(settings, item[settings.items.childs], function(item) {
                                             item.isSelected = !isChildSelected;
@@ -891,7 +906,9 @@
 
                                     var oldState = item.isSelected;
                                     
-                                    if(newState !== undefined && oldState != newState) {
+                                    if(newState !== undefined) {
+                                        if(oldState == newState) return;
+
                                         item.isSelected = newState || hasChildSelected(isArchive);
 
                                         $root
@@ -1051,6 +1068,19 @@
                 return true;
             }
 
+            window.addReportListOptions = function(options) {
+                $.each(options, function(i, item) {
+                    var $option = $('<option>')
+                                    .attr('value', item.id)
+                                    .text(item.name);
+                    $reportList.append($option).prop('disabled', false);
+                });
+            };
+
+            $reportList.on('change', function(e) {
+                $targetReport.val(e.target.value);
+            });
+
             var $scheduledProcessModal = $('#scheduledProcessModal');
 
             window.editScheduledProcess = function(spId) {
@@ -1070,10 +1100,6 @@
                 }
             });
 
-            window.showGlobalSpinner = function(state) {
-                $globalSpinner.toggleClass('slds-hide', !state);
-            };
-
             $('#archive_help_button').on('mouseover mouseleave', function(e) {
                 $('#archive_help').toggleClass('slds-hide', e.type == 'mouseleave');
             }).on('click', function(e) {
@@ -1081,6 +1107,8 @@
             });
 
             window.cleanForm = cleanForm;
+
+            addReportListOptions({!reportsJSON});
         });
     </script>
 </apex:page>

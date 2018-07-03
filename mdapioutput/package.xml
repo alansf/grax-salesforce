@@ -60,6 +60,7 @@
     <members>GRAXSetupCtrlTest</members>
     <members>GRAXSupportCtrl</members>
     <members>GRAXTimeMachineCtrl</members>
+    <members>GRAXTimeMachineCtrlTest</members>
     <members>GRAXUnitTest</members>
   </types>
   <types>

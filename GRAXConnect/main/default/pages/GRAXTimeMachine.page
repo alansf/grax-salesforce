@@ -16,13 +16,39 @@
 			border-bottom: 1px solid rgb(221, 219, 218);
 		}
 
-		.col-field-name {
+		table#diffTable > tbody > tr {
+			display: none;
+		}
+
+		table#diffTable.showAllRows > tbody > tr,
+		table#diffTable > tbody > tr.isDifferent {
+			display: table-row;
+		}
+
+		table#diffTable > tbody > tr > td.col-field-name {
 			max-width: 10vw;
 		}
 
-		.col-new-old {
+		table#diffTable > tbody > tr > td.col-old,
+		table#diffTable > tbody > tr > td.col-new {
 			max-width: 40vw;
 		}
+
+		table#diffTable > tbody > tr.isDifferent {
+			font-weight: bold;
+		}
+
+		/*table#diffTable > tbody > tr.isDifferent > td.col-field-name {
+			background-color: #faffbd;
+		}
+
+		table#diffTable > tbody > tr.isDifferent > td.col-old {
+			background-color: #ffdde1;
+		}
+
+		table#diffTable > tbody > tr.isDifferent > td.col-new {
+			background-color: #d8edff;
+		}*/
 
 		span.slds-truncate {
 			display: inline-block;
@@ -30,6 +56,57 @@
 	</style>
 </head>
 <body>
+	<script>
+		(function() {
+			var toggleAllRows = function($btn, $tbl, state) {
+				$btn.text(state ? 'Display updated fields only' : 'Display all field values');
+				$tbl.toggleClass('showAllRows', state);
+			};
+
+			window.toggleAllRowsButtonInit = function(btnSelector, tblSelector, state) {
+				state = state !== undefined ? state : false;
+
+				var $btn = $(btnSelector);
+				var $tbl = $(tblSelector);
+				
+				toggleAllRows($btn, $tbl, state);
+
+				$btn.on('click', function(e) {
+					state = !state;
+
+					toggleAllRows($btn, $tbl, state);
+
+					e.preventDefault();
+				}).removeClass('slds-hide');
+			};
+
+			window.fileSelectDataTableInit = function(fileSelectData) {
+				var $tbody = $('#fileSelectDataTable > tbody');
+
+				$.each(fileSelectData, function(i, item) {
+					var $tr = $('<tr>');
+
+					$tr.append($('<td>').text(item.label));
+
+					var $a = $('<a>')
+						.addClass('slds-button')
+						.text('Load this Version');
+
+					$a.on('click', function(e) {
+						showGlobalSpinner(true);
+						changeFileSelected(item.value);
+
+						e.preventDefault();
+					});
+
+					$tr.append($('<td>').append($a));
+
+					$tbody.append($tr);
+				});
+			};
+		})();
+	</script>
+
     <div class="slds-scope">
 		<apex:form id="form-timemachine">
 			<apex:actionFunction action="{!changeFileSelected}" name="changeFileSelected" immediate="true" rerender="out" oncomplete="showGlobalSpinner(false);">
@@ -42,28 +119,30 @@
 		
 
 			<apex:outputPanel id="datatableOuput" layout="block">
-				<apex:dataTable value="{!fileSelect}" var="selectOption" id="fileSelectDataTable" styleClass="slds-table slds-table_bordered slds-table_cell-buffer" rendered="{!hasBackups}">
-					<apex:column headerValue="Updated Date">
-						<apex:outputText value="{!selectOption.label}" />
-					</apex:column>
+				<apex:outputPanel rendered="{!hasBackups}">
+					<table id="fileSelectDataTable" class="slds-table slds-table_bordered slds-table_cell-buffer">
+						<thead>
+							<tr class="slds-text-title_caps">
+								<th scope="col">
+									<div class="slds-truncate" title="Updated Date">Updated Date</div>
+								</th>
+								<th scope="col">
+									<span class="slds-assistive-text">Actions</span>
+								</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
 
-					<apex:column >
-						<apex:facet name="header">
-							<span class="slds-assistive-text">Actions</span>
-						</apex:facet>
-						<apex:outputPanel >
-							<a href="javascript:void(0);" onclick="showGlobalSpinner(true);changeFileSelected('{!selectOption.value}');return false;" class="slds-button">
-								<span>Load this Version</span>
-							</a>
-						</apex:outputPanel>
-					</apex:column>
-				</apex:dataTable>
+					<script>
+						fileSelectDataTableInit({!fileSelectJson});
+					</script>
+				</apex:outputPanel>
 
 				<apex:outputPanel layout="block" rendered="{!!hasBackups}" styleClass="slds-text-align_center">
 					No records were found in GRAX
 				</apex:outputPanel>
 			</apex:outputPanel>
-
 
 			<apex:outputPanel id="out">
 				<apex:outputPanel rendered="{!isFileSelected}">
@@ -71,6 +150,7 @@
 						<h3 class="slds-section__title slds-theme_shade">
 							<span class="slds-truncate slds-p-horizontal_small" title="Version Information">Version Information</span>
 						</h3>
+						
 						<div aria-hidden="false" class="slds-section__content">
 							<div class="slds-form-element slds-form-element_separator slds-m-bottom_small">
 								<label lass="slds-form-element__label">Location</label>
@@ -79,27 +159,58 @@
 								</div>
 							</div>
 
-							<apex:dataTable value="{!diff}" var="fieldName" id="diffDataTable" styleClass="slds-table slds-table_bordered slds-table_col-bordered slds-table_cell-buffer">
-								<apex:column headerValue="Field" styleClass="col-field-name">
-									<span class="slds-truncate">
-										<apex:outputText value="{!fieldName}" />
-									</span>
-								</apex:column>	
+							<div class="slds-clearfix slds-p-vertical_large">
+								<div class="slds-clearfix">
+									<div class="slds-align_absolute-center">
+										<button id="toggleAllRowsButton" class="slds-button slds-button_neutral slds-hide"/>
+									</div>
+								</div>
+							</div>
 
-								<apex:column headerValue="New Value" styleClass="col-new-old">
-									<span class="slds-truncate">
-										<apex:outputText value="{!diff[fieldName].newValue}" />
-									</span>
-								</apex:column>
+							<table id="diffTable" class="slds-table slds-table_bordered slds-table_col-bordered slds-table_cell-buffer">
+								<thead>
+									<tr class="slds-text-title_caps">
+										<th scope="col">
+											<div class="slds-truncate" title="Field">Field</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate" title="New Value">New Value</div>
+										</th>
+										<th scope="col">
+											<div class="slds-truncate" title="Old Value">Old Value</div>
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<apex:repeat value="{!diff}" var="fieldName">
+										<tr class="{!diff[fieldName].styleClass}">
+											<td data-label="Field" class="col-field-name">
+												<span class="slds-truncate">
+													<apex:outputText value="{!fieldName}" />
+												</span>
+											</td>
 
-								<apex:column headerValue="Old Value" styleClass="col-new-old">
-									<span class="slds-truncate">
-										<apex:outputText value="{!diff[fieldName].oldValue}" />
-									</span>
-								</apex:column>
-							</apex:dataTable>
+											<td data-label="New Value" class="col-new">
+												<span class="slds-truncate">
+													<apex:outputText value="{!diff[fieldName].newValue}" />
+												</span>
+											</td>
+
+											<td data-label="Old Value" class="col-old">
+												<span class="slds-truncate">
+													<apex:outputText value="{!diff[fieldName].oldValue}" />
+												</span>
+											</td>
+										</tr>
+									</apex:repeat>
+								</tbody>
+							</table>
 						</div>
 					</div>
+
+					<script>
+						window.toggleAllRowsButtonInit('#toggleAllRowsButton', '#diffTable', false);
+					</script>
 					
 					<div class="slds-clearfix slds-p-vertical_large">
 						<div class="slds-clearfix">
