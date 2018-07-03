@@ -13,6 +13,12 @@
   <!-- Import the Design System style sheet -->
   <apex:slds />
 
+  <script>
+    var $sf = function(id) {
+        return $(document.getElementById(id));
+    };
+  </script>
+
   <style type="text/css">
     body {
         height: 100vh;
@@ -347,7 +353,7 @@
                                         <div class="slds-select_container">
                                             <apex:selectList id="objectlist" value="{!objToQuery}" multiselect="false" size="1" styleClass="slds-select objectlist" disabled="{!NOT(isconfigured)}">
                                                 <apex:selectOptions value="{!items}"/>
-                                                <apex:actionSupport reRender="auditenabled, field_properties, defaultFields, defaultFilter, defaultProcessingOrder, graxconfig, deploytrigger, savequery, processhistory" event="onchange" oncomplete="reRendered();"/>
+                                                <apex:actionSupport reRender="auditenabled, field_properties, defaultFields, defaultFilter, defaultProcessingOrder, graxconfig, deploytrigger, savequery, processhistory" event="onchange" oncomplete="reRendered();showGlobalSpinner(false);"/>
                                             </apex:selectList>
                                         </div>
                                     </div>
@@ -680,11 +686,21 @@
         </div>
     </div>
 
+    <div id="globalSpinner" class="slds-spinner_container slds-is-fixed slds-hide">
+        <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+
   </div>
   
   <!-- / REQUIRED SLDS WRAPPER -->
 
   <script>
+    var $globalSpinner = $('#globalSpinner');
+
     $(function() {
         // HELPERS
 
@@ -772,6 +788,10 @@
         ; // END EVENT HANDLERS
 
 
+        $('.objectlist').on('change', function(e) {
+            showGlobalSpinner(true);
+        });
+
         window.reRendered = function() {
             renderSvgIcons();
 
@@ -790,6 +810,10 @@
             }
 
             $objectlist.trigger('change');
+        };
+
+        window.showGlobalSpinner = function(state) {
+            $globalSpinner.toggleClass('slds-hide', !state);
         };
 
         window.reRendered();

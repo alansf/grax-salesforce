@@ -440,15 +440,19 @@ public with sharing class GRAXBackupCtrl {
         return options;
     }
 
-    public List<SelectOption> getReports() {   
-        List<SelectOption> options = new List<SelectOption>();
-        options.add(new SelectOption('' ,'-- SELECT REPORT --', true));
+    public String getReportsJSON() {
+        List<Object> rList = new List<Object>();
+        Map<String, Object> rMap;
 
-        for (Report r : [SELECT Id, Name FROM Report WHERE Format = 'Tabular' ORDER BY CreatedDate DESC]) {
-            options.add(new SelectOption(r.Id, r.Name));
+        for (Report r : [SELECT Id, Name FROM Report WHERE Format = 'Tabular' AND (FolderName Like '%GRAX%' OR Name Like '%GRAX%') ORDER BY CreatedDate DESC]) {
+            rMap = new Map<String, Object>();
+            rMap.put('id', r.Id);
+            rMap.put('name', r.Name);
+
+            rList.add(rMap);
         }
         
-        return options;
+        return JSON.serialize(rList);
     }
 
 }
