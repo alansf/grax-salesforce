@@ -13,7 +13,6 @@ public with sharing class GRAXBackupCtrl {
     public String sObjectDateField {get;set;}
     public String sObjectDateFieldDefault {get;set;}
 
-    public Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
     private Set<String> excludedStandardObjects = new Set<String>{'AccountCleanInfo','ContentDistribution','DuplicateRecordItem','EntitySubscription','ProcessInstance','TopicAssignment','AccountPartner','ContactCleanInfo','EmailMessageRelation','EventRelation','OpportunityPartner','Partner','CollaborationGroupRecord','CaseTeamMember','CaseTeamTemplateRecord','FlowRecordRelation','NetworkUserHistoryRecent'};
     private Set<String> excludedStandardObjectSufixes = new Set<String>{'Share','History','Feed'};
 
@@ -107,8 +106,8 @@ public with sharing class GRAXBackupCtrl {
 
     private void addAllChildRelationships(ObjRelStructure sObjRelStruc, List<ObjRelStructure> allObjRelStructure, Set<String> childsToBeVisitedUniqueKey){
         // Get the object description
-        if(globalDescribe.containsKey(sObjRelStruc.name)){
-            Schema.DescribeSObjectResult sObjDesc = globalDescribe.get(sObjRelStruc.name).getDescribe();
+        if(GRAXUtils.sObjectExists(sObjRelStruc.name)){
+            Schema.DescribeSObjectResult sObjDesc = GRAXUtils.getObjectDescribe(sObjRelStruc.name);
             
             if(sObjDesc.getChildRelationships().size() > 0){
                 //Visit all the Child Relationships of this SObject
@@ -156,7 +155,7 @@ public with sharing class GRAXBackupCtrl {
             List<ObjRelStructure> allObjRelStructure = new List<ObjRelStructure>();
             Set<String> childsToBeVisitedUniqueKey = new Set<String>();
 
-            Schema.DescribeSObjectResult rootSObjDesc = globalDescribe.get(selectedObject).getDescribe();
+            Schema.DescribeSObjectResult rootSObjDesc = GRAXUtils.getObjectDescribe(selectedObject);
 
             // Initiate the structure on the current SObject
             ObjRelStructure rootSObj = new ObjRelStructure(rootSObjDesc, null);
@@ -424,15 +423,9 @@ public with sharing class GRAXBackupCtrl {
         if(String.isNotBlank(selectedObject)) {
             Set<String> dateTypes = new Set<String>{'date','datetime'};
             
-            // Get a map of field name and field token
-            Map<String, Schema.SObjectField> fMap = globalDescribe.get(selectedObject).getDescribe().Fields.getMap();
-            
-            if(fMap != null){
-                for(Schema.SObjectField ft : fMap.values()){ // loop through all field tokens (ft)
-                    Schema.DescribeFieldResult fd = ft.getDescribe(); // describe each field (fd)
-                    if(dateTypes.contains(fd.getType().name().toLowerCase())){
-                        options.add(new SelectOption(fd.getName(), fd.getLabel()));
-                    }
+            for(Schema.DescribeFieldResult fd : GRAXUtils.getDescribeFieldsResultForObject(selectedObject).values()) {
+                if(dateTypes.contains(fd.getType().name().toLowerCase())){
+                    options.add(new SelectOption(fd.getName(), fd.getLabel()));
                 }
             }
         }

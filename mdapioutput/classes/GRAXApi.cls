@@ -12,6 +12,14 @@
  * License: https://github.com/HardingPoint/GRAXForSFDC/blob/master/LICENSE
  * --------------------------------------------------------------------------*/
 
+/*****************************************************************************************
+Name              : GRAXApi
+Description       : 
+Revision History  :
+Created/Modified by   Created/Modified Date     Requested by        Related Task/Issue     
+----------------------------------------------------------------------------------------
+1. Leandro Brunner       07/04/2018             
+******************************************************************************************/
 public class GRAXApi extends GRAXCloud {
     // -------------------------------------------------
     // https://grax.io
@@ -20,7 +28,7 @@ public class GRAXApi extends GRAXCloud {
 	private static Boolean isArchive = false;
     
     public static String jsonContent(List<SObject> triggerNew, List<SObject> triggerOld) {
-            return jsonContent(triggerNew,triggerOld,'');
+        return jsonContent(triggerNew,triggerOld,'');
     }
 
 	public static String jsonContentArchive(List<SObject> triggerNew) {
@@ -66,6 +74,34 @@ public class GRAXApi extends GRAXCloud {
             		FilterFields = gxcSettings.GRAXQuery.Selected_Fields__c;
             		
             newObjects = JSON.serialize(triggerNew);
+
+            if((Trigger.isExecuting && (Trigger.isInsert || Trigger.isUpdate)) || isArchive) {
+                // Get list of reference fields to query
+                List<String> referenceFields = GRAXUtils.getReferenceFields(ObjectType);
+
+                if(referenceFields.size() > 0) {
+                    // build the query to retrive same records including the name field of every lookup in the current object.
+                    String strQuery = 'SELECT ' + String.join(referenceFields, ',') + ' FROM ' + ObjectType;
+                    strQuery += ' WHERE Id IN :triggerNew';
+
+                    Map<Id, SObject> recsMap = new Map<Id, SObject>(Database.query(strQuery));
+
+                    List<Object> recList = (List<Object>)JSON.deserializeUntyped(newObjects);
+
+                    // Iterate through the records retrived and add every reference field name to the JSON.
+                    for(Object recObj : recList){
+                        Map<String, Object> rec = (Map<String, Object>)recObj;
+
+                        SObject so = recsMap.get((Id)rec.get('Id'));
+
+                        for(String refFld : referenceFields) {
+                            rec.put(refFld, GRAXUtils.parseSObjectFieldValue(so, refFld));
+                        }
+                    }
+
+                    newObjects = JSON.serialize(recList);
+                }
+            }
             
             /* --------------------------------------------------   
             // If graxconfig is NOT null it has been passed in from outside a trigger and is correct

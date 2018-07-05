@@ -35,7 +35,6 @@ public class GRAXRestoreCtrlTest {
         System.assertEquals('', grc.objToQuery);
         System.assertNotEquals(null, grc.fieldMap);
         System.assertNotEquals(null, grc.sObjectMap);
-        System.assertNotEquals(null, grc.globalDescribe);
         System.assertNotEquals(null, grc.tableRecords);
         
         System.assertNotEquals(null, grc.parentId);

@@ -62,6 +62,7 @@
     <members>GRAXTimeMachineCtrl</members>
     <members>GRAXTimeMachineCtrlTest</members>
     <members>GRAXUnitTest</members>
+    <members>GRAXUtils</members>
   </types>
   <types>
     <name>ContentAsset</name>

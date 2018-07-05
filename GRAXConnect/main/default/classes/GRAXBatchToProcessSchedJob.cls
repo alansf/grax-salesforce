@@ -296,7 +296,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
             
             // Check if there are parentIds identified to process for the following Child object
             // Only iterate up to 100 times
-            for(Integer i = 0; i < 100 && b.parentIds2ProcessForChild.size() == 0 && this.currentElementIndex < this.objects2Process.size(); i++){
+            for(Integer i = 0; (i < 100 || this.objects2Process[this.currentElementIndex].name == 'ContentDocumentLink') && b.parentIds2ProcessForChild.size() == 0 && this.currentElementIndex < this.objects2Process.size(); i++){
                 this.currentElementIndex = this.currentElementIndex + 1;
                 
                 isBatchCompleted = this.currentElementIndex >= this.objects2Process.size();
