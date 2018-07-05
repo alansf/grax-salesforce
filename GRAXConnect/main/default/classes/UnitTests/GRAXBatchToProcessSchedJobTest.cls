@@ -35,7 +35,7 @@ public class GRAXBatchToProcessSchedJobTest {
         Test.startTest();
 
         GRAXBatchToProcessSchedJobMainObject b = new GRAXBatchToProcessSchedJobMainObject(gsp.Id, false);
-        Id jobId = Database.executebatch(b);
+        Id jobId = Database.executebatch(b, 10);
 
         Test.stopTest();
 
@@ -89,10 +89,10 @@ public class GRAXBatchToProcessSchedJobTest {
 
         Test.startTest();
 
-        Database.executebatch(new GRAXBatchToProcessSchedJobMainObject(gsp.Id, false));
+        Database.executebatch(new GRAXBatchToProcessSchedJobMainObject(gsp.Id, false), 10);
 
         GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, objects2Process, 1, '', null);
-        Id jobId = Database.executebatch(b);
+        Id jobId = Database.executebatch(b, 20);
 
         Test.stopTest();
 
@@ -131,7 +131,7 @@ public class GRAXBatchToProcessSchedJobTest {
         Test.setMock(HttpCalloutMock.class, fakeResponse);
 
         GRAXBatchToProcessSchedJobMainObject b = new GRAXBatchToProcessSchedJobMainObject(gsp.Id, false);
-        Id jobId = Database.executebatch(b);
+        Id jobId = Database.executebatch(b, 10);
 
         Test.stopTest();
 
@@ -178,7 +178,7 @@ public class GRAXBatchToProcessSchedJobTest {
         Test.setMock(HttpCalloutMock.class, fakeResponse);
 
         GRAXBatchToProcessSchedJobMainObject b = new GRAXBatchToProcessSchedJobMainObject(gsp.Id, true);
-        Id jobId = Database.executebatch(b);
+        Id jobId = Database.executebatch(b, 10);
 
         Test.stopTest();
 
