@@ -25,7 +25,7 @@ public virtual class GRAXSettings {
 	
 	// Default to the testing URL
 	public String ApiURL = 'https://api.grax.io/test/api';
-	public String GRAXDeployURL = 'https://heroku.com/deploy?template=https://github.com/HardingPoint/GRAXEnterprise/blob/master';
+	public String GRAXDeployURL = 'https://heroku.com/deploy?template=https://github.com/HardingPoint/grax-enterprise-secure/blob/master';
 
 	public Boolean isObjectConfigured = false;
 	

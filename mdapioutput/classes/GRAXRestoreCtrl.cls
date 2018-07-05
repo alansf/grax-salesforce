@@ -13,7 +13,6 @@ public with sharing class GRAXRestoreCtrl {
     public List<String> selectedFieldsList {get;set;}
     public Map<String, SObject> sObjectMap {get;set;}
     public SObject sobjectToRestore {get;set;}
-    public Map<String, Schema.SObjectType> globalDescribe {get;set;}
     public Map<String, ChildRelatedItem> childRelatedMap {get;set;}
 
     public Map<String, Field> fieldMap {get;set;}
@@ -38,7 +37,7 @@ public with sharing class GRAXRestoreCtrl {
 
         public Field(Schema.DescribeFieldResult fd) {
             this.name = fd.getName();
-            this.label = CleanFieldLabel(fd, true);
+            this.label = GRAXUtils.CleanFieldLabel(fd, true);
             this.type = fd.getType().name();
 
             this.isCreateable = fd.isCreateable();
@@ -80,20 +79,6 @@ public with sharing class GRAXRestoreCtrl {
 
             return cls;
         }
-
-        public String CleanFieldLabel(Schema.DescribeFieldResult sField, Boolean escapeForVF){
-            String fieldLabel = sField.getLabel();
-            
-            if(!sField.isCustom() && sField.getType().name() == 'REFERENCE' && fieldLabel.endsWith(' ID')){
-                fieldLabel = fieldLabel.removeEnd(' ID');
-            } 
-            
-            if(escapeForVF){
-                fieldLabel = fieldLabel.escapeHtml4();
-            }
-            
-            return fieldLabel;
-        }
     }
 
     public GRAXRestoreCtrl() {
@@ -101,7 +86,6 @@ public with sharing class GRAXRestoreCtrl {
 
         fieldMap = new Map<String, Field>();
         sObjectMap = new Map<String, SObject>();
-        globalDescribe = Schema.getGlobalDescribe();
         tableRecords = new List<Object>();
 
         String strParentId = Apexpages.currentPage().getParameters().get('Id');
@@ -144,11 +128,11 @@ public with sharing class GRAXRestoreCtrl {
 
 
     public SObject createSObject(String typeName, Map<String, Object> mo) {
-        SObject so = globalDescribe.get(typeName).newSObject();
+        SObject so = GRAXUtils.createObjectInstance(typeName);
 
         for(Field f : fieldMap.values()) {
             try {
-                if(f.isCreateable) so.put(f.name, castGenericObjectToType(mo.get(f.name), f.type));
+                if(f.isCreateable) so.put(f.name, GRAXUtils.castGenericObjectToType(mo.get(f.name), f.type));
             } catch(Exception e) {
                 System.debug(LoggingLevel.WARN, e.getMessage() + ' on field ' + f.label);
             }
@@ -175,17 +159,11 @@ public with sharing class GRAXRestoreCtrl {
         fieldMap.clear();
 
         if(String.isNotBlank(objToQuery)) {
-            // Get a map of field name and field token
-            Map<String, Schema.SObjectField> fMap = globalDescribe.get(objToQuery).getDescribe().Fields.getMap();
-            
-            if(fMap != null){
-                for(Schema.SObjectField ft : fMap.values()){ // loop through all field tokens (ft)
-                    Schema.DescribeFieldResult fd = ft.getDescribe(); // describe each field (fd)
-                    
-                    Field f = new Field(fd);
-                    if(!fieldSetToExclude.contains(f.name)) {
-                        fieldMap.put(f.name, f);
-                    }
+            for(Schema.DescribeFieldResult fd : GRAXUtils.getDescribeFieldsResultForObject(objToQuery).values()) {
+                Field f = new Field(fd);
+
+                if(!fieldSetToExclude.contains(f.name)) {
+                    fieldMap.put(f.name, f);
                 }
             }
         }
@@ -297,8 +275,7 @@ public with sharing class GRAXRestoreCtrl {
         childRelatedMap = new Map<String, ChildRelatedItem>();
 
         Integer index = 0;
-        Schema.DescribeSObjectResult sObjDesc = globalDescribe.get(parentType).getDescribe();
-        for(Schema.ChildRelationship childRel : sObjDesc.getChildRelationships()) {
+        for(Schema.ChildRelationship childRel : GRAXUtils.getObjectDescribe(parentType).getChildRelationships()) {
             if(String.isNotBlank(childRel.getRelationshipName())) {
                 ChildRelatedItem cri = new ChildRelatedItem(childRel, String.valueOf(index));
                 childRelatedMap.put(cri.index, cri);
@@ -327,84 +304,5 @@ public with sharing class GRAXRestoreCtrl {
         }
         
         return JSON.serialize(fList);
-    }
-
-
-    // Description: Cast the value passing by parameter to the specified Field Type. 
-    public static Object castGenericObjectToType(Object objValue, String fieldType){     
-    	Object result = objValue;
-        
-        if(objValue <> null){
-        	String obj = String.valueOf(objValue);
-            
-            if(String.isBlank(obj)){
-                result = null;
-            }else{
-                if((new Set<String>{'time', 'datetime', 'date'}).contains(fieldType.toLowerCase())){
-	                if(fieldType.equalsIgnoreCase('time')){
-	                	// The assumption is that TIME values will be in this format '16:45:47.000Z'
-	                	// Add the time portion to it, so it is treated as a Datetime
-	                	obj = '2000-01-01T' + obj;
-	                }
-	                
-	                if( obj.length() > 19 && obj.contains('T')){
-                        //Bad format 2016-07-29T16:45:47.000Z . Reformat to 2016-07-29 16:45:47
-                        obj = obj.replace('T', ' ').subString(0, 19);
-                    }
-                    
-                    if(fieldType.equalsIgnoreCase('datetime') || fieldType.equalsIgnoreCase('time')){
-	                    if( obj.contains('/') ){
-	                        //MONTH/DAY/YEAR
-	                        result = (Object)Datetime.parse(obj);
-	                    }else{
-	                        //YEAR-MONTH-DAY
-	                        result = (Object)Datetime.valueOfGMT(obj);
-	                    }
-	                }else if(fieldType.equalsIgnoreCase('date')){
-	                    if( obj.contains('/') ){
-	                        //MONTH/DAY/YEAR
-	                        result = (Object)Date.parse(obj);
-	                    }else{
-	                        //YEAR-MONTH-DAY
-	                        result = (Object)Date.valueOf(obj);
-	                    }
-	                }
-	                
-	                if(fieldType.equalsIgnoreCase('time')){
-	                	// This value was already transformed to a Datetime, extract the Time portion of it
-	                	result = (Object)(((Datetime)result).timeGMT());
-	                }
-                }else if(fieldType.equalsIgnoreCase('boolean')){
-                    result = (Object)Boolean.valueOf(obj);
-                }else if(fieldType.equalsIgnoreCase('integer')){
-                    result = (Object)Integer.valueOf(obj);
-                }else if(fieldType.equalsIgnoreCase('double') || fieldType.equalsIgnoreCase('currency') || fieldType.equalsIgnoreCase('percent')){
-                    result = (Object)Double.valueOf(obj);
-                }else if(fieldType.equalsIgnoreCase('decimal')){
-                    result = (Object)Decimal.valueOf(obj);
-                }else{                      
-                    result = obj;
-                }
-            }
-        }
-               
-        return result;
-    }
-
-    public static String ImproveErrorMessage(Exception e){      
-        return ImproveErrorMessage(e.getMessage());
-    }
-    
-    public static String ImproveErrorMessage(String msj){
-        String result = msj;
-        
-        if(result.contains('FIELD_CUSTOM_VALIDATION_EXCEPTION')){
-            Integer lastIndex = result.length();
-            if(result.indexOf('FIELD_CUSTOM_VALIDATION_EXCEPTION') < result.lastIndexOf(':')){
-                lastIndex = result.lastIndexOf(':');
-            }
-            result = result.substring(result.indexOf('FIELD_CUSTOM_VALIDATION_EXCEPTION') + 'FIELD_CUSTOM_VALIDATION_EXCEPTION'.length()+2, lastIndex);
-        }
-        return result;
     }
 }

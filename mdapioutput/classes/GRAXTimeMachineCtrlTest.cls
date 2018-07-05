@@ -11,7 +11,7 @@ public with sharing class GRAXTimeMachineCtrlTest {
 
     @isTest
     public static void GRAXTimeMachineCtrlTest1() {
-        Profile p=[SELECT Id From Profile WHERE Name='Standard User'];
+        Profile p=[SELECT Id FROM Profile ORDER BY Id DESC LIMIT 1];
         User u2 =new User(Alias = 'newUser1' ,
                         Email ='newuser123@testorg.com',
                         EmailEncodingKey = 'UTF-8',

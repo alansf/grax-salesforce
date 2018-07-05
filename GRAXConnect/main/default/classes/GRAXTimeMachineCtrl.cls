@@ -23,8 +23,6 @@ public with sharing class GRAXTimeMachineCtrl {
 	private List<Object> oldState {get;set;}
 	private List<Object> newState {get;set;}
 
-	public static Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
-
 	public class Field {
         public String name {get;set;}
         public String label {get;set;}
@@ -120,7 +118,7 @@ public with sharing class GRAXTimeMachineCtrl {
         
             for(Integer i=10; i <= 14; i++) {
                 String datetimeString = '2018-06-' + i + 'T18:57:24.000Z';
-                Datetime updatedDate = (Datetime)GRAXRestoreCtrl.castGenericObjectToType(datetimeString, 'datetime');
+                Datetime updatedDate = (Datetime)GRAXUtils.castGenericObjectToType(datetimeString, 'datetime');
                 
                 if(!fileSelectMap.containsKey(datetimeString)) {
                     fileSelectMap.put(datetimeString, new List<SelectOption>());
@@ -142,7 +140,7 @@ public with sharing class GRAXTimeMachineCtrl {
                             if (FieldName=='Key')
                                 S3Key = FieldValue;
                             if (FieldName=='LastModified'){
-                                Datetime updatedDate = (Datetime)GRAXRestoreCtrl.castGenericObjectToType(FieldValue, 'datetime');
+                                Datetime updatedDate = (Datetime)GRAXUtils.castGenericObjectToType(FieldValue, 'datetime');
 
                                 if(!fileSelectMap.containsKey(FieldValue)) {
                                     fileSelectMap.put(FieldValue, new List<SelectOption>());
@@ -215,15 +213,11 @@ public with sharing class GRAXTimeMachineCtrl {
 	public static Map<String, Field> getFieldsMapBySObjectName(String sObjectName) {
         Map<String, Field> fieldsMap = new Map<String, Field>();
 
-        Map<String, Schema.SObjectField> fMap = globalDescribe.get(sObjectName).getDescribe().Fields.getMap();
-        
-        if(fMap != null){
-            for(Schema.SObjectField ft : fMap.values()) {
-                Field f = new Field(ft.getDescribe());
+        for(Schema.DescribeFieldResult fd : GRAXUtils.getDescribeFieldsResultForObject(sObjectName).values()) {
+            Field f = new Field(fd);
 
-                if(f.isUpdateable) {
-                    fieldsMap.put(f.name, f);
-                }
+            if(f.isUpdateable) {
+                fieldsMap.put(f.name, f);
             }
         }
 
@@ -242,7 +236,7 @@ public with sharing class GRAXTimeMachineCtrl {
         for(Field f : fieldMap.values()) {
             try {
                 if(f.isUpdateable && mo.containsKey(f.name)) {
-                    so.put(f.name, GRAXRestoreCtrl.castGenericObjectToType(mo.get(f.name), f.type));
+                    so.put(f.name, GRAXUtils.castGenericObjectToType(mo.get(f.name), f.type));
                 }
             } catch(Exception e) {
                 System.debug(LoggingLevel.WARN, e.getMessage() + ' on field ' + f.label);
