@@ -11,6 +11,14 @@
             left: 0;
             z-index: 99999999;
         }
+
+        .slds-scope .slds-input-has-icon.slds-form-element__date .slds-input__icon {
+            pointer-events: all;
+        }
+
+        .slds-scope .slds-input-has-icon.slds-form-element__date .slds-input__icon:hover {
+            fill: #005fb2;
+        }
     </style>    
 
     <apex:form id="form-archiving" styleClass="slds-tabs_scoped__content">
@@ -253,7 +261,7 @@
                                     <div class="slds-col slds-grow-none slds-m-right_small">
                                         <div class="slds-form-element">
                                             <label class="slds-form-element__label">Target Date</label>
-                                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right">
+                                            <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right slds-form-element__date">
                                                 <svg aria-hidden="true" class="slds-input__icon slds-icon-text-default">
                                                     <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#event')}"></use>
                                                 </svg>
@@ -372,7 +380,7 @@
                                         <div class="slds-form-element__row">
                                             <div class="slds-form-element">
                                                 <label class="slds-form-element__label">Schedule Start Date</label>
-                                                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right">
+                                                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--right slds-form-element__date">
                                                     <svg aria-hidden="true" class="slds-input__icon slds-icon-text-default">
                                                         <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#event')}"></use>
                                                     </svg>
