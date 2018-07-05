@@ -145,8 +145,12 @@ public with sharing class GRAXUtils {
 
                         nameField = relNameFieldDesc.getName();
                     }
-                                                                
-                    referenceFields.add(fieldDesc.getRelationshipName() + '.' + nameField);
+
+                    String relationName = fieldDesc.getRelationshipName();
+
+                    if(String.isNotBlank(relationName)) {
+                        referenceFields.add(relationName + '.' + nameField);
+                    }
                 }
                 
             }
