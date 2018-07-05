@@ -34,7 +34,7 @@ public class GRAXBatchToProcessSchedJobTest {
 
         Test.startTest();
 
-        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, null);
+        GRAXBatchToProcessSchedJobMainObject b = new GRAXBatchToProcessSchedJobMainObject(gsp.Id, false);
         Id jobId = Database.executebatch(b);
 
         Test.stopTest();
@@ -89,7 +89,7 @@ public class GRAXBatchToProcessSchedJobTest {
 
         Test.startTest();
 
-        Database.executebatch(new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, null));
+        Database.executebatch(new GRAXBatchToProcessSchedJobMainObject(gsp.Id, false));
 
         GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, objects2Process, 1, '', null);
         Id jobId = Database.executebatch(b);
@@ -130,7 +130,7 @@ public class GRAXBatchToProcessSchedJobTest {
         GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{"message": "Test successful"}', 'http://test.grax.io/applications/neo4j/configure', null);
         Test.setMock(HttpCalloutMock.class, fakeResponse);
 
-        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, null);
+        GRAXBatchToProcessSchedJobMainObject b = new GRAXBatchToProcessSchedJobMainObject(gsp.Id, false);
         Id jobId = Database.executebatch(b);
 
         Test.stopTest();
@@ -147,7 +147,7 @@ public class GRAXBatchToProcessSchedJobTest {
     @isTest
     static void GRAXBatchToProcessSchedJobExecuteNowTest() {
         Datetime now = Datetime.now();
-
+        
         GRAX_Data_Record__c dr = new GRAX_Data_Record__c();
         dr.Status__c = 'Sent Successful';
         dr.of_Times_Sent__c = 1;
@@ -161,7 +161,7 @@ public class GRAXBatchToProcessSchedJobTest {
 
         GRAX_Schedule_Process__c gsp = new GRAX_Schedule_Process__c();
         gsp.Object_Name__c = 'GRAX_Data_Record__c';
-        gsp.Date_Field__c = 'LastModifiedDate';
+        gsp.Date_Field__c = 'CreatedDate';
         gsp.Target_Date__c = Date.today().addDays(1);
         gsp.Select_Criteria__c = 'Main Object not modified';
         gsp.Schedule_Type__c = 'Once';
@@ -177,7 +177,7 @@ public class GRAXBatchToProcessSchedJobTest {
         GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, 'OK', '{"message": "Test successful"}', null);
         Test.setMock(HttpCalloutMock.class, fakeResponse);
 
-        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, true);
+        GRAXBatchToProcessSchedJobMainObject b = new GRAXBatchToProcessSchedJobMainObject(gsp.Id, true);
         Id jobId = Database.executebatch(b);
 
         Test.stopTest();
