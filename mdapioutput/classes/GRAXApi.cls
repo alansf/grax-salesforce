@@ -95,7 +95,7 @@ public class GRAXApi extends GRAXCloud {
                         SObject so = recsMap.get((Id)rec.get('Id'));
 
                         for(String refFld : referenceFields) {
-                            rec.put(refFld, GRAXUtils.parseSObjectFieldValue(so, refFld));
+                            rec.put(refFld.replaceAll('\\.', '_'), GRAXUtils.parseSObjectFieldValue(so, refFld));
                         }
                     }
 
