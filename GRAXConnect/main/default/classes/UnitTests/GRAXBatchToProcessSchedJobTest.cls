@@ -31,9 +31,10 @@ public class GRAXBatchToProcessSchedJobTest {
         GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{"message": "Test successful"}', 'http://test.grax.io/applications/neo4j/configure', null);
         Test.setMock(HttpCalloutMock.class, fakeResponse);
 
+        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, true);
+
         Test.startTest();
 
-        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, true);
         Id jobId = Database.executebatch(b, 10);
 
         Test.stopTest();
@@ -85,12 +86,13 @@ public class GRAXBatchToProcessSchedJobTest {
         GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{"message": "Test successful"}', 'http://test.grax.io/applications/neo4j/configure', null);
         Test.setMock(HttpCalloutMock.class, fakeResponse);
 
+        GRAXBatchToProcessSchedJobMainObject b1 = new GRAXBatchToProcessSchedJobMainObject(gsp.Id, true);
+        GRAXBatchToProcessSchedJob b2 = new GRAXBatchToProcessSchedJob(gsp.Id, objects2Process, 1, '', true);
+
         Test.startTest();
 
-        Database.executebatch(new GRAXBatchToProcessSchedJobMainObject(gsp.Id, true), 10);
-
-        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, objects2Process, 1, '', true);
-        Id jobId = Database.executebatch(b, 20);
+        Database.executebatch(b1, 10);
+        Database.executebatch(b2, 20);
 
         Test.stopTest();
 
@@ -122,12 +124,13 @@ public class GRAXBatchToProcessSchedJobTest {
         gsp.Archive__c = true;
         insert gsp;
 
-        Test.startTest();
-
         GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{"message": "Test successful"}', 'http://test.grax.io/applications/neo4j/configure', null);
         Test.setMock(HttpCalloutMock.class, fakeResponse);
 
         GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, true);
+
+        Test.startTest();
+        
         Id jobId = Database.executebatch(b, 10);
 
         Test.stopTest();
@@ -168,12 +171,12 @@ public class GRAXBatchToProcessSchedJobTest {
         gsp.Archive__c = true;
         insert gsp;
 
-        Test.startTest();
-
         GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, 'OK', '{"message": "Test successful"}', null);
         Test.setMock(HttpCalloutMock.class, fakeResponse);
 
         GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, true);
+
+        Test.startTest();
         
         Id jobId = Database.executebatch(b, 10);
 
