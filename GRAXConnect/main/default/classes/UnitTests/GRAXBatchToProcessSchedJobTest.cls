@@ -33,7 +33,7 @@ public class GRAXBatchToProcessSchedJobTest {
 
         Test.startTest();
 
-        GRAXBatchToProcessSchedJobMainObject b = new GRAXBatchToProcessSchedJobMainObject(gsp.Id, false);
+        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, true);
         Id jobId = Database.executebatch(b, 10);
 
         Test.stopTest();
@@ -87,9 +87,9 @@ public class GRAXBatchToProcessSchedJobTest {
 
         Test.startTest();
 
-        Database.executebatch(new GRAXBatchToProcessSchedJobMainObject(gsp.Id, false), 10);
+        Database.executebatch(new GRAXBatchToProcessSchedJobMainObject(gsp.Id, true), 10);
 
-        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, objects2Process, 1, '', null);
+        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, objects2Process, 1, '', true);
         Id jobId = Database.executebatch(b, 20);
 
         Test.stopTest();
@@ -127,7 +127,7 @@ public class GRAXBatchToProcessSchedJobTest {
         GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{"message": "Test successful"}', 'http://test.grax.io/applications/neo4j/configure', null);
         Test.setMock(HttpCalloutMock.class, fakeResponse);
 
-        GRAXBatchToProcessSchedJobMainObject b = new GRAXBatchToProcessSchedJobMainObject(gsp.Id, false);
+        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, true);
         Id jobId = Database.executebatch(b, 10);
 
         Test.stopTest();
@@ -173,7 +173,8 @@ public class GRAXBatchToProcessSchedJobTest {
         GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, 'OK', '{"message": "Test successful"}', null);
         Test.setMock(HttpCalloutMock.class, fakeResponse);
 
-        GRAXBatchToProcessSchedJobMainObject b = new GRAXBatchToProcessSchedJobMainObject(gsp.Id, true);
+        GRAXBatchToProcessSchedJob b = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, true);
+        
         Id jobId = Database.executebatch(b, 10);
 
         Test.stopTest();
