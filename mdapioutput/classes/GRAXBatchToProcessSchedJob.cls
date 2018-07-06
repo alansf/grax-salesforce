@@ -315,7 +315,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
             b.hasContentDocument = this.hasContentDocument;
             
             if(!Test.isRunningTest()){
-                database.executebatch(b, 1000);
+                database.executebatch(b, GRAXUtils.getBatchMaxExecutionNumber());
             }
         }else{
             // Update the Last Run Date and Next Run Date on the current Schedule Process record

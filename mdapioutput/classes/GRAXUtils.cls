@@ -243,4 +243,32 @@ public with sharing class GRAXUtils {
         return result;
     }
 
+    private static GRAXSettings__c gs;
+
+    public static GRAXSettings__c getGRAXSettings() {
+        if(gs == null) {
+            gs = GRAXSettings__c.getOrgDefaults();
+        }
+
+        return gs;
+    }
+
+    public static void setBatchMaxExecutionNumber(Integer newValue) {
+        gs.BatchMaxExecutionNumber__c = newValue;
+
+        upsert gs;
+    }
+
+    public static Integer getBatchMaxExecutionNumber() {
+        Integer maxExecutionNumber = (Integer)getGRAXSettings().BatchMaxExecutionNumber__c;
+
+        if(maxExecutionNumber == null) {
+            maxExecutionNumber = 1000;
+
+            setBatchMaxExecutionNumber(maxExecutionNumber);
+        }
+
+        return maxExecutionNumber;
+    }
+
 }

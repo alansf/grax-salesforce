@@ -119,7 +119,7 @@ global with sharing class GRAXBatchToProcessSchedJobFromReport implements Databa
                 b2.isExecuteNow = b1.isExecuteNow;
                 b2.hasContentDocument = b1.hasContentDocument;
 
-                database.executebatch(b2, 1000);
+                database.executebatch(b2, GRAXUtils.getBatchMaxExecutionNumber());
             } else if(this.isExecuteNow) {
                 GRAXBatchToResendDataRecords batchToResendDataRecords = new GRAXBatchToResendDataRecords();
                 batchToResendDataRecords.currentJobId = b1.currentJobId;
