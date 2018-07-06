@@ -42,6 +42,8 @@
             <apex:param name="spId" value="" />
         </apex:actionFunction>
 
+        <apex:actionFunction name="reRenderReportPicklist" reRender="renderReportPicklist" oncomplete="showGlobalSpinner(false);"></apex:actionFunction>
+
         <div class="slds-tabs_default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <ul class="slds-tabs_default__nav" role="tablist">
                 <li class="slds-tabs_default__item slds-is-active" title="Scheduled Processes" role="presentation">
@@ -283,6 +285,12 @@
                                                     <select id="reportList" class="slds-select reportList">
                                                         <option value="" selected="selected" disabled="disabled">-- SELECT REPORT --</option>
                                                     </select>
+
+                                                    <apex:outputPanel id="renderReportPicklist">
+                                                        <script>
+                                                            addReportListOptions({!reportsJSON});
+                                                        </script>
+                                                    </apex:outputPanel>
                                                 </div>
                                             </div>
                                         </div>
@@ -494,10 +502,19 @@
             var $cancelScheduledProcess = $('#cancelScheduledProcess, #scheduledProcessModal .slds-modal__close');
             //var $globalSpinner = $('#globalSpinner');
 
+            var _reportListRendered = false;
+
             var selectFilterCriteriaTypeOption = function(value, isEvent) {
                 if(!isEvent) {
                     $filterCriteriaTypeOptions.filter(':checked').prop('checked', false);
                     $filterCriteriaTypeOptions.filter('[value="' + value + '"]').prop('checked', true);
+                } else {
+                    if(value == 'Report' && !_reportListRendered) {
+                        showGlobalSpinner(true);
+                        reRenderReportPicklist();
+
+                        _reportListRendered = true;
+                    }
                 }
                 $('[data-filterCriteriaType]').addClass('slds-hide');
                 $('[data-filterCriteriaType="' + value + '"]').removeClass('slds-hide');
@@ -1077,6 +1094,9 @@
             }
 
             window.addReportListOptions = function(options) {
+                showGlobalSpinner(true);
+                $reportList.find('option:gt(0)').remove();
+
                 $.each(options, function(i, item) {
                     var $option = $('<option>')
                                     .attr('value', item.id)
@@ -1102,6 +1122,7 @@
             $scheduledProcessModal.on('modaltoggle', function(e, state) {
                 if(!state) {
                     fillForm = cleanForm;
+                    _reportListRendered = false;
                 } else {
                     fillForm();
                     updateSaveState();
@@ -1115,8 +1136,6 @@
             });
 
             window.cleanForm = cleanForm;
-
-            addReportListOptions({!reportsJSON});
         });
     </script>
 </apex:page>

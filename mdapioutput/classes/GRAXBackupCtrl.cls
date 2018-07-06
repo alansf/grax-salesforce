@@ -391,14 +391,14 @@ public with sharing class GRAXBackupCtrl {
 
             try{
                 if(gsp.Target_Date__c <> null) {
-                    Database.executebatch(new GRAXBatchToProcessSchedJobMainObject(gsp.Id, true), 1000);
+                    Database.executebatch(new GRAXBatchToProcessSchedJobMainObject(gsp.Id, true), GRAXUtils.getBatchMaxExecutionNumber());
                 }
 
                 if(gsp.Target_Report__c <> null) {
                     GRAXBatchToProcessSchedJobFromReport b = new GRAXBatchToProcessSchedJobFromReport(gsp.Id, null, null, 100);
                     b.isExecuteNow = true;
                     
-                    Database.executeBatch(b, 100);
+                    Database.executeBatch(b, GRAXUtils.getBatchMaxExecutionNumber());
                 }
 
                 gsp.Status__c = 'Running';
