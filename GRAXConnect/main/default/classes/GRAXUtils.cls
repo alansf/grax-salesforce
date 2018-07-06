@@ -141,11 +141,11 @@ public with sharing class GRAXUtils {
                         // Get the Name field defined for this related object
                         String relObjName = getObjectNameFromSObjectType(fieldDesc.getReferenceTo()[0]);
                         Schema.DescribeSObjectResult relObjDescribe = getObjectDescribe(relObjName);
-                        
+			    
+                        // Get the Name field of the related object
+                        Schema.DescribeFieldResult relNameFieldDesc = getNameFieldDescForObject(relObjName);
+			    
 			if(relObjDescribe <> null){    
-			    // Get the Name field of the related object
-			    Schema.DescribeFieldResult relNameFieldDesc = getNameFieldDescForObject(relObjName);
-
 			    nameField = relNameFieldDesc.getName();
 			}
                     }
