@@ -426,6 +426,36 @@
         <field>GRAX_Schedule_Process__c.Target_Report__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Account_Reporting_Setting__mdt.cacheResults__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Account_Reporting_Setting__mdt.Filter_Key__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Account_Reporting_Setting__mdt.Filter_Key_Id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Account_Reporting_Setting__mdt.filterKeyIndex__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Account_Reporting_Setting__mdt.Report_ID__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>GRAX_Account_Reporting_Setting__mdt.size__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <layoutAssignments>
         <layout>GRAXQuery__c-GRAXQueries Layout</layout>
     </layoutAssignments>

@@ -1,0 +1,63 @@
+<apex:page standardController="Account" extensions="GRAXAccountReportingCtrl" showHeader="false" sidebar="false">
+<!--<base target="_blank" />-->
+
+<script type="text/javascript">
+    var __sfdcSessionId = '{!GETSESSIONID()}';
+</script>
+<script src="../../soap/ajax/41.0/connection.js"
+      type="text/javascript">
+</script>
+<script src="../../soap/ajax/41.0/apex.js"
+      type="text/javascript">
+</script>
+
+<style>
+    .goToReport:active > .preventClick .analyticsEmbeddedChart {
+        pointer-events: none;
+    }
+</style>
+
+<script>
+    function goToReport(reportId, filterKeyID, filterKeyIndex, e) {
+        e = e || window.event;
+        var target = e.target || e.srcElement;
+
+        if(target.classList.contains('chartContainer') || target.classList.contains('analyticsEmbeddedChart')) {
+            var newUrl = '/' + reportId;
+
+            if((typeof sforce != 'undefined') && (sforce != null) && sforce.one){
+                newUrl += '?pv' + filterKeyIndex + encodeURI('{!filterValue}');
+                sforce.one.navigateToURL(newUrl);
+                //newUrl = '#/sObject/' + reportId + '';
+            } else {
+                newUrl += '?drilldown=1&drillcol=' + filterKeyID + '&drillval=' + encodeURI('{!filterValue}') + '&drillop=equals';
+                window.open(window.location.protocol + '//' + window.location.hostname + newUrl, '_blank');
+            }
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        return false;
+    };
+</script>
+
+<table width="100%">
+    <tr>
+        <apex:repeat value="{!settings}" var="setting" id="reports">
+            <td>
+                <a href="javascript:void(0);" onmouseup="javascript:goToReport('{!setting.Report_ID__c}', '{!setting.Filter_Key_Id__c}', {!setting.filterKeyIndex__c}, event);">
+                    Report Link
+                </a>
+
+                <div class="goToReport" onmouseup="goToReport('{!setting.Report_ID__c}', '{!setting.Filter_Key_Id__c}', {!setting.filterKeyIndex__c}, event);">
+                    <div class="preventClick">
+                        <analytics:reportChart reportId="{!setting.Report_ID__c}" size="{!setting.size__c}" cacheResults="{!setting.cacheResults__c}" filter="[{column:'{!setting.Filter_Key__c}',operator:'equals',value:'{!filterValue}'}]"/>
+                    </div>
+                </div>
+            </td>
+        </apex:repeat>
+    </tr>
+</table>
+    
+</apex:page>
