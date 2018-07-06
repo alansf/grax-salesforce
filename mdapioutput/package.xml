@@ -107,6 +107,7 @@
     <members>GRAXQuery__c.Total_Records_Processed__c</members>
     <members>GRAXQuery__c.graxconfig__c</members>
     <members>GRAXSettings__c.ApiToken__c</members>
+    <members>GRAXSettings__c.BatchMaxExecutionNumber__c</members>
     <members>GRAXSettings__c.EnableFieldTracking__c</members>
     <members>GRAXSettings__c.EnableObjectTracking__c</members>
     <members>GRAXSettings__c.GRAX_API_Url__c</members>

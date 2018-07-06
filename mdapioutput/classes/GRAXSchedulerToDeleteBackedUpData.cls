@@ -9,6 +9,6 @@ Created/Modified by   Created/Modified Date     Requested by          Related Ta
 global class GRAXSchedulerToDeleteBackedUpData implements Schedulable {
 	global void execute(SchedulableContext sc) {
 		GRAXBatchToDeleteBackedUpData b = new GRAXBatchToDeleteBackedUpData();
-        Database.executebatch(b, 1000);
+        Database.executebatch(b, GRAXUtils.getBatchMaxExecutionNumber());
     }
 }

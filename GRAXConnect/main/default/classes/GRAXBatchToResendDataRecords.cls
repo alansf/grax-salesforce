@@ -53,7 +53,7 @@ global class GRAXBatchToResendDataRecords implements Database.Batchable<sObject>
             GRAXBatchToDeleteBackedUpData batchToDeleteBackedUpData = new GRAXBatchToDeleteBackedUpData();
             batchToDeleteBackedUpData.currentJobId = this.currentJobId;
 
-            Database.executebatch(batchToDeleteBackedUpData, 1000);
+            Database.executebatch(batchToDeleteBackedUpData, GRAXUtils.getBatchMaxExecutionNumber());
         }
     }
 }

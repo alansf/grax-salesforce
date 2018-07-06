@@ -18,7 +18,7 @@ global class GRAXSchedulerToProcessSchedJobs implements Schedulable {
                
                 try{
                     // Check if the call to "executebatch" failed to acquire an Apex flex queue lock
-                    Id jobId = Database.executebatch(b, 1000);
+                    Id jobId = Database.executebatch(b, GRAXUtils.getBatchMaxExecutionNumber());
                     schedProcess.Status__c = 'Running';
                 }catch(System.AsyncException e){
                     schedProcess.Status__c = 'Error';
@@ -30,7 +30,7 @@ global class GRAXSchedulerToProcessSchedJobs implements Schedulable {
                 
                 try{
                     // Check if the call to "executebatch" failed to acquire an Apex flex queue lock
-                    Id jobId = Database.executebatch(b, 1000);
+                    Id jobId = Database.executebatch(b, GRAXUtils.getBatchMaxExecutionNumber());
                     schedProcess.Status__c = 'Running';
                 }catch(System.AsyncException e){
                     schedProcess.Status__c = 'Error';
