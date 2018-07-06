@@ -136,19 +136,23 @@ public with sharing class GRAXUtils {
                     String nameField = 'Name';
 
                     if(fieldDesc.getReferenceTo().size() == 1) {
+                        nameField = '';
+			    
                         // Get the Name field defined for this related object
                         String relObjName = getObjectNameFromSObjectType(fieldDesc.getReferenceTo()[0]);
                         Schema.DescribeSObjectResult relObjDescribe = getObjectDescribe(relObjName);
-                                                        
+			    
                         // Get the Name field of the related object
                         Schema.DescribeFieldResult relNameFieldDesc = getNameFieldDescForObject(relObjName);
-
-                        nameField = relNameFieldDesc.getName();
+			    
+			if(relObjDescribe <> null){    
+			    nameField = relNameFieldDesc.getName();
+			}
                     }
 
                     String relationName = fieldDesc.getRelationshipName();
 
-                    if(String.isNotBlank(relationName)) {
+                    if(String.isNotBlank(relationName) && nameField <> '') {
                         referenceFields.add(relationName + '.' + nameField);
                     }
                 }
