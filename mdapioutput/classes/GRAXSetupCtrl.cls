@@ -458,7 +458,8 @@ public with sharing class GRAXSetupCtrl {
             this.sObjtoquery = objname;
             this.fieldname = fieldname;
             
-           	Boolean defaultSelected = true;
+           	// Boolean defaultSelected = true;
+           	Boolean defaultSelected = false;
             this.fieldselected = defaultSelected;
             this.fieldauditenabled = defaultSelected;
             
@@ -481,9 +482,9 @@ public with sharing class GRAXSetupCtrl {
                         fieldselected=true;
                         message = 'Synchronized';
                     } else {
-                    // Default to True
-                        // fieldselected=false;
-                        fieldselected = true;
+                    		// Default to True
+                    		// fieldselected = true;
+                        fieldselected=false;
                         disabled = true;
                         message = 'Not Synchronized';
                     }
