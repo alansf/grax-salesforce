@@ -145,7 +145,7 @@ public with sharing class GRAXUtils {
                         // Get the Name field of the related object
                         Schema.DescribeFieldResult relNameFieldDesc = getNameFieldDescForObject(relObjName);
 			    
-			if(relObjDescribe <> null){    
+			if(relObjDescribe <> null && relNameFieldDesc<>null){    
 			    nameField = relNameFieldDesc.getName();
 			}
                     }
