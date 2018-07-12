@@ -17,6 +17,9 @@ public with sharing class GRAXRestoreCtrl {
 
     public Map<String, Field> fieldMap {get;set;}
     public Set<String> fieldSetToExclude = new Set<String>{'Id', 'IsDeleted', 'SystemModstamp'};
+    public Map<String, Set<String>> fieldsToExcludeByObject = new Map<String, Set<String>>{
+        'Case' => new Set<String>{'Comments'}
+    };
 
     public List<Object> tableRecords {get;set;}
     public String selectedFields {get;set;}
@@ -162,7 +165,7 @@ public with sharing class GRAXRestoreCtrl {
             for(Schema.DescribeFieldResult fd : GRAXUtils.getDescribeFieldsResultForObject(objToQuery).values()) {
                 Field f = new Field(fd);
 
-                if(!fieldSetToExclude.contains(f.name)) {
+                if(!fieldSetToExclude.contains(f.name) && (!fieldsToExcludeByObject.containsKey(objToQuery) || !fieldsToExcludeByObject.get(objToQuery).contains(f.name))) {
                     fieldMap.put(f.name, f);
                 }
             }
@@ -247,7 +250,7 @@ public with sharing class GRAXRestoreCtrl {
         try {
             insert sobjectToRestore;
         } catch(DMLException e) {
-			ApexPages.addMessages(e);
+            ApexPages.addMessages(e);
         }
 
         return null;

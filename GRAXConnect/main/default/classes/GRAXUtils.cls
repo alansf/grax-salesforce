@@ -275,4 +275,70 @@ public with sharing class GRAXUtils {
         return maxExecutionNumber;
     }
 
+    public static Integer getBatchMaxExecutionNumber(String sobjectName) {
+        Map<String, Schema.DescribeFieldResult> fieldsMap = getDescribeFieldsResultForObject(sobjectName);
+        Integer maxBytes = 8388608;
+        Integer maxExecutionNumber = getBatchMaxExecutionNumber();
+        Integer executionNumber = maxExecutionNumber;
+
+        Integer totalBytes = 0;
+
+        for(Schema.DescribeFieldResult dfr: fieldsMap.values()) {
+            totalBytes += dfr.getByteLength();
+        }
+
+        if(totalBytes > maxBytes) {
+            executionNumber = maxBytes / totalBytes;
+        }
+
+        if(executionNumber > maxExecutionNumber) {
+            executionNumber = maxExecutionNumber;
+        }
+
+        return executionNumber;
+    }
+
+    public static void setSelectedObjectHierarchyJSON(Id gspId, String jsonContent) {
+        setSelectedObjectHierarchyJSON(new Attachment(
+            ParentId = gspId,
+            Name = 'SelectedObjectHierarchyJSON.txt'
+        ), jsonContent);
+    }
+
+    public static void setSelectedObjectHierarchyJSON(Attachment att, String jsonContent) {
+        if(att <> null) {
+            att.Body = Blob.valueOf(jsonContent);
+            
+            upsert att;
+        }
+    }
+
+    public static String getSelectedObjectHierarchyJSON(Id gspId) {
+        return getSelectedObjectHierarchyJSON(getSelectedObjectHierarchyAttachment(gspId));
+    }
+
+    public static String getSelectedObjectHierarchyJSON(Attachment att) {
+        String retJSON = '{}';
+
+        if(att <> null) {
+            try {
+                retJSON = att.Body.toString();
+            } catch (Exception e) {
+                retJSON = EncodingUtil.base64Encode(att.Body);
+            }
+        }
+
+        return retJSON;
+    }
+
+    public static Attachment getSelectedObjectHierarchyAttachment(Id gspId) {
+        Attachment retAtt;
+
+        for(Attachment att : [SELECT Body FROM Attachment WHERE ParentId = :gspId AND Name = 'SelectedObjectHierarchyJSON.txt' ORDER BY Id DESC LIMIT 1]) {
+            retAtt = att;
+        }
+
+        return retAtt;
+    }
+
 }

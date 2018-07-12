@@ -7,7 +7,7 @@ Created/Modified by   Created/Modified Date     Requested by          Related Ta
 1. Ariel Yankelevich       04/26/2018           David Mackey        GRAX Audit Trail Process (https://app.asana.com/0/326600806074978/633149554508926/f)
 2. Ariel Yankelevich       06/05/2018           David Mackey        Backup and Restore Notes & Attachments (https://app.asana.com/0/326600806074978/692982800286805/f)
 ******************************************************************************************/
-global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, Database.Stateful{
+global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, Database.Stateful, Database.AllowsCallouts {
     public String query = '';
     public List<GRAXBackupCtrl.ObjRelStructure> objects2Process;
     public Integer currentElementIndex;
@@ -18,8 +18,8 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
     public Integer maxParentIds2ProcessByChildIteration = 5000;
     public List<Id> parentIds2ProcessForChild;
     public List<Id> graxDataRecIds2ProcessForChild;
-    public Boolean isArchive;
-    public Boolean isExecuteNow;
+    public Boolean isArchive = false;
+    public Boolean isExecuteNow = false;
     public Boolean hasContentDocument;
     private Set<String> asyncObjects2ProcessByGRAX = new Set<String>{'Attachment', 'ContentVersion'};
     
@@ -37,8 +37,9 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         if(objects2Process == null){
             // If this is the first time the batch is firing for the current Schedule Process
             // calculate the selected object hierarchy and initial query
-            GRAX_Schedule_Process__c schedProcess = [SELECT Id, Selected_Object_Hierarchy_JSON__c, Select_Criteria__c, Target_Date__c, Date_Field__c, Archive__c FROM GRAX_Schedule_Process__c WHERE Id =: jobId];
-            
+            GRAX_Schedule_Process__c schedProcess = [SELECT Id, Select_Criteria__c, Target_Date__c, Date_Field__c, Archive__c FROM GRAX_Schedule_Process__c WHERE Id =: jobId];
+            String selectedObjectHierarchyJSON = GRAXUtils.getSelectedObjectHierarchyJSON(schedProcess.Id);
+
             // If this schedule job was set as an archive process, create the associted record and then also associate it to the GRAX Data Records
             if(schedProcess.Archive__c){
                 GRAX_Archive_Process__c archiveProc = new GRAX_Archive_Process__c();
@@ -53,7 +54,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
             }
             
             // Get the JSON string and convert it to the object structure
-            GRAXBackupCtrl.ObjRelStructure rootSObj = (GRAXBackupCtrl.ObjRelStructure)JSON.deserialize(schedProcess.Selected_Object_Hierarchy_JSON__c, GRAXBackupCtrl.ObjRelStructure.class);
+            GRAXBackupCtrl.ObjRelStructure rootSObj = (GRAXBackupCtrl.ObjRelStructure)JSON.deserialize(selectedObjectHierarchyJSON, GRAXBackupCtrl.ObjRelStructure.class);
             
             // Now we have to make this structure flat, in order to process the objects one by one
             this.objects2Process = new List<GRAXBackupCtrl.ObjRelStructure>();
@@ -308,14 +309,14 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
             }
         }
         
-        if(!isBatchCompleted){
+        if(!isBatchCompleted && !Test.isRunningTest()){
             b.isArchive = this.isArchive;
             b.currentArchiveProcessId = this.currentArchiveProcessId;
             b.isExecuteNow = this.isExecuteNow;
             b.hasContentDocument = this.hasContentDocument;
             
             if(!Test.isRunningTest()){
-                database.executebatch(b, GRAXUtils.getBatchMaxExecutionNumber());
+                database.executebatch(b, GRAXUtils.getBatchMaxExecutionNumber(this.objects2Process[this.currentElementIndex].name));
             }
         }else{
             // Update the Last Run Date and Next Run Date on the current Schedule Process record

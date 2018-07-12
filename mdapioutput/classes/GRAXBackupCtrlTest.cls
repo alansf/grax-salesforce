@@ -23,13 +23,16 @@ public class GRAXBackupCtrlTest {
             gsp.Schedule_Start_Date__c = Date.today();
             gsp.Schedule_Start_Time__c = '23:00';
             gsp.Next_Run_Date__c = Datetime.now();
-            gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"' + obj + '","parentUniqueKey":null,"relatedFieldName":null,"name":"' + obj + '","childObjRelStructure":[]}';
             gsp.Archive__c = false;
 
             gspList.add(gsp);
         }
 
         insert gspList;
+
+        for(GRAX_Schedule_Process__c gsp : gspList) {
+            GRAXUtils.setSelectedObjectHierarchyJSON(gsp.Id, '{"uniqueKey":"' + gsp.Object_Name__c + '","parentUniqueKey":null,"relatedFieldName":null,"name":"' + gsp.Object_Name__c + '","childObjRelStructure":[]}');
+        }
     }
 
     @isTest
@@ -130,7 +133,7 @@ public class GRAXBackupCtrlTest {
 
         Test.startTest();
 
-        for(GRAX_Schedule_Process__c gsp : [SELECT Id FROM GRAX_Schedule_Process__c LIMIT 1]) {+
+        for(GRAX_Schedule_Process__c gsp : [SELECT Id FROM GRAX_Schedule_Process__c LIMIT 1]) {
             idToDelete = gsp.Id;
             pageRef.getParameters().put('spId', idToDelete);
             gbc.deleteScheduledProcess();
@@ -167,7 +170,7 @@ public class GRAXBackupCtrlTest {
             System.assertEquals(gbc.schedule, gsp.Schedule_Type__c);
             System.assertEquals(gbc.scheduleStartDate, gsp.Schedule_Start_Date__c.format());
             System.assertEquals(gbc.scheduleStartTime, gsp.Schedule_Start_Time__c);
-            System.assertEquals(gbc.objectJSON, gsp.Selected_Object_Hierarchy_JSON__c);
+            System.assertEquals(gbc.objectJSON, GRAXUtils.getSelectedObjectHierarchyJSON(gsp.Id));
             System.assertEquals(gbc.archive, gsp.Archive__c);
         }
 

@@ -207,16 +207,6 @@
         </valueSet>
     </fields>
     <fields>
-        <fullName>Selected_Object_Hierarchy_JSON__c</fullName>
-        <description>Selected_Object_Hierarchy_JSON</description>
-        <externalId>false</externalId>
-        <label>Selected Object Hierarchy JSON</label>
-        <length>131072</length>
-        <trackTrending>false</trackTrending>
-        <type>LongTextArea</type>
-        <visibleLines>3</visibleLines>
-    </fields>
-    <fields>
         <fullName>Status__c</fullName>
         <description>Status</description>
         <externalId>false</externalId>

@@ -20,7 +20,6 @@ public with sharing class GRAXDataRecordTriggerTest {
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
         gsp.Next_Run_Date__c = Datetime.now();
-        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"Account","parentUniqueKey":null,"relatedFieldName":null,"name":"Account","childObjRelStructure":[]}';
         gsp.Archive__c = false;
         insert gsp;
 
@@ -61,7 +60,6 @@ public with sharing class GRAXDataRecordTriggerTest {
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
         gsp.Next_Run_Date__c = Datetime.now();
-        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"Account","parentUniqueKey":null,"relatedFieldName":null,"name":"Account","childObjRelStructure":[]}';
         gsp.Archive__c = false;
         insert gsp;
 
@@ -101,7 +99,6 @@ public with sharing class GRAXDataRecordTriggerTest {
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
         gsp.Next_Run_Date__c = Datetime.now();
-        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"Account_Attachments","parentUniqueKey":"Account","relatedFieldName":"ParentId","name":"Attachment","childObjRelStructure":[]}';
         gsp.Archive__c = true;
         insert gsp;
 
@@ -143,7 +140,6 @@ public with sharing class GRAXDataRecordTriggerTest {
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
         gsp.Next_Run_Date__c = Datetime.now();
-        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"Account_Attachments","parentUniqueKey":"Account","relatedFieldName":"ParentId","name":"Attachment","childObjRelStructure":[]}';
         gsp.Archive__c = true;
         insert gsp;
 

@@ -32,10 +32,13 @@ public class GRAXBatchToDeleteBackedUpDataTest {
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
         gsp.Next_Run_Date__c = Datetime.now();
-        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"GRAX_Data_Record__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAX_Data_Record__c","childObjRelStructure":[]}';
         gsp.Archive__c = true;
         insert gsp;
 
+        GRAXUtils.setSelectedObjectHierarchyJSON(gsp.Id, '{"uniqueKey":"GRAX_Data_Record__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAX_Data_Record__c","childObjRelStructure":[]}');
+
+        System.assertNotEquals(null, GRAXUtils.getSelectedObjectHierarchyJSON(gsp.Id));
+        
         GRAX_Archive_Process__c archiveProc = new GRAX_Archive_Process__c();
         archiveProc.GRAX_Schedule_Process__c = gsp.Id;
         archiveProc.Async_Records_Successfully_Sent__c = 0;
