@@ -26,6 +26,8 @@ public with sharing class GRAXBackupCtrl {
     public String objectJSON {get;set;}
     public Boolean archive {get;set;}
 
+    public Attachment selectedObjectHierarchyAttachment {get;set;}
+
     public class ScheduledProcess {
         public Id cronId {get;set;}
         public String createdBy {get;set;}
@@ -226,20 +228,28 @@ public with sharing class GRAXBackupCtrl {
             gsp.Date_Field__c = sObjectDateField;
             if(filterCriteriaType == 'Date') {
                 gsp.Target_Date__c = createDate(targetDate);
+                gsp.Select_Criteria__c = criteria;
             }
             if(filterCriteriaType == 'Report') {
                 gsp.Target_Report__c = targetReport;
+                gsp.Select_Criteria__c = null;
             }
-            gsp.Select_Criteria__c = criteria;
             gsp.Schedule_Type__c = schedule;
             gsp.Schedule_Start_Date__c = createDate(scheduleStartDate);
             gsp.Schedule_Start_Time__c = scheduleStartTime;
             gsp.Next_Run_Date__c = createDateTime(scheduleStartDate, scheduleStartTime);
-            gsp.Selected_Object_Hierarchy_JSON__c = objectJSON;
+            //gsp.Selected_Object_Hierarchy_JSON__c = objectJSON;
             gsp.Archive__c = archive;
 
             // Insert or update the record.
             upsert gsp;
+
+            if(selectedObjectHierarchyAttachment <> null) {
+                GRAXUtils.setSelectedObjectHierarchyJSON(selectedObjectHierarchyAttachment, objectJSON);
+            } else {
+                GRAXUtils.setSelectedObjectHierarchyJSON(gsp.Id, objectJSON);
+            }
+
 
             String graxSchedulerToProcessSchedJobs = 'GRAXSchedulerToProcessSchedJobs';
             String graxSchedulerToDeleteBackedUpData = 'GRAXSchedulerToDeleteBackedUpData';
@@ -289,6 +299,7 @@ public with sharing class GRAXBackupCtrl {
         scheduleStartTime = null;
         objectJSON = null;
         archive = false;
+        selectedObjectHierarchyAttachment = null;
     }
 
     public Pagereference cleanFormDataHandler() {
@@ -313,17 +324,22 @@ public with sharing class GRAXBackupCtrl {
             sObjectDateField = gsp.Date_Field__c;
             targetDate = String.valueOf(gsp.Target_Date__c);
             targetReport = gsp.Target_Report__c;
+            criteria = gsp.Select_Criteria__c;
             if(targetDate <> null) {
                 filterCriteriaType = 'Date';
             }
             if(targetReport <> null) {
                 filterCriteriaType = 'Report';
+                criteria = 'Main Object not modified';
             }
-            criteria = gsp.Select_Criteria__c;
             schedule = gsp.Schedule_Type__c;
             scheduleStartDate = gsp.Schedule_Start_Date__c.format();
             scheduleStartTime = gsp.Schedule_Start_Time__c;
-            objectJSON = gsp.Selected_Object_Hierarchy_JSON__c;
+
+            //objectJSON = gsp.Selected_Object_Hierarchy_JSON__c;
+            selectedObjectHierarchyAttachment = GRAXUtils.getSelectedObjectHierarchyAttachment(gsp.Id);
+            objectJSON = GRAXUtils.getSelectedObjectHierarchyJSON(selectedObjectHierarchyAttachment);
+
             archive = gsp.Archive__c;
         }
 
@@ -354,7 +370,7 @@ public with sharing class GRAXBackupCtrl {
     // Update scheduledProcessMap with the latest data.
     public void updateScheduledProcessMap() {
         // Get the Map of GRAX_Schedule_Process__c
-        Map<ID, GRAX_Schedule_Process__c> GRAXScheduledProcessMap = new Map<ID, GRAX_Schedule_Process__c>([SELECT Id, Selected_Object_Hierarchy_JSON__c, Select_Criteria__c, Object_Name__c, Target_Date__c, Target_Report__c, Schedule_Start_Date__c, Schedule_Start_Time__c, Last_Run_Date__c, Next_Run_Date__c, Date_Field__c, Schedule_Type__c, Archive__c, CreatedDate, CreatedBy.Name FROM GRAX_Schedule_Process__c WHERE isDeleted = false ORDER BY Object_Name__c, Last_Run_Date__c]);
+        Map<ID, GRAX_Schedule_Process__c> GRAXScheduledProcessMap = new Map<ID, GRAX_Schedule_Process__c>([SELECT Id, Select_Criteria__c, Object_Name__c, Target_Date__c, Target_Report__c, Schedule_Start_Date__c, Schedule_Start_Time__c, Last_Run_Date__c, Next_Run_Date__c, Date_Field__c, Schedule_Type__c, Archive__c, CreatedDate, CreatedBy.Name FROM GRAX_Schedule_Process__c WHERE isDeleted = false ORDER BY Object_Name__c, Last_Run_Date__c]);
 
         scheduledProcessMap.clear();
 
@@ -391,14 +407,14 @@ public with sharing class GRAXBackupCtrl {
 
             try{
                 if(gsp.Target_Date__c <> null) {
-                    Database.executebatch(new GRAXBatchToProcessSchedJobMainObject(gsp.Id, true), GRAXUtils.getBatchMaxExecutionNumber());
+                    Database.executebatch(new GRAXBatchToProcessSchedJobMainObject(gsp.Id, true), GRAXUtils.getBatchMaxExecutionNumber(gsp.Object_Name__c));
                 }
 
                 if(gsp.Target_Report__c <> null) {
-                    GRAXBatchToProcessSchedJobFromReport b = new GRAXBatchToProcessSchedJobFromReport(gsp.Id, null, null, 100);
+                    GRAXBatchToProcessSchedJobFromReport b = new GRAXBatchToProcessSchedJobFromReport(gsp.Id, null, 100);
                     b.isExecuteNow = true;
                     
-                    Database.executeBatch(b, GRAXUtils.getBatchMaxExecutionNumber());
+                    Database.executeBatch(b, GRAXUtils.getBatchMaxExecutionNumber(gsp.Object_Name__c));
                 }
 
                 gsp.Status__c = 'Running';

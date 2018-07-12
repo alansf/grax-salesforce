@@ -23,10 +23,11 @@ public class GRAXSchedulerToProcessSchedJobsTest {
             gsp.Schedule_Start_Date__c = Date.today();
             gsp.Schedule_Start_Time__c = '23:00';
             gsp.Next_Run_Date__c = Datetime.now();
-            gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"' + obj + '","parentUniqueKey":null,"relatedFieldName":null,"name":"' + obj + '","childObjRelStructure":[]}';
             gsp.Archive__c = false;
 
-            gspList.add(gsp);
+            insert gsp;
+
+            GRAXUtils.setSelectedObjectHierarchyJSON(gsp.Id, '{"uniqueKey":"' + obj + '","parentUniqueKey":null,"relatedFieldName":null,"name":"' + obj + '","childObjRelStructure":[]}');
         }
 
         insert gspList;

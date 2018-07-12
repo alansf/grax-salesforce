@@ -12,13 +12,13 @@ global class GRAXSchedulerToProcessSchedJobs implements Schedulable {
        
 		// Find any Schedule Process Job that is supposed to run at the current GMT time, 
 		// or that it hasn't been executed on the previous Schedule run and it's not currently executing
-		for(GRAX_Schedule_Process__c schedProcess : [SELECT Id, Status__c, Target_Date__c, Target_Report__c FROM GRAX_Schedule_Process__c WHERE Next_Run_Date__c <=: System.now() AND Status__c <> 'Running']){
+		for(GRAX_Schedule_Process__c schedProcess : [SELECT Id, Status__c, Target_Date__c, Target_Report__c, Object_Name__c FROM GRAX_Schedule_Process__c WHERE Next_Run_Date__c <=: System.now() AND Status__c <> 'Running']){
             if(schedProcess.Target_Date__c <> null) {
-                GRAXBatchToProcessSchedJobMainObject b = new GRAXBatchToProcessSchedJobMainObject(schedProcess.Id, null);
+                GRAXBatchToProcessSchedJobMainObject b = new GRAXBatchToProcessSchedJobMainObject(schedProcess.Id, false);
                
                 try{
                     // Check if the call to "executebatch" failed to acquire an Apex flex queue lock
-                    Id jobId = Database.executebatch(b, GRAXUtils.getBatchMaxExecutionNumber());
+                    Id jobId = Database.executebatch(b, GRAXUtils.getBatchMaxExecutionNumber(schedProcess.Object_Name__c));
                     schedProcess.Status__c = 'Running';
                 }catch(System.AsyncException e){
                     schedProcess.Status__c = 'Error';
@@ -26,11 +26,11 @@ global class GRAXSchedulerToProcessSchedJobs implements Schedulable {
             }
 
             if(schedProcess.Target_Report__c <> null) {
-                GRAXBatchToProcessSchedJobFromReport b = new GRAXBatchToProcessSchedJobFromReport(schedProcess.Id, null, null, null);
+                GRAXBatchToProcessSchedJobFromReport b = new GRAXBatchToProcessSchedJobFromReport(schedProcess.Id, null, null);
                 
                 try{
                     // Check if the call to "executebatch" failed to acquire an Apex flex queue lock
-                    Id jobId = Database.executebatch(b, GRAXUtils.getBatchMaxExecutionNumber());
+                    Id jobId = Database.executebatch(b, GRAXUtils.getBatchMaxExecutionNumber(schedProcess.Object_Name__c));
                     schedProcess.Status__c = 'Running';
                 }catch(System.AsyncException e){
                     schedProcess.Status__c = 'Error';

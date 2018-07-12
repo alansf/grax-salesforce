@@ -8,6 +8,6 @@ Created/Modified by   Created/Modified Date     Requested by        Related Task
 ******************************************************************************************/
 global class GRAXSchedulerToCleanDataRecords implements Schedulable {
    global void execute(SchedulableContext sc) {
-      database.executebatch(new GRAXBatchToCleanDataRecords());
+      database.executebatch(new GRAXBatchToCleanDataRecords(0),1000);
    }
 }

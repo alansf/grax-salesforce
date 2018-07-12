@@ -289,6 +289,7 @@
                                                     <apex:outputPanel id="renderReportPicklist">
                                                         <script>
                                                             addReportListOptions({!reportsJSON});
+                                                            updateSaveState();
                                                         </script>
                                                     </apex:outputPanel>
                                                 </div>
@@ -523,6 +524,8 @@
 
             var selectReport = function(value) {
                 if(value) {
+                    if(!_reportListRendered) reRenderReportPicklist();
+
                     $reportList.val(value);
                 } else {
                     $reportList.get(0).selectedIndex = 0;
@@ -610,7 +613,7 @@
             $scheduleStartTime.removeAttr('size');
             $sObjectDateFieldsList.prop('disabled', true);
 
-            var updateSaveState = function() {
+            window.updateSaveState = function() {
                 var condition = false;
 
                 condition = $objectList.val() != null;

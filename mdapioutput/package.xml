@@ -168,7 +168,6 @@
     <members>GRAX_Schedule_Process__c.Schedule_Start_Time__c</members>
     <members>GRAX_Schedule_Process__c.Schedule_Type__c</members>
     <members>GRAX_Schedule_Process__c.Select_Criteria__c</members>
-    <members>GRAX_Schedule_Process__c.Selected_Object_Hierarchy_JSON__c</members>
     <members>GRAX_Schedule_Process__c.Status__c</members>
     <members>GRAX_Schedule_Process__c.Target_Date__c</members>
     <members>GRAX_Schedule_Process__c.Target_Report__c</members>

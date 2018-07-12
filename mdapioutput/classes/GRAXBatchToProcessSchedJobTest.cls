@@ -19,14 +19,17 @@ public class GRAXBatchToProcessSchedJobTest {
         gsp.Object_Name__c = 'GRAXQuery__c';
         gsp.Date_Field__c = 'LastModifiedDate';
         gsp.Target_Date__c = Date.today().addDays(1);
-        gsp.Select_Criteria__c = 'Main Object not modified';
+        //gsp.Select_Criteria__c = 'Main Object not modified';
         gsp.Schedule_Type__c = 'Once';
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
         gsp.Next_Run_Date__c = Datetime.now();
-        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"GRAXQuery__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAXQuery__c","childObjRelStructure":[]}';
         gsp.Archive__c = false;
         insert gsp;
+
+        GRAXUtils.setSelectedObjectHierarchyJSON(gsp.Id, '{"uniqueKey":"GRAXQuery__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAXQuery__c","childObjRelStructure":[]}');
+
+        System.assertNotEquals(null, GRAXUtils.getSelectedObjectHierarchyJSON(gsp.Id));
 
         GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, 'OK', '{"message": "Test successful"}', null);
 
@@ -64,31 +67,24 @@ public class GRAXBatchToProcessSchedJobTest {
         gsp.Object_Name__c = 'GRAXQuery__c';
         gsp.Date_Field__c = 'LastModifiedDate';
         gsp.Target_Date__c = Date.today().addDays(1);
-        gsp.Select_Criteria__c = 'Main Object not modified';
+        //gsp.Select_Criteria__c = 'Main Object not modified';
         gsp.Schedule_Type__c = 'Once';
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
         gsp.Next_Run_Date__c = Datetime.now();
-        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"GRAXQuery__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAXQuery__c","childObjRelStructure":[{"uniqueKey":"GRAXQuery__c_Attachments","parentUniqueKey":"GRAXQuery__c","relatedFieldName":"ParentId","name":"Attachment","childObjRelStructure":[]}]}';
-        gsp.Archive__c = true;
+        gsp.Archive__c = false;
         insert gsp;
 
-        List<GRAXBackupCtrl.ObjRelStructure> objects2Process = new List<GRAXBackupCtrl.ObjRelStructure>();
-        GRAXBackupCtrl.ObjRelStructure rootSObj = (GRAXBackupCtrl.ObjRelStructure)JSON.deserialize(gsp.Selected_Object_Hierarchy_JSON__c, GRAXBackupCtrl.ObjRelStructure.class);
+        GRAXUtils.setSelectedObjectHierarchyJSON(gsp.Id, '{"uniqueKey":"GRAXQuery__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAXQuery__c","childObjRelStructure":[{"uniqueKey":"GRAXQuery__c_Attachments","parentUniqueKey":"GRAXQuery__c","relatedFieldName":"ParentId","name":"Attachment","childObjRelStructure":[]}]}');
 
-        objects2Process.add(rootSObj);
+        String selectedJSON = GRAXUtils.getSelectedObjectHierarchyJSON(gsp.Id);
 
-        Integer i = 0;
-        while(objects2Process.size() > 0 && i < objects2Process.size()){
-            GRAXBackupCtrl.ObjRelStructure sObjRelStruc = objects2Process[i];
-            objects2Process.addAll(sObjRelStruc.childObjRelStructure);
-            i++;
-        }
+        System.assertNotEquals(null, selectedJSON);
 
         GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, 'OK', '{"message": "Test successful"}', null);
         
-        GRAXBatchToProcessSchedJobMainObject b1 = new GRAXBatchToProcessSchedJobMainObject(gsp.Id, true);
-        GRAXBatchToProcessSchedJob b2 = new GRAXBatchToProcessSchedJob(gsp.Id, objects2Process, 1, '', true);
+        GRAXBatchToProcessSchedJob b1 = new GRAXBatchToProcessSchedJob(gsp.Id, null, 0, null, false);
+        GRAXBatchToProcessSchedJob b2 = new GRAXBatchToProcessSchedJob(gsp.Id, b1.objects2Process, 1, b1.currentSelectCriteria, b1.isExecuteNow);
 
         Test.startTest();
 
@@ -98,7 +94,13 @@ public class GRAXBatchToProcessSchedJobTest {
 
         Test.stopTest();
 
-        GRAX_Data_Record__c dr = [SELECT Id FROM GRAX_Data_Record__c WHERE GRAX_Schedule_Process__c = :gsp.Id LIMIT 1];
+        GRAX_Data_Record__c dr;
+
+        for(GRAX_Data_Record__c r : [SELECT Id FROM GRAX_Data_Record__c WHERE GRAX_Schedule_Process__c = :gsp.Id LIMIT 1]) {
+            dr = r;
+        }
+
+        System.assertNotEquals(null, dr);
 
         System.assertEquals(1, [SELECT Id FROM GRAX_Data_Record_Id__c WHERE GRAX_Data_Record__c = :dr.Id AND SFDC_Id__c = :gq.Id].size());
     }
@@ -119,14 +121,17 @@ public class GRAXBatchToProcessSchedJobTest {
         gsp.Object_Name__c = 'GRAXQuery__c';
         gsp.Date_Field__c = 'LastModifiedDate';
         gsp.Target_Date__c = Date.today().addDays(1);
-        gsp.Select_Criteria__c = 'Main Object not modified';
+        //gsp.Select_Criteria__c = 'Main Object not modified';
         gsp.Schedule_Type__c = 'Once';
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
         gsp.Next_Run_Date__c = Datetime.now();
-        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"GRAXQuery__c_Attachments","parentUniqueKey":"GRAXQuery__c","relatedFieldName":"ParentId","name":"Attachment","childObjRelStructure":[]}';
         gsp.Archive__c = true;
         insert gsp;
+
+        GRAXUtils.setSelectedObjectHierarchyJSON(gsp.Id, '{"uniqueKey":"GRAXQuery__c_Attachments","parentUniqueKey":"GRAXQuery__c","relatedFieldName":"ParentId","name":"Attachment","childObjRelStructure":[]}');
+
+        System.assertNotEquals(null, GRAXUtils.getSelectedObjectHierarchyJSON(gsp.Id));
 
         GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, 'OK', '{"message": "Test successful"}', null);
 
@@ -168,14 +173,17 @@ public class GRAXBatchToProcessSchedJobTest {
         gsp.Object_Name__c = 'GRAXQuery__c';
         gsp.Date_Field__c = 'CreatedDate';
         gsp.Target_Date__c = Date.today().addDays(1);
-        gsp.Select_Criteria__c = 'Main Object not modified';
+        //gsp.Select_Criteria__c = 'Main Object not modified';
         gsp.Schedule_Type__c = 'Once';
         gsp.Schedule_Start_Date__c = Date.today();
         gsp.Schedule_Start_Time__c = '23:00';
         gsp.Next_Run_Date__c = now;
-        gsp.Selected_Object_Hierarchy_JSON__c = '{"uniqueKey":"GRAXQuery__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAXQuery__c","childObjRelStructure":[]}';
         gsp.Archive__c = true;
         insert gsp;
+
+        GRAXUtils.setSelectedObjectHierarchyJSON(gsp.Id, '{"uniqueKey":"GRAXQuery__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAXQuery__c","childObjRelStructure":[]}');
+
+        System.assertNotEquals(null, GRAXUtils.getSelectedObjectHierarchyJSON(gsp.Id));
 
         GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, 'OK', '{"message": "Test successful"}', null);
 

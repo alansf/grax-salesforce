@@ -408,11 +408,6 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>GRAX_Schedule_Process__c.Selected_Object_Hierarchy_JSON__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
         <field>GRAX_Schedule_Process__c.Status__c</field>
         <readable>true</readable>
     </fieldPermissions>
