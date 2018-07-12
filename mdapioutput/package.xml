@@ -80,7 +80,6 @@
   </types>
   <types>
     <name>Layout</name>
-    <members>Account-Account (Sales) Layout</members>
     <members>GRAXQuery__c-GRAXQueries Layout</members>
     <members>GRAX_Account_Reporting_Setting__mdt-GRAX Account Reporting Setting Layout</members>
     <members>GRAX_Archive_Process__c-GRAX Archive Process Layout</members>
