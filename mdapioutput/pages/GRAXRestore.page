@@ -4,11 +4,13 @@
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" type="text/javascript"></script>
-    <script src="{!URLFOR($Resource.grax, '/jquery.slds.js')}"></script>
-    <script src="{!URLFOR($Resource.grax, '/jquery.sldsTree.js')}"></script>
-    <!-- Import the Design System style sheet -->
-    <apex:slds />
+    <apex:outputPanel rendered="{!!isMasterRestore}">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" type="text/javascript"></script>
+        <script src="{!URLFOR($Resource.grax, '/jquery.slds.js')}"></script>
+        <script src="{!URLFOR($Resource.grax, '/jquery.sldsTree.js')}"></script>
+        <!-- Import the Design System style sheet -->
+        <apex:slds />
+    </apex:outputPanel>
 
     <style>
         .assistiveText {
@@ -56,7 +58,7 @@
     </script>
 </head>
 <body>
-    <div class="slds-scope">
+    <div class="{!IF(isMasterRestore, 'slds-tabs_scoped__content', 'slds-scope')}">
         <apex:form id="form-restore">
             <apex:actionFunction action="{!changeObjToQuery}" name="changeObjToQuery" immediate="true" reRender="fieldListOutput">
                 <apex:param name="objToQueryValue" value="" />
@@ -64,6 +66,7 @@
 
             <apex:actionFunction action="{!updateDataTable}" name="updateDataTable" immediate="true" reRender="datatableOuput" oncomplete="showDataTable();">
                 <apex:param name="selectedFields" value="" />
+                <apex:param name="filterSearchTerm" value="" />
             </apex:actionFunction>
 
             <apex:actionFunction action="{!changeSObjectToRestore}" name="changeSObjectToRestore" immediate="true" reRender="restoreOutput" oncomplete="showRestoreModal(true);">
@@ -89,11 +92,16 @@
                                 <div class="slds-col slds-grow-none slds-m-right_small">
                                     <div class="slds-form-element">
                                         <div class="slds-form-element__control">
-                                            <div class="slds-select_container">
-                                                <select id="objectList" class="slds-select" disabled="disabled">
+                                            <apex:outputPanel layout="block" styleClass="slds-select_container" rendered="{!isMasterRestore}">
+                                                <apex:selectList id="objectList" value="{!objToQuery}" multiselect="false" size="1" styleClass="slds-select objectList">
+                                                    <apex:selectOptions value="{!items}"/>
+                                                </apex:selectList>
+                                            </apex:outputPanel>
+                                            <apex:outputPanel layout="block" styleClass="slds-select_container" rendered="{!!isMasterRestore}">
+                                                <select id="objectList" class="slds-select objectList" disabled="disabled">
                                                     <option value="" disabled="disabled" selected="selected">-- SELECT SALESFORCE OBJECT --</option>
                                                 </select>
-                                            </div>
+                                            </apex:outputPanel>
                                         </div>
                                     </div>
                                 </div>
@@ -115,6 +123,25 @@
                             </div>
                         </div>
                     </div>
+
+                    <apex:outputPanel styleClass="slds-section slds-is-open slds-p-top_large" layout="block" rendered="{!isMasterRestore}">
+                        <h3 class="slds-section__title slds-theme_shade">
+                            <span class="slds-truncate slds-p-horizontal_small" title="Filter Records">Filter Records</span>
+                        </h3>
+                        <div aria-hidden="false" class="slds-section__content slds-is-relative">
+                            <div class="slds-grid slds-grid_vertical-align-center">
+                                <div class="slds-col slds-m-right_small">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label" for="filter-search-term">Search Term</label>
+                                        <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_left">
+                                            <i data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#search')}" class="slds-icon slds-input__icon slds-input__icon_left slds-icon-text-default"></i>
+                                            <input id="filter-search-term" class="slds-input" placeholder="Search" type="text" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
 
                     <div class="slds-section slds-is-open slds-p-top_large">
                         <h3 class="slds-section__title slds-theme_shade">
@@ -233,12 +260,13 @@
 
             <script>
                 $(function() {
-                    var $objectList = $('#objectList');
+                    var $objectList = $('.objectList');
                     var $fieldlist = $('#fieldlist');
                     var $sObjectDataTableContainer = $('#sObjectDataTableContainer');
                     var $restoreModal = $('#restoreModal');
                     var $saveRestore = $('#saveRestore');
                     var $fieldListSelector = $('#fieldListSelector');
+                    var $filterSearchTerm = $('#filter-search-term');
                     var $retriveGRAXFields = $('#retriveGRAXFields');
                     var $globalSpinner = $('#globalSpinner');
 
@@ -275,7 +303,7 @@
 
                         if(selectedFields) {
                             $sObjectDataTableContainer.attr({'data-loading': true});
-                            updateDataTable(selectedFields);
+                            updateDataTable(selectedFields, $filterSearchTerm.val());
                         } else {
                             alert('No fields selected.');
                         }
@@ -482,11 +510,13 @@
                 });
             </script>
         
-            <script>
-                $(function() {
-                    addObjectListOptions({!relatedJSON});
-                });
-            </script>
+            <apex:outputPanel rendered="{!!isMasterRestore}">
+                <script>
+                    $(function() {
+                        addObjectListOptions({!relatedJSON});
+                    });
+                </script>
+            </apex:outputPanel>
         
             <apex:outputPanel id="fieldListOutput">
                 <script>

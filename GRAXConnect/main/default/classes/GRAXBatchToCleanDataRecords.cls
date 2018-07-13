@@ -25,8 +25,9 @@ global class GRAXBatchToCleanDataRecords implements Database.Batchable<sObject> 
         return Database.getQueryLocator(this.query);
     }
 
-    global void execute(Database.BatchableContext BC, List<GRAX_Data_Record__c> scope) {
+    global void execute(Database.BatchableContext BC, List<SObject> scope) {
         delete scope;
+        Database.emptyRecycleBin(scope);
     }
 
     global void finish(Database.BatchableContext BC){
