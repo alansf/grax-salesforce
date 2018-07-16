@@ -608,8 +608,6 @@
             var _isScheduledProcessMultiple = false;
             var _hasScheduledProcessMultipleSelected = false;
 
-            var _itemsJSON = [];
-
             var selectFilterCriteriaTypeOption = function(value, isEvent) {
                 if(!isEvent) {
                     $filterCriteriaTypeOptions.filter(':checked').prop('checked', false);
@@ -648,6 +646,8 @@
 
                     $("#colDt_q").val('today').trigger('change');
 
+                    var scheduledProcessType = '{!scheduledProcessType}';
+
                     $objectList.val(!selectedObject ? null : selectedObject);
                     selectReport(!targetReport ? null : targetReport);
                     $schedule.val('{!schedule}');
@@ -670,11 +670,13 @@
                     if(schedule) $('[name="scheduleOptions"][value="' + schedule + '"]').prop('checked', true);
 
                     selectFilterCriteriaTypeOption(!criteriaType ? 'Date' : criteriaType);
-                    if(!_isScheduledProcessMultiple) {
+
+                    if(scheduledProcessType == 'Hierarchy') {
                         renderObjectHierarchy();
-                    } else {
-                        _itemsJSON = {!itemsJSON};
-                        window.ObjectsSelection(_itemsJSON);
+                    }
+
+                    if(scheduledProcessType == 'Multi-Object') {
+                        renderObjectsSelection();
                     }
                 };
             </script>
@@ -684,6 +686,10 @@
             <script>
                 var renderObjectHierarchy = function() {
                     if('{!selectedObject}') window.ObjectHierarchy({!RelStructure});
+                };
+
+                var renderObjectsSelection = function() {
+                    window.ObjectsSelection({!itemsJSON});
                 };
             </script>
         </apex:outputPanel>
@@ -778,8 +784,6 @@
                 var criteria = 'Main Object not modified';
                 $('[name="criteriaOptions"][value="' + criteria + '"]').prop('checked', true);
                 selectFilterCriteriaTypeOption('Date');
-
-                window.ObjectsSelection(_itemsJSON);
             };
             
             
@@ -793,6 +797,8 @@
             $createMultiobjectBackup.on('click', function(e) {
                 _isScheduledProcessMultiple = true;
                 showScheduledProcessModal(true);
+
+                renderObjectsSelection();
 
                 e.preventDefault();
             });
@@ -881,8 +887,8 @@
             var mergeParentObjectsSelection = function(a, b) {
                 $.each(a, function(ai, aitem) {
                     $.each(b, function(bi, bitem) {
-                        if(a['uniqueKey'] == b['uniqueKey']) {
-                            a.isSelected = true;
+                        if(aitem['uniqueKey'] == bitem['uniqueKey']) {
+                            aitem.isSelected = true;
                             _hasScheduledProcessMultipleSelected = true;
                         }
                     });
@@ -1321,10 +1327,13 @@
 
             window.editScheduledProcess = function(spId, isScheduledProcessMultiple) {
                 selectScheduledProcess(spId);
-                _isScheduledProcessMultiple = _isScheduledProcessMultiple;
+                _isScheduledProcessMultiple = isScheduledProcessMultiple;
             };
 
             window.showScheduledProcessModal = function(state) {
+                $scheduledProcessType.val(_isScheduledProcessMultiple ? 'Multi-Object' : 'Hierarchy');
+                $scheduledProcessModal.attr('data-multi', _isScheduledProcessMultiple);
+
                 $scheduledProcessModal.trigger('modaltoggle', [state]);
             };
 
@@ -1336,9 +1345,6 @@
                     fillForm();
                     updateSaveState();
                 }
-
-                $scheduledProcessType.val(_isScheduledProcessMultiple ? 'Multi-Object' : 'Hierarchy');
-                $scheduledProcessModal.attr('data-multi', _isScheduledProcessMultiple);
             });
 
             $('#archive_help_button').on('mouseover mouseleave', function(e) {

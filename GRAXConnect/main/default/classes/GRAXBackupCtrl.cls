@@ -336,11 +336,20 @@ public with sharing class GRAXBackupCtrl {
         
         // Get Id of the selected Scheduled Process.
         Id spId = Apexpages.currentPage().getParameters().get('spId');
+        
+        Boolean scheduleProcessExist = scheduledProcessMap.containsKey(spId);
+        Boolean multiObjectExist = multiObjectBackupMap.containsKey(spId);
 
         // Check if the Scheduled Process exist.
-        if(scheduledProcessMap.containsKey(spId)) {
+        if(scheduleProcessExist || multiObjectExist) {
             // Set the selection.
-            gsp = scheduledProcessMap.get(spId).GRAXScheduleProcess;
+            if(scheduleProcessExist) {
+                gsp = scheduledProcessMap.get(spId).GRAXScheduleProcess;
+            }
+
+            if(multiObjectExist) {
+                gsp = multiObjectBackupMap.get(spId).GRAXScheduleProcess;
+            }
 
             scheduledProcessType = gsp.type__c;
             selectedObject = gsp.Object_Name__c;
