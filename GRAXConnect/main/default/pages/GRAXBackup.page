@@ -608,6 +608,8 @@
             var _isScheduledProcessMultiple = false;
             var _hasScheduledProcessMultipleSelected = false;
 
+            var _itemsJSON = [];
+
             var selectFilterCriteriaTypeOption = function(value, isEvent) {
                 if(!isEvent) {
                     $filterCriteriaTypeOptions.filter(':checked').prop('checked', false);
@@ -636,8 +638,6 @@
                 
                 $targetReport.val(value).trigger('change');
             };
-
-            var _itemsJSON = [];
         </script>
 
         <apex:outputPanel id="fillInputs">
@@ -648,7 +648,9 @@
 
                     $("#colDt_q").val('today').trigger('change');
 
-                    $scheduledProcessType.val('{!scheduledProcessType}');
+                    var scheduledProcessType = '{!scheduledProcessType}';
+                    if(scheduledProcessType) $scheduledProcessType.val(scheduledProcessType);
+
                     $objectList.val(!selectedObject ? null : selectedObject);
                     selectReport(!targetReport ? null : targetReport);
                     $schedule.val('{!schedule}');
@@ -675,7 +677,7 @@
                         renderObjectHierarchy();
                     } else {
                         _itemsJSON = {!itemsJSON};
-                        window.ObjectsSelection(itemsJSON);
+                        window.ObjectsSelection(_itemsJSON);
                     }
                 };
             </script>
@@ -778,7 +780,7 @@
                 $('[name="criteriaOptions"][value="' + criteria + '"]').prop('checked', true);
                 selectFilterCriteriaTypeOption('Date');
 
-                window.ObjectsSelection(itemsJSON);
+                window.ObjectsSelection(_itemsJSON);
             };
             
             

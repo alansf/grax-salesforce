@@ -57,7 +57,7 @@ public with sharing class GRAXBackupCtrl {
         scheduledProcessMap = new Map<Id, ScheduledProcess>();
         multiObjectBackupMap = new Map<Id, ScheduledProcess>();
 
-        scheduledProcessType = 'Hierarchy';
+        scheduledProcessType = '';
 
         updateScheduledProcessMap();
     }
@@ -218,6 +218,8 @@ public with sharing class GRAXBackupCtrl {
     // Save the GRAX_Schedule_Process__c record based on the form data.
     public Pagereference saveScheduledProcess() {
         Boolean condition = false;
+
+        System.debug(scheduledProcessType);
 
         if(scheduledProcessType == 'Multi-Object') {
             condition = objectJSON <> null;
