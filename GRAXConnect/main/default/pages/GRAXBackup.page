@@ -130,7 +130,7 @@
                                             </a>
                                         </li>
                                         <li class="slds-dropdown__item" role="presentation">
-                                            <a href="javascript:void(0);" onclick="showGlobalSpinner(true);editScheduledProcess('{!sp.GRAXScheduleProcess.Id}');return false;" role="menuitem" tabindex="0">
+                                            <a href="javascript:void(0);" onclick="showGlobalSpinner(true);editScheduledProcess('{!sp.GRAXScheduleProcess.Id}', false);return false;" role="menuitem" tabindex="0">
                                                 <span class="slds-truncate" title="Edit">Edit</span>
                                             </a>
                                         </li>
@@ -195,7 +195,7 @@
                                             </a>
                                         </li>
                                         <li class="slds-dropdown__item" role="presentation">
-                                            <a href="javascript:void(0);" onclick="showGlobalSpinner(true);editScheduledProcess('{!sp.GRAXScheduleProcess.Id}');return false;" role="menuitem" tabindex="0">
+                                            <a href="javascript:void(0);" onclick="showGlobalSpinner(true);editScheduledProcess('{!sp.GRAXScheduleProcess.Id}', true);return false;" role="menuitem" tabindex="0">
                                                 <span class="slds-truncate" title="Edit">Edit</span>
                                             </a>
                                         </li>
@@ -648,9 +648,6 @@
 
                     $("#colDt_q").val('today').trigger('change');
 
-                    var scheduledProcessType = '{!scheduledProcessType}';
-                    if(scheduledProcessType) $scheduledProcessType.val(scheduledProcessType);
-
                     $objectList.val(!selectedObject ? null : selectedObject);
                     selectReport(!targetReport ? null : targetReport);
                     $schedule.val('{!schedule}');
@@ -759,6 +756,8 @@
                 
                 $("#colDt_q").val('today').trigger('change');
 
+                _isScheduledProcessMultiple = false;
+
                 $objectList.val(null);
                 selectReport(null);
                 $schedule.val(null);
@@ -786,8 +785,6 @@
             
             $createScheduledProcess.on('click', function(e) {
                 _isScheduledProcessMultiple = false;
-                $scheduledProcessType.val('Hierarchy');
-                $scheduledProcessModal.attr('data-multi', _isScheduledProcessMultiple);
                 showScheduledProcessModal(true);
 
                 e.preventDefault();
@@ -795,8 +792,6 @@
 
             $createMultiobjectBackup.on('click', function(e) {
                 _isScheduledProcessMultiple = true;
-                $scheduledProcessType.val('Multi-Object');
-                $scheduledProcessModal.attr('data-multi', _isScheduledProcessMultiple);
                 showScheduledProcessModal(true);
 
                 e.preventDefault();
@@ -1324,8 +1319,9 @@
 
             var $scheduledProcessModal = $('#scheduledProcessModal');
 
-            window.editScheduledProcess = function(spId) {
+            window.editScheduledProcess = function(spId, isScheduledProcessMultiple) {
                 selectScheduledProcess(spId);
+                _isScheduledProcessMultiple = _isScheduledProcessMultiple;
             };
 
             window.showScheduledProcessModal = function(state) {
@@ -1340,6 +1336,9 @@
                     fillForm();
                     updateSaveState();
                 }
+
+                $scheduledProcessType.val(_isScheduledProcessMultiple ? 'Multi-Object' : 'Hierarchy');
+                $scheduledProcessModal.attr('data-multi', _isScheduledProcessMultiple);
             });
 
             $('#archive_help_button').on('mouseover mouseleave', function(e) {
