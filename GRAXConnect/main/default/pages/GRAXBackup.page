@@ -19,6 +19,15 @@
         .slds-scope .slds-input-has-icon.slds-form-element__date .slds-input__icon:hover {
             fill: #005fb2;
         }
+
+        #scheduledProcessModal[data-multi="true"] [data-multi="false"],
+        #scheduledProcessModal[data-multi="false"] [data-multi="true"] {
+            display: none;
+        }
+
+        #scheduledProcessModal[data-multi="false"] [data-multi="false"] {
+            display: block!important;
+        }
     </style>   
     
     <script>
@@ -31,7 +40,7 @@
             <apex:param name="selectedObjectValue" assignTo="{!selectedObject}" value="" />
         </apex:actionFunction>
 
-        <apex:actionFunction action="{!saveScheduledProcess}" name="saveScheduledProcess" reRender="scheduledprocesses, sObjectDateFieldsList, fillInputs" oncomplete="showScheduledProcessModal(false);reRendered();showGlobalSpinner(false);"></apex:actionFunction>
+        <apex:actionFunction action="{!saveScheduledProcess}" name="saveScheduledProcess" reRender="scheduledprocesses, multiobjectbackup, sObjectDateFieldsList, fillInputs" oncomplete="showScheduledProcessModal(false);reRendered();showGlobalSpinner(false);"></apex:actionFunction>
         
         <apex:actionFunction action="{!cleanFormDataHandler}" name="cleanFormData" immediate="true" reRender="sObjectDateFieldsList, fillInputs" oncomplete="reRendered();showGlobalSpinner(false);"></apex:actionFunction>
 
@@ -39,7 +48,7 @@
             <apex:param name="spId" value="" />
         </apex:actionFunction>
 
-        <apex:actionFunction action="{!deleteScheduledProcess}" name="deleteScheduledProcess" immediate="true" reRender="scheduledprocesses" oncomplete="reRendered();showGlobalSpinner(false);">
+        <apex:actionFunction action="{!deleteScheduledProcess}" name="deleteScheduledProcess" immediate="true" reRender="scheduledprocesses, multiobjectbackup" oncomplete="reRendered();showGlobalSpinner(false);">
             <apex:param name="spId" value="" />
         </apex:actionFunction>
 
@@ -52,7 +61,10 @@
         <div class="slds-tabs_default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
             <ul class="slds-tabs_default__nav" role="tablist">
                 <li class="slds-tabs_default__item slds-is-active" title="Scheduled Processes" role="presentation">
-                    <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" aria-selected="false" aria-controls="tab-archiving_scheduledprocesses" id="tab-archiving_scheduledprocesses__item">Scheduled Processes</a>
+                    <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" aria-selected="true" aria-controls="tab-archiving_scheduledprocesses" id="tab-archiving_scheduledprocesses__item">Scheduled Processes</a>
+                </li>
+                <li class="slds-tabs_default__item" title="Backup" role="presentation">
+                    <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" aria-selected="false" aria-controls="tab-archiving_multiobjectbackup" id="tab-archiving_multiobjectbackup__item">Backup</a>
                 </li>
             </ul>
             <div id="tab-archiving_scheduledprocesses" class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-archiving_scheduledprocesses__item">                
@@ -134,9 +146,74 @@
                     </apex:column>
                 </apex:dataTable>
             </div>
+
+            <div id="tab-archiving_multiobjectbackup" class="slds-tabs_default__content slds-hide" role="tabpanel" aria-labelledby="tab-archiving_multiobjectbackup__item">                
+                <div class="slds-clearfix slds-p-bottom_medium">
+                    <div class="slds-clearfix">
+                        <div class="slds-float_left">
+                            <button id="createMultiobjectBackup" class="slds-button slds-button_brand">Create</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <apex:dataTable value="{!multiobjectbackup}" var="sp" id="multiobjectbackup" styleClass="slds-table slds-table_bordered slds-table_cell-buffer">        
+                    <apex:column >
+                        <apex:facet name="header">Created Date</apex:facet>
+                        <apex:outputText value="{!sp.createdDate}"/>
+                    </apex:column>
+
+                    <apex:column >
+                        <apex:facet name="header">Created By</apex:facet>
+                        <apex:outputText value="{!sp.createdBy}"/>
+                    </apex:column>
+
+                    <apex:column >
+                        <apex:facet name="header">Date Last Ran</apex:facet>
+                        <apex:outputText value="{!sp.lastRunDate}"/>
+                    </apex:column>
+
+                    <apex:column >
+                        <apex:facet name="header">Next Run Date</apex:facet>
+                        <apex:outputText value="{!sp.nextRunDate}"/>
+                    </apex:column>
+
+                    <apex:column >
+                        <apex:facet name="header">
+                            <span class="slds-assistive-text">Actions</span>
+                        </apex:facet>
+                        <apex:outputPanel >
+                            <div class="slds-dropdown-trigger slds-dropdown-trigger_click">
+                                <button class="slds-button slds-button_icon slds-button_icon-border-filled slds-button_icon-x-small" aria-haspopup="true" title="Show Actions">
+                                    <i data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#down')}" class="slds-button__icon"></i>
+                                    <span class="slds-assistive-text">Show Actions</span>
+                                </button>
+                                <div class="slds-dropdown slds-dropdown_right slds-dropdown_actions">
+                                    <ul class="slds-dropdown__list" role="menu">
+                                        <li class="slds-dropdown__item" role="presentation">
+                                            <a href="javascript:void(0);" onclick="showGlobalSpinner(true);execScheduledProcess('{!sp.GRAXScheduleProcess.Id}');return false;" role="menuitem" tabindex="0">
+                                                <span class="slds-truncate" title="Execute Now">Execute Now</span>
+                                            </a>
+                                        </li>
+                                        <li class="slds-dropdown__item" role="presentation">
+                                            <a href="javascript:void(0);" onclick="showGlobalSpinner(true);editScheduledProcess('{!sp.GRAXScheduleProcess.Id}');return false;" role="menuitem" tabindex="0">
+                                                <span class="slds-truncate" title="Edit">Edit</span>
+                                            </a>
+                                        </li>
+                                        <li class="slds-dropdown__item" role="presentation">
+                                            <a href="javascript:void(0);" onclick="showGlobalSpinner(true);deleteScheduledProcess('{!sp.GRAXScheduleProcess.Id}');return false;" role="menuitem" tabindex="-1">
+                                                <span class="slds-truncate" title="Delete">Delete</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </apex:outputPanel>
+                    </apex:column>
+                </apex:dataTable>
+            </div>
         </div>
 
-        <section id="scheduledProcessModal" role="dialog" tabindex="-1" aria-labelledby="modal-ScheduledProcess" aria-modal="true" aria-describedby="modal-content-ScheduledProcess" class="slds-modal slds-modal_medium slds-hide">
+        <section id="scheduledProcessModal" data-multi="false" role="dialog" tabindex="-1" aria-labelledby="modal-ScheduledProcess" aria-modal="true" aria-describedby="modal-content-ScheduledProcess" class="slds-modal slds-modal_medium slds-hide">
             <div class="slds-modal__container" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <header class="slds-modal__header">
                     <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
@@ -149,7 +226,10 @@
                 </header>
                 
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-ScheduledProcess">
-                    <div class="slds-section slds-is-open">
+                    <apex:inputHidden id="scheduledProcessType" value="{!scheduledProcessType}"></apex:inputHidden>
+                    <apex:inputHidden id="objectJSON" value="{!objectJSON}" html-data-id="objectJSON"></apex:inputHidden>
+
+                    <div class="slds-section slds-is-open" data-multi="false">
                         <h3 class="slds-section__title slds-theme_shade">
                             <span class="slds-truncate slds-p-horizontal_small" title="Select SalesForce object">Select SalesForce object</span>
                         </h3>
@@ -169,8 +249,22 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="slds-section slds-is-open slds-p-bottom_medium" id="ObjectsSection" data-multi="true">
+                        <h3 class="slds-section__title slds-theme_shade">
+                            <span class="slds-truncate slds-p-horizontal_small" title="Select SalesForce Objects">Select SalesForce Objects</span>
+                        </h3>
+                        <div aria-hidden="false" class="slds-section__content slds-is-relative">
+                            <div id="ObjectsSelection" data-load="true"></div>
+                            <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
+                                <span class="slds-assistive-text">Loading Tree...</span>
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+                    </div>
     
-                    <div class="slds-section slds-is-open slds-p-top_large">
+                    <div class="slds-section slds-is-open slds-p-top_large" data-multi="false">
                         <h3 class="slds-section__title slds-theme_shade">
                             <span class="slds-truncate slds-p-horizontal_small" title="Select Filter Criteria">Select Filter Criteria</span>
                         </h3>
@@ -306,7 +400,7 @@
                         </div>
                     </div>
     
-                    <div class="slds-section slds-is-open slds-p-top_large">
+                    <div class="slds-section slds-is-open slds-p-top_large" data-multi="false">
                         <h3 class="slds-section__title slds-theme_shade">
                             <span class="slds-truncate slds-p-horizontal_small" title="Select Criteria">Select Criteria</span>
                         </h3>
@@ -442,12 +536,11 @@
                         </div>
                     </div>
     
-                    <div class="slds-section slds-is-open slds-p-top_large" id="ObjectHierarchySection">
+                    <div class="slds-section slds-is-open slds-p-top_large" id="ObjectHierarchySection" data-multi="false">
                         <h3 class="slds-section__title slds-theme_shade">
                             <span class="slds-truncate slds-p-horizontal_small" title="Object Hierarchy">Object Hierarchy</span>
                         </h3>
                         <div aria-hidden="false" class="slds-section__content slds-is-relative">
-                            <apex:inputHidden id="objectJSON" value="{!objectJSON}" html-data-id="objectJSON"></apex:inputHidden>
                             <div id="ObjectHierarchy" data-load="true"></div>
                             <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
                                 <span class="slds-assistive-text">Loading Tree...</span>
@@ -466,7 +559,7 @@
                             Back up - This will Back up and NOT delete the record(s) from Salesforce.
                         </div>
                     </div>
-                    <div class="slds-form-element slds-float_left">
+                    <div class="slds-form-element slds-float_left" data-multi="false">
                         <button id="archive_help_button" class="slds-button slds-button_icon slds-button slds-button_icon" title="Help">
                             <i class="slds-button__icon" data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#info')}"></i>
                             <span class="slds-assistive-text">Help</span>
@@ -490,7 +583,9 @@
         <div class="slds-backdrop slds-hide"></div>
 
         <script>
+            var $scheduledProcessType = $sf('{!$Component.scheduledProcessType}');
             var $objectList = $sf('{!$Component.objectList}');
+            var $ObjectsSelection = $('#ObjectsSelection');
             var $filterCriteriaType = $sf('{!$Component.filterCriteriaType}');
             var $filterCriteriaTypeOptions = $('[name="filterCriteriaTypeOptions"]');
             var $targetDate = $sf('{!$Component.targetDate}');
@@ -504,11 +599,14 @@
             var $sObjectDateFieldsList = $sf('{!$Component.sObjectDateFieldsList}');
             var $ObjectHierarchy = $('#ObjectHierarchy');
             var $createScheduledProcess = $('#createScheduledProcess');
+            var $createMultiobjectBackup = $('#createMultiobjectBackup');
             var $saveScheduledProcess = $('#saveScheduledProcess');
             var $cancelScheduledProcess = $('#cancelScheduledProcess, #scheduledProcessModal .slds-modal__close');
             var $globalSpinner = window.$globalSpinner || $('#globalSpinner');
 
             var _reportListRendered = false;
+            var _isScheduledProcessMultiple = false;
+            var _hasScheduledProcessMultipleSelected = false;
 
             var selectFilterCriteriaTypeOption = function(value, isEvent) {
                 if(!isEvent) {
@@ -538,6 +636,8 @@
                 
                 $targetReport.val(value).trigger('change');
             };
+
+            var _itemsJSON = [];
         </script>
 
         <apex:outputPanel id="fillInputs">
@@ -548,6 +648,7 @@
 
                     $("#colDt_q").val('today').trigger('change');
 
+                    $scheduledProcessType.val('{!scheduledProcessType}');
                     $objectList.val(!selectedObject ? null : selectedObject);
                     selectReport(!targetReport ? null : targetReport);
                     $schedule.val('{!schedule}');
@@ -570,7 +671,12 @@
                     if(schedule) $('[name="scheduleOptions"][value="' + schedule + '"]').prop('checked', true);
 
                     selectFilterCriteriaTypeOption(!criteriaType ? 'Date' : criteriaType);
-                    renderObjectHierarchy();
+                    if(!_isScheduledProcessMultiple) {
+                        renderObjectHierarchy();
+                    } else {
+                        _itemsJSON = {!itemsJSON};
+                        window.ObjectsSelection(itemsJSON);
+                    }
                 };
             </script>
         </apex:outputPanel>
@@ -621,18 +727,24 @@
             window.updateSaveState = function() {
                 var condition = false;
 
-                condition = $objectList.val() != null;
+                if(!_isScheduledProcessMultiple) {
+                    condition = $objectList.val() != null;
 
-                if($filterCriteriaType.val() == 'Date') {
-                    condition = condition && $targetDate.val() != '';
-                } else if($filterCriteriaType.val() == 'Report') {
-                    condition = condition && $reportList.val() && $targetReport.val() != '';
+                    if($filterCriteriaType.val() == 'Date') {
+                        condition = condition && $targetDate.val() != '';
+                    } else if($filterCriteriaType.val() == 'Report') {
+                        condition = condition && $reportList.val() && $targetReport.val() != '';
+                    } else {
+                        condition = false;
+                    }
+
+                    condition = condition && $scheduleStartDate.val() != '';
+                    condition = condition && $('[name="criteriaOptions"]:checked').length == 1;
                 } else {
-                    condition = false;
+                    condition = _isScheduledProcessMultiple && _hasScheduledProcessMultipleSelected;
                 }
                 
-                condition = condition && $scheduleStartDate.val() != '';
-                condition = condition && $('[name="criteriaOptions"]:checked, [name="scheduleOptions"]:checked').length == 2;
+                condition = condition && $('[name="scheduleOptions"]:checked').length == 1;
 
                 $saveScheduledProcess.prop('disabled', !condition);
             };
@@ -665,10 +777,24 @@
                 var criteria = 'Main Object not modified';
                 $('[name="criteriaOptions"][value="' + criteria + '"]').prop('checked', true);
                 selectFilterCriteriaTypeOption('Date');
+
+                window.ObjectsSelection(itemsJSON);
             };
             
             
             $createScheduledProcess.on('click', function(e) {
+                _isScheduledProcessMultiple = false;
+                $scheduledProcessType.val('Hierarchy');
+                $scheduledProcessModal.attr('data-multi', _isScheduledProcessMultiple);
+                showScheduledProcessModal(true);
+
+                e.preventDefault();
+            });
+
+            $createMultiobjectBackup.on('click', function(e) {
+                _isScheduledProcessMultiple = true;
+                $scheduledProcessType.val('Multi-Object');
+                $scheduledProcessModal.attr('data-multi', _isScheduledProcessMultiple);
                 showScheduledProcessModal(true);
 
                 e.preventDefault();
@@ -755,6 +881,17 @@
                 });
             };
 
+            var mergeParentObjectsSelection = function(a, b) {
+                $.each(a, function(ai, aitem) {
+                    $.each(b, function(bi, bitem) {
+                        if(a['uniqueKey'] == b['uniqueKey']) {
+                            a.isSelected = true;
+                            _hasScheduledProcessMultipleSelected = true;
+                        }
+                    });
+                });
+            };
+
             var setCascadeDeleteParents = function(settings, items) {
                 var hasCascadeDelete = function(item) {
                     var isCascadeDelete = false;
@@ -791,6 +928,72 @@
                 }
 
                 return false;
+            };
+
+            window.ObjectsSelection = function(objects) {
+                _hasScheduledProcessMultipleSelected = false;
+
+                if(objects.length == 0) return;
+
+                var selection = null;
+
+                try {
+                    selection = $.parseJSON($('[data-id="objectJSON"]').val());
+                } catch(e) {}
+
+                if(selection != null) {
+                    mergeParentObjectsSelection(objects, selection);
+                }
+
+                $ObjectsSelection.sldsTree({
+                    data: objects,
+                    items: {
+                        id: 'uniqueKey',
+                        childs: 'childObjRelStructure',
+                        label: 'name'
+                    },
+                    attrs: {
+                        root: {'class': ''}
+                    },
+                    expandIcon: {
+                        path: "{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#chevronright')}"
+                    },
+                    onDiv: function($div, item, settings) {
+                        $div.append('<div class="slds-size_1-of-1">\
+                        <div class="slds-form-element">\
+                            <div class="slds-form-element__control">\
+                                <span class="slds-checkbox">\
+                                <input name="' + item[settings.items.id] + '" id="' + item[settings.items.id] + '" type="checkbox" ' + (item.isSelected ? 'checked' : '') + ' />\
+                                <label class="slds-checkbox__label" for="' + item[settings.items.id] + '">\
+                                    <span class="slds-checkbox_faux"></span>\
+                                    <span class="slds-form-element__label">' + item[settings.items.label] + '</span>\
+                                </label>\
+                                </span>\
+                            </div>\
+                            </div>\
+                        </div>');
+                    },
+                    onUl: function($ul, items, settings) {},
+                    onFinish: function($root, items, settings) {
+                        var setObjectsJSON = function() {
+                            var selectedItems = getSelectedItems(settings, items);
+
+                            return $objectJSON.val(JSON.stringify(selectedItems));
+                        };
+
+                        callNested(settings, items, function(item, parent) {
+                            $root.find('#' + item[settings.items.id]).on('change', function(e) {
+                                item.isSelected = e.target.checked;
+
+                                if(item.isSelected) {
+                                    _hasScheduledProcessMultipleSelected = true;
+                                }
+
+                                setObjectsJSON();
+                            });
+                        });
+                    }
+                });
             };
 
             window.ObjectHierarchy = function(objRoot) {
