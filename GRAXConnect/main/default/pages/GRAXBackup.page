@@ -506,7 +506,7 @@
             var $createScheduledProcess = $('#createScheduledProcess');
             var $saveScheduledProcess = $('#saveScheduledProcess');
             var $cancelScheduledProcess = $('#cancelScheduledProcess, #scheduledProcessModal .slds-modal__close');
-            //var $globalSpinner = $('#globalSpinner');
+            var $globalSpinner = window.$globalSpinner || $('#globalSpinner');
 
             var _reportListRendered = false;
 

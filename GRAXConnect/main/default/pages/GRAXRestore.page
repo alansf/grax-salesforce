@@ -244,13 +244,15 @@
             </section>
             <div class="slds-backdrop slds-hide"></div>
 
-            <div id="globalSpinner" class="slds-spinner_container slds-is-fixed slds-hide">
-                <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
-                    <span class="slds-assistive-text">Loading</span>
-                    <div class="slds-spinner__dot-a"></div>
-                    <div class="slds-spinner__dot-b"></div>
+            <apex:outputPanel rendered="{!!isMasterRestore}" layout="block">
+                <div id="globalSpinner" class="slds-spinner_container slds-is-fixed slds-hide">
+                    <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
                 </div>
-            </div>
+            </apex:outputPanel>
 
             <script>
                 $(function() {
@@ -262,7 +264,7 @@
                     var $fieldListSelector = $('#fieldListSelector');
                     var $filterSearchTerm = $('#filter-search-term');
                     var $retriveGRAXFields = $('#retriveGRAXFields');
-                    var $globalSpinner = $('#globalSpinner');
+                    var $globalSpinner = window.$globalSpinner || $('#globalSpinner');
 
                     window.addObjectListOptions = function(options) {
                         options.sort(function (a, b) {
