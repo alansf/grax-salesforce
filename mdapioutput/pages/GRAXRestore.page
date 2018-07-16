@@ -1,9 +1,4 @@
 <apex:page controller="GRAXRestoreCtrl" cache="false" showChat="false" showHeader="true" standardStylesheets="true" sidebar="true" applyHtmlTag="true" applyBodyTag="false" docType="html-5.0">
-<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <apex:outputPanel rendered="{!!isMasterRestore}">
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" type="text/javascript"></script>
         <script src="{!URLFOR($Resource.grax, '/jquery.slds.js')}"></script>
@@ -56,9 +51,8 @@
     <script>
         var selectedObject;
     </script>
-</head>
-<body>
-    <div class="{!IF(isMasterRestore, 'slds-tabs_scoped__content', 'slds-scope')}">
+
+    <div class="{!IF(isMasterRestore, 'slds-tabs_scoped__content', 'slds-scope')}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
         <apex:form id="form-restore">
             <apex:actionFunction action="{!changeObjToQuery}" name="changeObjToQuery" immediate="true" reRender="fieldListOutput">
                 <apex:param name="objToQueryValue" value="" />
@@ -527,6 +521,4 @@
             </apex:outputPanel>
         </apex:form>
     </div>
-</body>
-</html>
 </apex:page>
