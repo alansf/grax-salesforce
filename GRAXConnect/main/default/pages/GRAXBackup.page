@@ -19,7 +19,12 @@
         .slds-scope .slds-input-has-icon.slds-form-element__date .slds-input__icon:hover {
             fill: #005fb2;
         }
-    </style>    
+    </style>   
+    
+    <script>
+        window.addReportListOptions = function() {};
+        window.updateSaveState = function() {};
+    </script>
 
     <apex:form id="form-archiving" styleClass="slds-tabs_scoped__content">
         <apex:actionFunction action="{!changeSelectedObject}" name="changeSelectedObject" immediate="true" reRender="relStructureOutput, sObjectDateFieldsList" oncomplete="renderObjectHierarchy();">
@@ -501,7 +506,7 @@
             var $createScheduledProcess = $('#createScheduledProcess');
             var $saveScheduledProcess = $('#saveScheduledProcess');
             var $cancelScheduledProcess = $('#cancelScheduledProcess, #scheduledProcessModal .slds-modal__close');
-            //var $globalSpinner = $('#globalSpinner');
+            var $globalSpinner = window.$globalSpinner || $('#globalSpinner');
 
             var _reportListRendered = false;
 

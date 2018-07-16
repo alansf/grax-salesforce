@@ -27,6 +27,9 @@ public with sharing class GRAXRestoreCtrl {
     public String objToQuery {get;set;}
     public String relToQuery {get;set;}
 
+    public Boolean isMasterRestore {get;set;}
+    public String filterSearchTerm {get;set;}
+
     public class Field {
         public String name {get;set;}
         public String label {get;set;}
@@ -91,10 +94,17 @@ public with sharing class GRAXRestoreCtrl {
         sObjectMap = new Map<String, SObject>();
         tableRecords = new List<Object>();
 
-        String strParentId = Apexpages.currentPage().getParameters().get('Id');
+        String strParentId;
+        try {
+            strParentId = Apexpages.currentPage().getParameters().get('Id');
+        } catch(Exception e) {}
+
         if(String.isNotBlank(strParentId)) {
             parentId = Id.valueOf(strParentId);
             parentType = parentId.getSObjectType().getDescribe().getName();
+            isMasterRestore = false;
+        } else {
+            isMasterRestore = true;
         }
     }
 
@@ -110,11 +120,18 @@ public with sharing class GRAXRestoreCtrl {
             '"s3secretaccesskey":"' + gxcSettings.graxConfig.s3secretaccesskey__c + '",' + 
             '"s3region":"' + gxcSettings.graxConfig.s3region__c + '",' + 
             '"orgid": "'+ UserInfo.getOrganizationId() + '",' +
-            '"filterfield": "'+ relToQuery + '",' +
-            '"filtervalue": "'+ parentId + '",' +
-            '"objecttype": "'+ objToQuery + '",' +
-            '"fields": "Id,'+ selectedFields + '"' + 
-        '}';
+            '"objecttype": "'+ objToQuery + '",';
+
+        if(isMasterRestore) {
+            content += '"esendpoint":"https://search-grax-sales-demo-2vurmmexs6c444alo45eyyzwea.us-east-2.es.amazonaws.com",' +
+                '"query": "' + filterSearchTerm + '"';
+        } else {
+            content += '"filterfield": "'+ relToQuery + '",' +
+                '"filtervalue": "'+ parentId + '",' +
+                '"fields": "Id,'+ selectedFields + '"';
+        }
+        
+        content += '}';
         
         System.debug(content);
 
@@ -185,11 +202,15 @@ public with sharing class GRAXRestoreCtrl {
     }
 
     public Pagereference changeObjToQuery() {
-        String objToQueryIndex = Apexpages.currentPage().getParameters().get('objToQueryValue');
+        String objToQueryValue = Apexpages.currentPage().getParameters().get('objToQueryValue');
         
-        if(String.isNotBlank(objToQueryIndex)) {
-            objToQuery = childRelatedMap.get(objToQueryIndex).name;
-            relToQuery = childRelatedMap.get(objToQueryIndex).value;
+        if(String.isNotBlank(objToQueryValue)) {
+            if(isMasterRestore) {
+                objToQuery = objToQueryValue;
+            } else {
+                objToQuery = childRelatedMap.get(objToQueryValue).name;
+                relToQuery = childRelatedMap.get(objToQueryValue).value;
+            }
 
             updateSObjectFields();
         }
@@ -200,6 +221,8 @@ public with sharing class GRAXRestoreCtrl {
     public Pagereference updateDataTable() {
         selectedFields = Apexpages.currentPage().getParameters().get('selectedFields');
         selectedFieldsList = selectedFields.split(',');
+
+        filterSearchTerm = Apexpages.currentPage().getParameters().get('filterSearchTerm');
 
         retriveTableRecords();
         updateSObjectMap();
@@ -289,6 +312,23 @@ public with sharing class GRAXRestoreCtrl {
         return JSON.serialize(childRelatedMap.values());
     }
 
+    public List<SelectOption> getItems() {
+        String objectname;
+        List<SelectOption> options = new List<SelectOption>();
+        Map<String, SObjectType> sObjects = Schema.getGlobalDescribe();
+            options.add(new SelectOption('' ,'-- SELECT SALESFORCE OBJECT --', true));
+        for (String apiName : sObjects.keySet())
+        {
+            Map<String, Schema.RecordTypeInfo> types = sObjects.get(apiName).getDescribe().getRecordTypeInfosByName();
+            if (types.size() > 0){
+                objectname = sObjects.get(apiName).getDescribe().getName();
+                options.add(new SelectOption(objectname ,objectname ));
+            }
+        }
+        options.sort();
+        
+        return options;
+    }
 
     public String getFieldsJSON() {
         List<Object> fList = new List<Object>();

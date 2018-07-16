@@ -44,10 +44,12 @@ public class GRAXRestoreCtrlTest {
 
     @isTest
     static void changeObjToQueryTest() {
-        GRAXRestoreCtrl grc = new GRAXRestoreCtrl();
-
         PageReference pageRef = Page.GRAXRestore;
         Test.setCurrentPage(pageRef);
+
+        pageRef.getParameters().put('Id', '001J0000020re5wIAA'); // Account
+
+        GRAXRestoreCtrl grc = new GRAXRestoreCtrl();
 
         grc.parentType = 'Account';
         

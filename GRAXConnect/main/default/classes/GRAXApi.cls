@@ -18,8 +18,10 @@ Description       :
 Revision History  :
 Created/Modified by   Created/Modified Date     Requested by        Related Task/Issue     
 ----------------------------------------------------------------------------------------
-1. Leandro Brunner       07/04/2018             
+1. Leandro Brunner        04/07/2018             
+2. Ariel Yankelevich      07/13/2018            David Mackey 		Pass the SF "Company Name" in the Json (https://app.asana.com/0/326600806074978/741694214355703/f)
 ******************************************************************************************/
+
 public class GRAXApi extends GRAXCloud {
     // -------------------------------------------------
     // https://grax.io
@@ -155,6 +157,7 @@ public class GRAXApi extends GRAXCloud {
 	        String content = '{' + 
 									'"archive": '+ (isArchive? 'true':'false') + ',' +
 	        						'"orgId": "'+ UserInfo.getOrganizationId() + '",' +
+                					'"GRAXCompanyName": "'+ UserInfo.getOrganizationName() + '",' +
 	        						'"userId": ' + JSON.serialize(UserInfo.getUserId()) + ',' + 
 	        						'"graphdburl": "' + gxcSettings.graphdburl + '",' + 
 	        						'"postgresurl": "' + gxcSettings.PostgresURL + '",' + 

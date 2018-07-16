@@ -17,6 +17,37 @@
     }
 </style>
 
+<apex:outputPanel rendered="{! $User.UIThemeDisplayed == 'Theme3' }">
+    <style>
+        div.reports {
+            display: table;
+            width: 100%;
+        }
+
+        div.reports > div {
+            display: table-row;
+        }
+
+        div.reports > div div.report {
+            display: table-cell;
+        }
+    </style>
+</apex:outputPanel>
+
+<apex:outputPanel rendered="{! $User.UIThemeDisplayed == 'Theme4d' }">
+    <style>
+        div.reports {
+            display: block;
+            display: flex;
+            justify-content: center;
+        }
+
+        div.report + div.report {
+            margin-top: 1rem;
+        }
+    </style>
+</apex:outputPanel>
+
 <script>
     function goToReport(reportId, filterKeyID, filterKeyIndex, e) {
         e = e || window.event;
@@ -42,10 +73,10 @@
     };
 </script>
 
-<table width="100%">
-    <tr>
+<div class="reports">
+    <div>
         <apex:repeat value="{!settings}" var="setting" id="reports">
-            <td>
+            <div class="report">
                 <a href="javascript:void(0);" onmouseup="javascript:goToReport('{!setting.Report_ID__c}', '{!setting.Filter_Key_Id__c}', {!setting.filterKeyIndex__c}, event);">
                     Report Link
                 </a>
@@ -55,9 +86,9 @@
                         <analytics:reportChart reportId="{!setting.Report_ID__c}" size="{!setting.size__c}" cacheResults="{!setting.cacheResults__c}" filter="[{column:'{!setting.Filter_Key__c}',operator:'equals',value:'{!filterValue}'}]"/>
                     </div>
                 </div>
-            </td>
+            </div>
         </apex:repeat>
-    </tr>
-</table>
+    </div>
+</div>
     
 </apex:page>
