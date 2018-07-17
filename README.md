@@ -27,14 +27,33 @@ The GRAX Installation consists of three main steps:
 
 ## GRAX Salesforce APP
 
-1. Deploy GRAX APP for Salesforce:
-	1. Click "Deploy GRAX to Salesforce" button
-	<a href="https://deploytosalesforce.herokuapp.com?owner=HardingPoint&repo=grax-salesforce">
-<img alt="Deploy to Salesforce" src="https://deploytosalesforce.herokuapp.com/resources/img/deploy-to-salesforce3.png"></a>
+1. Download this (https://developer.salesforce.com/tools/sfdxcli)
+    1. If you already have SFDX CLI then skip this step
 
-	2. Allow GRAX Application Access to Salesforce 
-	3. Click deploy in the upper right corner. Wait for deployment to finish and log back into Salesforce. 
-	4. Before continuning with the configuration of GRAX in Salesforce, Amazon S3 and Elastic Search instances need to be created.
+
+2. Download/install Git support
+    1. Mac: $ git —version
+    2. Windows: (http://git-scm.com/download/win)
+3. Create a folder called "Development"
+    1. Within this folder create a sub-folder called "GRAXforSFDC"
+    2. Right click on the folder and click on "New Terminal Tab at folder"
+    3. Run this code:
+   ```git remote set-url origin https://github.com/HardingPoint/grax-salesforce```
+   ```git pull origin master```
+    4. ```cd grax-salesforce```
+    5. Once that has completed, run this code:  ```rm -rf ./mdapioutput && sfdx force:source:convert -d mdapioutput/```
+    6. Create a new instance for SF: ```sfdx force:auth:web:login -a <ALIAS> -r <INSTANCEURL>```
+        1. In the above, replace <ALIAS> with the username and <InstanceURL> with the url. 
+        2. Example: ```sfdx force:auth:web:login -a test-hardingpoint -r https://test.salesforce.com (https://test.salesforce.com/)```
+3. Push this code to the SF instance
+        1. make sure that all scheduled jobs have been delelted prior to running the following command: 
+        2. ```sfdx force:mdapi:deploy -d mdapioutput/ -w 100 -u <instance alias>```
+        3. Example: ```sfdx force:mdapi:deploy -d mdapioutput/ -w 100 -u test-hardingpoint```
+4. Configure the GRAX Application within Salesforce
+
+
+
+Before continuning with the configuration of GRAX in Salesforce, Amazon S3 and Elastic Search instances need to be created.
 
 ## Amazon S3 Configuration 
 
