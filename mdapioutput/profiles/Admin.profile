@@ -508,7 +508,7 @@
     <layoutAssignments>
         <layout>GRAX_Schedule_Process__c-GRAX Schedule Process Layout</layout>
     </layoutAssignments>
-    
+
     <pageAccesses>
         <apexPage>GRAXAbout</apexPage>
         <enabled>true</enabled>
