@@ -110,6 +110,8 @@ public with sharing class GRAXBackupCtrl {
             
             childObjRelStructure = new List<ObjRelStructure>();
         }
+
+        public ObjRelStructure() {}
     }
 
     private void addAllChildRelationships(ObjRelStructure sObjRelStruc, List<ObjRelStructure> allObjRelStructure, Set<String> childsToBeVisitedUniqueKey){
@@ -218,8 +220,6 @@ public with sharing class GRAXBackupCtrl {
     // Save the GRAX_Schedule_Process__c record based on the form data.
     public Pagereference saveScheduledProcess() {
         Boolean condition = false;
-
-        System.debug(scheduledProcessType);
 
         if(scheduledProcessType == 'Multi-Object') {
             condition = objectJSON <> null;
@@ -507,15 +507,20 @@ public with sharing class GRAXBackupCtrl {
     }
 
     public String getItemsJSON() {
-        List<String> objs = new List<String>();
+        List<ObjRelStructure> objs = new List<ObjRelStructure>();
+        ObjRelStructure obj;
 
         for(SelectOption op : getItems()) {
             if(!op.getDisabled()) {
-                objs.add('{"uniqueKey":"' + op.getValue() + '","parentUniqueKey":null,"relatedFieldName":null,"name":"' + op.getLabel() + '","childObjRelStructure":[]}');
+                obj = new ObjRelStructure();
+                obj.uniqueKey = op.getValue();
+                obj.name = op.getLabel();
+
+                objs.add(obj);
             }
         }
 
-        return '[' + String.join(objs, ',') + ']';
+        return JSON.serialize(objs);
     }
 
 }
