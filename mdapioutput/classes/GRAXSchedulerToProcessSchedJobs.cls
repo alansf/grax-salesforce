@@ -12,7 +12,7 @@ global class GRAXSchedulerToProcessSchedJobs implements Schedulable {
        
 		// Find any Schedule Process Job that is supposed to run at the current GMT time, 
 		// or that it hasn't been executed on the previous Schedule run and it's not currently executing
-		for(GRAX_Schedule_Process__c schedProcess : [SELECT Id, Status__c, Target_Date__c, Target_Report__c, Object_Name__c FROM GRAX_Schedule_Process__c WHERE Next_Run_Date__c <=: System.now() AND Status__c <> 'Running']){
+		for(GRAX_Schedule_Process__c schedProcess : [SELECT Id, Status__c, Target_Date__c, Target_Report__c, Object_Name__c FROM GRAX_Schedule_Process__c WHERE Next_Run_Date__c <=: System.now() AND Status__c <> 'Running' AND type__c = 'Hierarchy']){
             if(schedProcess.Target_Date__c <> null) {
                 GRAXBatchToProcessSchedJobMainObject b = new GRAXBatchToProcessSchedJobMainObject(schedProcess.Id, false);
                
