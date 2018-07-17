@@ -190,11 +190,6 @@
                                 <div class="slds-dropdown slds-dropdown_right slds-dropdown_actions">
                                     <ul class="slds-dropdown__list" role="menu">
                                         <li class="slds-dropdown__item" role="presentation">
-                                            <a href="javascript:void(0);" onclick="showGlobalSpinner(true);execScheduledProcess('{!sp.GRAXScheduleProcess.Id}');return false;" role="menuitem" tabindex="0">
-                                                <span class="slds-truncate" title="Execute Now">Execute Now</span>
-                                            </a>
-                                        </li>
-                                        <li class="slds-dropdown__item" role="presentation">
                                             <a href="javascript:void(0);" onclick="showGlobalSpinner(true);editScheduledProcess('{!sp.GRAXScheduleProcess.Id}', true);return false;" role="menuitem" tabindex="0">
                                                 <span class="slds-truncate" title="Edit">Edit</span>
                                             </a>
