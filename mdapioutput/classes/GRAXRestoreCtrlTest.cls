@@ -154,4 +154,15 @@ public class GRAXRestoreCtrlTest {
         System.assertNotEquals(null, grc.sobjectToRestore.Id);
     }
 
+    @isTest
+    static void getItemsTest() {
+        GRAXRestoreCtrl grc = new GRAXRestoreCtrl();
+
+        Test.startTest();
+
+        System.assertNotEquals(Schema.getGlobalDescribe().size(), grc.getItems().size() - 1);
+
+        Test.stopTest();        
+    }
+
 }

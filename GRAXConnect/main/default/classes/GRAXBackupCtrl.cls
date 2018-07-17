@@ -41,6 +41,9 @@ public with sharing class GRAXBackupCtrl {
 
     public GRAX_Schedule_Process__c gsp {get;set;}
     public Map<Id, ScheduledProcess> scheduledProcessMap {get;set;}
+    public Map<Id, ScheduledProcess> multiObjectBackupMap {get;set;}
+
+    public String scheduledProcessType {get;set;}
 
     public GRAXBackupCtrl() {
         userTimeZone = UserInfo.getTimeZone().getID();
@@ -52,6 +55,9 @@ public with sharing class GRAXBackupCtrl {
         archive = false;
         gsp = new GRAX_Schedule_Process__c();
         scheduledProcessMap = new Map<Id, ScheduledProcess>();
+        multiObjectBackupMap = new Map<Id, ScheduledProcess>();
+
+        scheduledProcessType = '';
 
         updateScheduledProcessMap();
     }
@@ -104,6 +110,8 @@ public with sharing class GRAXBackupCtrl {
             
             childObjRelStructure = new List<ObjRelStructure>();
         }
+
+        public ObjRelStructure() {}
     }
 
     private void addAllChildRelationships(ObjRelStructure sObjRelStruc, List<ObjRelStructure> allObjRelStructure, Set<String> childsToBeVisitedUniqueKey){
@@ -211,35 +219,48 @@ public with sharing class GRAXBackupCtrl {
     
     // Save the GRAX_Schedule_Process__c record based on the form data.
     public Pagereference saveScheduledProcess() {
-        Boolean condition = true;
-        condition = condition && selectedObject <> null;
-        condition = condition && sObjectDateField <> null;
-        condition = condition && (targetDate <> null || targetReport <> null);
-        condition = condition && (filterCriteriaType == 'Date' || filterCriteriaType == 'Report');
-        condition = condition && criteria <> null;
-        condition = condition && schedule <> null;
-        condition = condition && scheduleStartDate <> null;
-        condition = condition && scheduleStartTime <> null;
-        condition = condition && objectJSON <> null;
-        condition = condition && archive <> null;
+        Boolean condition = false;
+
+        if(scheduledProcessType == 'Multi-Object') {
+            condition = objectJSON <> null;
+            condition = condition && schedule <> null;
+            condition = condition && scheduleStartDate <> null;
+            condition = condition && scheduleStartTime <> null;
+        }
+        
+        if(scheduledProcessType == 'Hierarchy') {
+            condition = selectedObject <> null;
+            condition = condition && sObjectDateField <> null;
+            condition = condition && (targetDate <> null || targetReport <> null);
+            condition = condition && (filterCriteriaType == 'Date' || filterCriteriaType == 'Report');
+            condition = condition && criteria <> null;
+            condition = condition && schedule <> null;
+            condition = condition && scheduleStartDate <> null;
+            condition = condition && scheduleStartTime <> null;
+            condition = condition && objectJSON <> null;
+            condition = condition && archive <> null;
+
+            if(condition) {
+                gsp.Object_Name__c = selectedObject;
+                gsp.Date_Field__c = sObjectDateField;
+                if(filterCriteriaType == 'Date') {
+                    gsp.Target_Date__c = createDate(targetDate);
+                    gsp.Select_Criteria__c = criteria;
+                }
+                if(filterCriteriaType == 'Report') {
+                    gsp.Target_Report__c = targetReport;
+                    gsp.Select_Criteria__c = null;
+                }
+                gsp.Archive__c = archive;
+            }
+        }
 
         if(condition) {
-            gsp.Object_Name__c = selectedObject;
-            gsp.Date_Field__c = sObjectDateField;
-            if(filterCriteriaType == 'Date') {
-                gsp.Target_Date__c = createDate(targetDate);
-                gsp.Select_Criteria__c = criteria;
-            }
-            if(filterCriteriaType == 'Report') {
-                gsp.Target_Report__c = targetReport;
-                gsp.Select_Criteria__c = null;
-            }
+            gsp.type__c = scheduledProcessType;
             gsp.Schedule_Type__c = schedule;
             gsp.Schedule_Start_Date__c = createDate(scheduleStartDate);
             gsp.Schedule_Start_Time__c = scheduleStartTime;
             gsp.Next_Run_Date__c = createDateTime(scheduleStartDate, scheduleStartTime);
-            //gsp.Selected_Object_Hierarchy_JSON__c = objectJSON;
-            gsp.Archive__c = archive;
 
             // Insert or update the record.
             upsert gsp;
@@ -289,6 +310,7 @@ public with sharing class GRAXBackupCtrl {
 
     public void cleanFormData() {
         gsp = new GRAX_Schedule_Process__c();
+        scheduledProcessType = '';
         selectedObject = '';
         filterCriteriaType = 'Date';
         targetDate = null;
@@ -314,12 +336,22 @@ public with sharing class GRAXBackupCtrl {
         
         // Get Id of the selected Scheduled Process.
         Id spId = Apexpages.currentPage().getParameters().get('spId');
+        
+        Boolean scheduleProcessExist = scheduledProcessMap.containsKey(spId);
+        Boolean multiObjectExist = multiObjectBackupMap.containsKey(spId);
 
         // Check if the Scheduled Process exist.
-        if(scheduledProcessMap.containsKey(spId)) {
+        if(scheduleProcessExist || multiObjectExist) {
             // Set the selection.
-            gsp = scheduledProcessMap.get(spId).GRAXScheduleProcess;
+            if(scheduleProcessExist) {
+                gsp = scheduledProcessMap.get(spId).GRAXScheduleProcess;
+            }
 
+            if(multiObjectExist) {
+                gsp = multiObjectBackupMap.get(spId).GRAXScheduleProcess;
+            }
+
+            scheduledProcessType = gsp.type__c;
             selectedObject = gsp.Object_Name__c;
             sObjectDateField = gsp.Date_Field__c;
             targetDate = String.valueOf(gsp.Target_Date__c);
@@ -370,7 +402,7 @@ public with sharing class GRAXBackupCtrl {
     // Update scheduledProcessMap with the latest data.
     public void updateScheduledProcessMap() {
         // Get the Map of GRAX_Schedule_Process__c
-        Map<ID, GRAX_Schedule_Process__c> GRAXScheduledProcessMap = new Map<ID, GRAX_Schedule_Process__c>([SELECT Id, Select_Criteria__c, Object_Name__c, Target_Date__c, Target_Report__c, Schedule_Start_Date__c, Schedule_Start_Time__c, Last_Run_Date__c, Next_Run_Date__c, Date_Field__c, Schedule_Type__c, Archive__c, CreatedDate, CreatedBy.Name FROM GRAX_Schedule_Process__c WHERE isDeleted = false ORDER BY Object_Name__c, Last_Run_Date__c]);
+        Map<ID, GRAX_Schedule_Process__c> GRAXScheduledProcessMap = new Map<ID, GRAX_Schedule_Process__c>([SELECT Id, type__c, Select_Criteria__c, Object_Name__c, Target_Date__c, Target_Report__c, Schedule_Start_Date__c, Schedule_Start_Time__c, Last_Run_Date__c, Next_Run_Date__c, Date_Field__c, Schedule_Type__c, Archive__c, CreatedDate, CreatedBy.Name FROM GRAX_Schedule_Process__c WHERE isDeleted = false ORDER BY Object_Name__c, Last_Run_Date__c]);
 
         scheduledProcessMap.clear();
 
@@ -392,7 +424,13 @@ public with sharing class GRAXBackupCtrl {
                 sp.GRAXScheduleProcess = GRAXScheduledProcessMap.get(gsp.Id);
 
                 // Add the ScheduledProcess object to the map.
-                scheduledProcessMap.put(gsp.Id, sp);
+                if(gsp.type__c == 'Hierarchy') {
+                    scheduledProcessMap.put(gsp.Id, sp);
+                }
+
+                if(gsp.type__c == 'Multi-Object') {
+                    multiObjectBackupMap.put(gsp.Id, sp);
+                }
             }
         }
     }
@@ -432,6 +470,10 @@ public with sharing class GRAXBackupCtrl {
     public List<ScheduledProcess> getScheduledProcesses() {
         return scheduledProcessMap.values();
     }
+
+    public List<ScheduledProcess> getMultiObjectBackup() {
+        return multiObjectBackupMap.values();
+    }
     
     public List<SelectOption> getSObjectDateFields(){
         List<SelectOption> options = new List<SelectOption>();
@@ -462,6 +504,23 @@ public with sharing class GRAXBackupCtrl {
         }
         
         return JSON.serialize(rList);
+    }
+
+    public String getItemsJSON() {
+        List<ObjRelStructure> objs = new List<ObjRelStructure>();
+        ObjRelStructure obj;
+
+        for(SelectOption op : getItems()) {
+            if(!op.getDisabled()) {
+                obj = new ObjRelStructure();
+                obj.uniqueKey = op.getValue();
+                obj.name = op.getLabel();
+
+                objs.add(obj);
+            }
+        }
+
+        return JSON.serialize(objs);
     }
 
 }

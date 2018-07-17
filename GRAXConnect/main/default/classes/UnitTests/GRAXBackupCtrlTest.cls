@@ -76,6 +76,7 @@ public class GRAXBackupCtrlTest {
         PageReference pageRef = Page.GRAXBackup;
         Test.setCurrentPage(pageRef);
 
+        gbc.scheduledProcessType = 'Hierarchy';
         gbc.selectedObject = 'Account';
         gbc.sObjectDateField = gbc.sObjectDateFieldDefault;
         gbc.targetDate = '12/25/2018';
@@ -100,6 +101,63 @@ public class GRAXBackupCtrlTest {
             FROM CronTrigger
             WHERE CronJobDetail.Name IN :new List<String>{ 'GRAXSchedulerToProcessSchedJobs', 'GRAXSchedulerToDeleteBackedUpData' }
         ].size(), 2);
+    }
+
+    @isTest
+    static void saveScheduledProcessTest2() {
+        GRAXBackupCtrl gbc = new GRAXBackupCtrl();
+
+        PageReference pageRef = Page.GRAXBackup;
+        Test.setCurrentPage(pageRef);
+
+        gbc.filterCriteriaType = 'Report';
+        gbc.scheduledProcessType = 'Hierarchy';
+        gbc.selectedObject = 'Account';
+        gbc.sObjectDateField = gbc.sObjectDateFieldDefault;
+        gbc.targetReport = '00OU0000000aYlZ';
+        gbc.schedule = 'Monthly';
+        gbc.scheduleStartDate = '12/31/2018';
+        gbc.scheduleStartTime = '23:00';
+        gbc.objectJSON = '{}';
+        gbc.archive = false;
+
+        Integer prevScheduledProcessMapsize = gbc.scheduledProcessMap.size();
+
+        Test.startTest();
+        gbc.saveScheduledProcess();
+        Test.stopTest();
+
+        System.assertEquals(gbc.selectedObject, '');
+        System.assertNotEquals(gbc.scheduledProcessMap, null);
+        System.assertNotEquals(gbc.scheduledProcessMap.size(), prevScheduledProcessMapsize);
+    }
+
+    @isTest
+    static void saveScheduledProcessTest3() {
+        GRAXBackupCtrl gbc = new GRAXBackupCtrl();
+
+        List<Object> objectList = (List<Object>)JSON.deserializeUntyped(gbc.getItemsJSON());
+
+        System.assertEquals(gbc.getItems().size() - 1, objectList.size());
+
+        PageReference pageRef = Page.GRAXBackup;
+        Test.setCurrentPage(pageRef);
+
+        gbc.scheduledProcessType = 'Multi-Object';
+        gbc.schedule = 'Monthly';
+        gbc.scheduleStartDate = '12/31/2018';
+        gbc.scheduleStartTime = '23:00';
+        gbc.objectJSON = '[]';
+
+        Integer prevMultiObjectBackupMapSize = gbc.multiObjectBackupMap.size();
+
+        Test.startTest();
+        gbc.saveScheduledProcess();
+        Test.stopTest();
+
+        System.assertEquals(gbc.selectedObject, '');
+        System.assertNotEquals(gbc.multiObjectBackupMap, null);
+        System.assertNotEquals(gbc.multiObjectBackupMap.size(), prevMultiObjectBackupMapSize);
     }
 
     @isTest
@@ -205,6 +263,55 @@ public class GRAXBackupCtrlTest {
         Test.startTest();
 
         System.assertNotEquals(Schema.getGlobalDescribe().size(), gbc.getItems().size() - 1);
+
+        Test.stopTest();        
+    }
+
+    @isTest
+    static void getReportsJSONTest() {
+        GRAXBackupCtrl gbc = new GRAXBackupCtrl();
+
+        Test.startTest();
+
+        System.assertNotEquals(null, gbc.getReportsJSON());
+
+        Test.stopTest();        
+    }
+
+    @isTest
+    static void cleanFormDataHandlerTest() {
+        GRAXBackupCtrl gbc = new GRAXBackupCtrl();
+
+        gbc.filterCriteriaType = 'Report';
+        gbc.scheduledProcessType = 'Hierarchy';
+        gbc.selectedObject = 'Account';
+        gbc.sObjectDateField = gbc.sObjectDateFieldDefault;
+        gbc.targetReport = '00OU0000000aYlZ';
+        gbc.schedule = 'Monthly';
+        gbc.scheduleStartDate = '12/31/2018';
+        gbc.scheduleStartTime = '23:00';
+        gbc.objectJSON = '{}';
+        gbc.archive = false;
+
+        PageReference pageRef = Page.GRAXBackup;
+        Test.setCurrentPage(pageRef);
+
+        Test.startTest();
+        gbc.cleanFormDataHandler();
+
+        System.assertEquals(null, gbc.gsp.Id);
+        System.assertEquals('', gbc.scheduledProcessType);
+        System.assertEquals('', gbc.selectedObject);
+        System.assertEquals('Date', gbc.filterCriteriaType);
+        System.assertEquals(null, gbc.targetDate);
+        System.assertEquals('', gbc.targetReport);
+        System.assertEquals('Main Object not modified', gbc.criteria);
+        System.assertEquals(null, gbc.schedule);
+        System.assertEquals(null, gbc.scheduleStartDate);
+        System.assertEquals(null, gbc.scheduleStartTime);
+        System.assertEquals(null, gbc.objectJSON);
+        System.assertEquals(false, gbc.archive);
+        System.assertEquals(null, gbc.selectedObjectHierarchyAttachment);
 
         Test.stopTest();        
     }

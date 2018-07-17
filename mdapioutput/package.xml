@@ -171,6 +171,7 @@
     <members>GRAX_Schedule_Process__c.Status__c</members>
     <members>GRAX_Schedule_Process__c.Target_Date__c</members>
     <members>GRAX_Schedule_Process__c.Target_Report__c</members>
+    <members>GRAX_Schedule_Process__c.type__c</members>
   </types>
   <types>
     <name>ListView</name>
