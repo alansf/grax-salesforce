@@ -37,6 +37,8 @@ public with sharing class GRAXRestoreCtrl {
 
         public Boolean isCreateable {get;set;}
         public Boolean isNamePointing {get;set;}
+        public Boolean isReference {get;set;}
+        public Boolean isSearchPrefilterable {get;set;}
 
         public String containerClass;
         public String styleClass;
@@ -48,21 +50,23 @@ public with sharing class GRAXRestoreCtrl {
 
             this.isCreateable = fd.isCreateable();
             this.isNamePointing = fd.isNamePointing();
+            this.isReference = fd.getReferenceTo().size() > 0;
+            this.isSearchPrefilterable = fd.isSearchPrefilterable();
         }
 
         public String getStyleClass() {
             String cls = 'slds-input';
 
-            if(type == 'PICKLIST') {
+            if(type == 'REFERENCE' && isNamePointing) {
+                cls = 'is-name-pointing';
+            }
+
+            if(type == 'PICKLIST' || (type == 'REFERENCE' && !isSearchPrefilterable)) {
                 cls = 'slds-select';
             }
 
             if(type == 'TEXTAREA') {
                 cls = 'slds-textarea';
-            }
-
-            if(type == 'REFERENCE' && isNamePointing) {
-                cls = 'is-name-pointing';
             }
 
             return cls;
@@ -71,12 +75,12 @@ public with sharing class GRAXRestoreCtrl {
         public String getContainerClass() {
             String cls = '';
 
-            if(type == 'PICKLIST') {
-                cls = 'slds-select_container';
+            if(type == 'REFERENCE' || isSearchPrefilterable) {
+                cls = 'slds-input-has-icon slds-input-has-icon_right';
             }
 
-            if(type == 'REFERENCE') {
-                cls = 'slds-input-has-icon slds-input-has-icon_right';
+            if(type == 'PICKLIST' || (type == 'REFERENCE' && !isSearchPrefilterable)) {
+                cls = 'slds-select_container';
             }
 
             if(type == 'BOOLEAN') {
@@ -152,7 +156,13 @@ public with sharing class GRAXRestoreCtrl {
 
         for(Field f : fieldMap.values()) {
             try {
-                if(f.isCreateable) so.put(f.name, GRAXUtils.castGenericObjectToType(mo.get(f.name), f.type));
+                if(f.isCreateable) {
+                    Object val = GRAXUtils.castGenericObjectToType(mo.get(f.name), f.type);
+                    
+                    if(f.isReference && !GRAXUtils.idExist((String)val)) continue;
+
+                    so.put(f.name, val);
+                }
             } catch(Exception e) {
                 System.debug(LoggingLevel.WARN, e.getMessage() + ' on field ' + f.label);
             }
@@ -270,6 +280,8 @@ public with sharing class GRAXRestoreCtrl {
     }
 
     public Pagereference saveSObjectToRestore() {
+        System.debug(JSON.serializePretty(sobjectToRestore));
+
         try {
             insert sobjectToRestore;
         } catch(DMLException e) {

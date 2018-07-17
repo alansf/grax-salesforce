@@ -341,4 +341,16 @@ public with sharing class GRAXUtils {
         return retAtt;
     }
 
+
+    public static Boolean idExist(String sid) {
+        try {
+            Id recordId = Id.valueOf(sid);
+            
+            String soql = 'SELECT count() FROM ' + recordId.getSObjectType() + ' WHERE Id = :recordId';
+            
+            return Database.countQuery(soql) == 1;
+        } catch (Exception e) {}
+
+        return false;
+    }
 }
