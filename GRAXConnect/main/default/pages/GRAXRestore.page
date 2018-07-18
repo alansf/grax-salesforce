@@ -63,11 +63,11 @@
                 <apex:param name="filterSearchTerm" value="" />
             </apex:actionFunction>
 
-            <apex:actionFunction action="{!changeSObjectToRestore}" name="changeSObjectToRestore" immediate="true" reRender="restoreOutput" oncomplete="showRestoreModal(true);">
+            <apex:actionFunction action="{!changeSObjectToRestore}" name="changeSObjectToRestore" immediate="true" reRender="restoreOutput" oncomplete="showRestoreModal(true);showGlobalSpinner(false);">
                 <apex:param name="soToRestore" value="" />
             </apex:actionFunction>
 
-            <apex:actionFunction action="{!saveSObjectToRestore}" name="saveSObjectToRestore" reRender="restoreOutput" oncomplete="showRestoreModal(false);renderSvgIcons();"></apex:actionFunction>
+            <apex:actionFunction action="{!saveSObjectToRestore}" name="saveSObjectToRestore" immediate="true" reRender="restoreOutput" oncomplete="showRestoreModal(false);showGlobalSpinner(false);renderSvgIcons();"></apex:actionFunction>
 
             <div class="slds-tabs_default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <!--<ul class="slds-tabs_default__nav" role="tablist">
@@ -266,6 +266,10 @@
                     var $retriveGRAXFields = $('#retriveGRAXFields');
                     var $globalSpinner = window.$globalSpinner || $('#globalSpinner');
 
+                    window.showGlobalSpinner = window.showGlobalSpinner || function(state) {
+                        $globalSpinner.toggleClass('slds-hide', !state);
+                    };
+
                     window.addObjectListOptions = function(options) {
                         options.sort(function (a, b) {
                             if (a.label > b.label) {
@@ -313,11 +317,13 @@
                     };
 
                     window.restore = function(sid) {
+                        showGlobalSpinner(true);
                         changeSObjectToRestore(sid);
                         $globalSpinner.removeClass('slds-hide');
                     };
         
                     $saveRestore.on('click', function(e) {
+                        showGlobalSpinner(true);
                         saveSObjectToRestore();
         
                         e.preventDefault();
