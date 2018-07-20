@@ -27,7 +27,7 @@ public class GRAXSchedulerToProcessSchedJobsTest {
 
             insert gsp;
 
-            GRAXUtils.setSelectedObjectHierarchyJSON(gsp.Id, '{"uniqueKey":"' + obj + '","parentUniqueKey":null,"relatedFieldName":null,"name":"' + obj + '","childObjRelStructure":[]}');
+            GRAXUtils.setSelectionJSON(gsp.Id, '{"uniqueKey":"' + obj + '","parentUniqueKey":null,"relatedFieldName":null,"name":"' + obj + '","childObjRelStructure":[]}');
         }
 
         insert gspList;

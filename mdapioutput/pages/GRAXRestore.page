@@ -46,6 +46,10 @@
         .noPointerEvents {
             pointer-events: none;
         }
+
+        .slds-scope .slds-input-has-icon a.slds-input__icon {
+            pointer-events: all;
+        }
     </style>
 
     <script>
@@ -154,8 +158,11 @@
                                 <apex:outputPanel id="datatableOuput" layout="block">
                                     <apex:dataTable value="{!sObjectMap}" var="sid" id="sObjectDataTable" styleClass="slds-table slds-table_bordered slds-table_cell-buffer" rendered="{!!isTableRecordsEmpty}">
                                         <apex:repeat var="n" value="{!selectedFieldsList}">
-                                            <apex:column headerValue="{!fieldMap[n].label}">
+                                            <apex:column headerValue="{!fieldMap[n].label}" rendered="{!fieldMap[n].isCreateable}">
                                                 <apex:outputField value="{!sObjectMap[sid][fieldMap[n].name]}" />
+                                            </apex:column>
+                                            <apex:column headerValue="{!fieldMap[n].label}" rendered="{!!fieldMap[n].isCreateable}">
+                                                <apex:outputText value="{!objectMap[sid][fieldMap[n].name]}" />
                                             </apex:column>
                                         </apex:repeat>
                     
@@ -209,7 +216,7 @@
                             </apex:outputPanel>
 
                             <apex:repeat var="f" value="{!sObjectFields}" rendered="{!sobjectToRestore != null}">
-                                <apex:outputPanel styleClass="slds-form-element slds-m-bottom_xx-small" rendered="{!f.isCreateable}">
+                                <apex:outputPanel styleClass="slds-form-element slds-m-bottom_xx-small" rendered="{!f.isCreateable && f.isEditable}">
                                     <apex:outputLabel styleClass="slds-form-element__label" for="inputField" value="{!f.label}"/>
                                     <div class="slds-form-element__control">
                                         <div class="{!f.containerClass}">

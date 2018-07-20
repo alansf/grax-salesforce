@@ -43,7 +43,7 @@ global with sharing class GRAXBatchToProcessSchedJobFromReport implements Databa
                 this.csvIt = new GRAXCSVIterator(csv);
             }
             
-            this.mainBatchProcess = new GRAXBatchToProcessSchedJob(jobId, null, 0, null, isExecuteNow);
+            this.mainBatchProcess = new GRAXBatchToProcessSchedJob(jobId, null, 0, null, isExecuteNow, false);
         }
 
         if(splitSize <> null) {

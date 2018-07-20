@@ -28,6 +28,10 @@
         #scheduledProcessModal[data-multi="false"] [data-multi="false"] {
             display: block!important;
         }
+
+        #ObjectsSection > div.slds-scrollable_y {
+            max-height: 45vh;
+        }
     </style>   
     
     <script>
@@ -190,6 +194,11 @@
                                 <div class="slds-dropdown slds-dropdown_right slds-dropdown_actions">
                                     <ul class="slds-dropdown__list" role="menu">
                                         <li class="slds-dropdown__item" role="presentation">
+                                            <a href="javascript:void(0);" onclick="showGlobalSpinner(true);execScheduledProcess('{!sp.GRAXScheduleProcess.Id}');return false;" role="menuitem" tabindex="0">
+                                                <span class="slds-truncate" title="Execute Now">Execute Now</span>
+                                            </a>
+                                        </li>
+                                        <li class="slds-dropdown__item" role="presentation">
                                             <a href="javascript:void(0);" onclick="showGlobalSpinner(true);editScheduledProcess('{!sp.GRAXScheduleProcess.Id}', true);return false;" role="menuitem" tabindex="0">
                                                 <span class="slds-truncate" title="Edit">Edit</span>
                                             </a>
@@ -249,13 +258,8 @@
                         <h3 class="slds-section__title slds-theme_shade">
                             <span class="slds-truncate slds-p-horizontal_small" title="Select SalesForce Objects">Select SalesForce Objects</span>
                         </h3>
-                        <div aria-hidden="false" class="slds-section__content slds-is-relative">
-                            <div id="ObjectsSelection" data-load="true"></div>
-                            <div role="status" class="slds-spinner slds-spinner_large slds-spinner_brand">
-                                <span class="slds-assistive-text">Loading Tree...</span>
-                                <div class="slds-spinner__dot-a"></div>
-                                <div class="slds-spinner__dot-b"></div>
-                            </div>
+                        <div class="slds-is-relative slds-scrollable_y slds-p-vertical_small">
+                            <div id="ObjectsSelection"></div>
                         </div>
                     </div>
     
@@ -727,7 +731,7 @@
             window.updateSaveState = function() {
                 var condition = false;
 
-                if(!_isScheduledProcessMultiple) {
+                if(!_hasScheduledProcessMultipleSelected) {
                     condition = $objectList.val() != null;
 
                     if($filterCriteriaType.val() == 'Date') {
@@ -741,7 +745,7 @@
                     condition = condition && $scheduleStartDate.val() != '';
                     condition = condition && $('[name="criteriaOptions"]:checked').length == 1;
                 } else {
-                    condition = _isScheduledProcessMultiple && _hasScheduledProcessMultipleSelected;
+                    condition = _hasScheduledProcessMultipleSelected;
                 }
                 
                 condition = condition && $('[name="scheduleOptions"]:checked').length == 1;
@@ -758,6 +762,7 @@
                 $("#colDt_q").val('today').trigger('change');
 
                 _isScheduledProcessMultiple = false;
+                _hasScheduledProcessMultipleSelected = false;
 
                 $objectList.val(null);
                 selectReport(null);
@@ -973,8 +978,16 @@
                     },
                     onUl: function($ul, items, settings) {},
                     onFinish: function($root, items, settings) {
+                        var hasItemSelected = function() {
+                            return hasItem(items, function(item, i) {
+                                return item.isSelected;
+                            });
+                        };
+
                         var setObjectsJSON = function() {
                             var selectedItems = getSelectedItems(settings, items);
+
+                            _hasScheduledProcessMultipleSelected = hasItemSelected();
 
                             return $objectJSON.val(JSON.stringify(selectedItems));
                         };
@@ -982,10 +995,6 @@
                         callNested(settings, items, function(item, parent) {
                             $root.find('#' + item[settings.items.id]).on('change', function(e) {
                                 item.isSelected = e.target.checked;
-
-                                if(item.isSelected) {
-                                    _hasScheduledProcessMultipleSelected = true;
-                                }
 
                                 setObjectsJSON();
                             });

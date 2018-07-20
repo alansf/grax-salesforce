@@ -264,48 +264,44 @@ public with sharing class GRAXUtils {
     }
 
     public static Integer getBatchMaxExecutionNumber() {
-        Integer maxExecutionNumber = (Integer)getGRAXSettings().BatchMaxExecutionNumber__c;
+        return 1000;
+    }
 
-        if(maxExecutionNumber == null) {
-            maxExecutionNumber = 1000;
+    public static Decimal getObjectMaxTotalBytes(String sobjectName) {
+        Map<String, Schema.DescribeFieldResult> fieldsMap = getDescribeFieldsResultForObject(sobjectName);
 
-            setBatchMaxExecutionNumber(maxExecutionNumber);
+        Decimal totalBytes = 0;
+
+        for(Schema.DescribeFieldResult dfr: fieldsMap.values()) {
+            if(!dfr.getType().name().equalsIgnoreCase('base64')){
+                totalBytes += dfr.getByteLength();
+            }
         }
 
-        return maxExecutionNumber;
+        return Math.ceil(totalBytes * 0.15);
     }
 
     public static Integer getBatchMaxExecutionNumber(String sobjectName) {
-        Map<String, Schema.DescribeFieldResult> fieldsMap = getDescribeFieldsResultForObject(sobjectName);
         Integer maxBytes = 8388608;
-        Integer maxExecutionNumber = getBatchMaxExecutionNumber();
+        Integer maxExecutionNumber = 2000; 
         Integer executionNumber = maxExecutionNumber;
 
-        Integer totalBytes = 0;
+        Decimal totalBytes = getObjectMaxTotalBytes(sobjectName);
 
-        for(Schema.DescribeFieldResult dfr: fieldsMap.values()) {
-            totalBytes += dfr.getByteLength();
-        }
-
-        if(totalBytes > maxBytes) {
-            executionNumber = maxBytes / totalBytes;
-        }
-
-        if(executionNumber > maxExecutionNumber) {
-            executionNumber = maxExecutionNumber;
-        }
+        executionNumber = (Integer)Math.ceil(maxBytes / totalBytes);
+        executionNumber = Math.min(executionNumber, maxExecutionNumber);
 
         return executionNumber;
     }
 
-    public static void setSelectedObjectHierarchyJSON(Id gspId, String jsonContent) {
-        setSelectedObjectHierarchyJSON(new Attachment(
+    public static void setSelectionJSON(Id gspId, String jsonContent) {
+        setSelectionJSON(new Attachment(
             ParentId = gspId,
-            Name = 'SelectedObjectHierarchyJSON.txt'
+            Name = 'SelectionJSON.txt'
         ), jsonContent);
     }
 
-    public static void setSelectedObjectHierarchyJSON(Attachment att, String jsonContent) {
+    public static void setSelectionJSON(Attachment att, String jsonContent) {
         if(att <> null) {
             att.Body = Blob.valueOf(jsonContent);
             
@@ -313,11 +309,11 @@ public with sharing class GRAXUtils {
         }
     }
 
-    public static String getSelectedObjectHierarchyJSON(Id gspId) {
-        return getSelectedObjectHierarchyJSON(getSelectedObjectHierarchyAttachment(gspId));
+    public static String getSelectionJSON(Id gspId) {
+        return getSelectionJSON(getSelectionAttachment(gspId));
     }
 
-    public static String getSelectedObjectHierarchyJSON(Attachment att) {
+    public static String getSelectionJSON(Attachment att) {
         String retJSON = '{}';
 
         if(att <> null) {
@@ -331,10 +327,10 @@ public with sharing class GRAXUtils {
         return retJSON;
     }
 
-    public static Attachment getSelectedObjectHierarchyAttachment(Id gspId) {
+    public static Attachment getSelectionAttachment(Id gspId) {
         Attachment retAtt;
 
-        for(Attachment att : [SELECT Body FROM Attachment WHERE ParentId = :gspId AND Name = 'SelectedObjectHierarchyJSON.txt' ORDER BY Id DESC LIMIT 1]) {
+        for(Attachment att : [SELECT Body FROM Attachment WHERE ParentId = :gspId AND Name = 'SelectionJSON.txt' ORDER BY Id DESC LIMIT 1]) {
             retAtt = att;
         }
 
@@ -352,5 +348,9 @@ public with sharing class GRAXUtils {
         } catch (Exception e) {}
 
         return false;
+    }
+
+    public static Boolean isPersonAccountEnabled() {
+        return getDescribeFieldsResultForObject('Account').containsKey('IsPersonAccount');
     }
 }

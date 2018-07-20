@@ -30,9 +30,9 @@ public with sharing class GRAXBatchToProcessSchedJobFromReportTest {
         gsp.Archive__c = true;
         insert gsp;
 
-        GRAXUtils.setSelectedObjectHierarchyJSON(gsp.Id, '{"uniqueKey":"GRAX_Data_Record__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAX_Data_Record__c","childObjRelStructure":[{"uniqueKey":"GRAX_Data_Record__c_Attachments","parentUniqueKey":"GRAX_Data_Record__c","relatedFieldName":"ParentId","name":"Attachment","childObjRelStructure":[]}]}');
+        GRAXUtils.setSelectionJSON(gsp.Id, '{"uniqueKey":"GRAX_Data_Record__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAX_Data_Record__c","childObjRelStructure":[{"uniqueKey":"GRAX_Data_Record__c_Attachments","parentUniqueKey":"GRAX_Data_Record__c","relatedFieldName":"ParentId","name":"Attachment","childObjRelStructure":[]}]}');
 
-        System.assertNotEquals(null, GRAXUtils.getSelectedObjectHierarchyJSON(gsp.Id));
+        System.assertNotEquals(null, GRAXUtils.getSelectionJSON(gsp.Id));
 
         GRAXUnitTest.SingleRequestMock fakeResponse = new GRAXUnitTest.SingleRequestMock(200, '{"message": "Test successful"}', 'http://test.grax.io/applications/neo4j/configure', null);
         Test.setMock(HttpCalloutMock.class, fakeResponse);

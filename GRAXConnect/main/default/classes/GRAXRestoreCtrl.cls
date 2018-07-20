@@ -12,6 +12,7 @@ public with sharing class GRAXRestoreCtrl {
     public String parentType;
     public List<String> selectedFieldsList {get;set;}
     public Map<String, SObject> sObjectMap {get;set;}
+    public Map<String, Map<String, String>> objectMap {get;set;}
     public SObject sobjectToRestore {get;set;}
     public Map<String, ChildRelatedItem> childRelatedMap {get;set;}
 
@@ -30,6 +31,18 @@ public with sharing class GRAXRestoreCtrl {
     public Boolean isMasterRestore {get;set;}
     public String filterSearchTerm {get;set;}
 
+    public Boolean isPersonAccountEnabled = false;
+    public Boolean isPersonAccount {get;set;}
+
+    public Set<String> contactFields;
+    public Set<String> accountContactCommonFields = new Set<String>{
+        'Id', 'IsDeleted', 'MasterRecordId', 'Phone', 'Name',
+        'Fax', 'PhotoUrl', 'Description', 'OwnerId', 'CreatedDate',
+        'CreatedById', 'LastModifiedDate', 'LastModifiedById',
+        'SystemModstamp', 'LastActivityDate', 'LastViewedDate',
+        'LastReferencedDate', 'Jigsaw', 'CleanStatus'
+    };
+
     public class Field {
         public String name {get;set;}
         public String label {get;set;}
@@ -39,6 +52,8 @@ public with sharing class GRAXRestoreCtrl {
         public Boolean isNamePointing {get;set;}
         public Boolean isReference {get;set;}
         public Boolean isSearchPrefilterable {get;set;}
+
+        public Boolean isEditable {get;set;}
 
         public String containerClass;
         public String styleClass;
@@ -52,6 +67,8 @@ public with sharing class GRAXRestoreCtrl {
             this.isNamePointing = fd.isNamePointing();
             this.isReference = fd.getReferenceTo().size() > 0;
             this.isSearchPrefilterable = fd.isSearchPrefilterable();
+
+            this.isEditable = true;
         }
 
         public String getStyleClass() {
@@ -96,6 +113,7 @@ public with sharing class GRAXRestoreCtrl {
 
         fieldMap = new Map<String, Field>();
         sObjectMap = new Map<String, SObject>();
+        objectMap = new Map<String, Map<String, String>>();
         tableRecords = new List<Object>();
 
         String strParentId;
@@ -109,6 +127,12 @@ public with sharing class GRAXRestoreCtrl {
             isMasterRestore = false;
         } else {
             isMasterRestore = true;
+        }
+
+        isPersonAccountEnabled = GRAXUtils.isPersonAccountEnabled();
+        if(isPersonAccountEnabled) {
+            isPersonAccount = false;
+            contactFields = GRAXUtils.getDescribeFieldsResultForObject('Contact').keySet();
         }
     }
 
@@ -127,6 +151,17 @@ public with sharing class GRAXRestoreCtrl {
             '"objecttype": "'+ objToQuery + '",';
 
         if(isMasterRestore) {
+
+            if(isPersonAccountEnabled && objToQuery == 'Account') {
+                if(!String.isEmpty(filterSearchTerm)) {
+                    filterSearchTerm += ' AND ';
+                }
+
+                filterSearchTerm += 'doc.IsPersonAccount:' + String.valueOf(isPersonAccount);
+            }
+
+            System.debug(filterSearchTerm);
+
             content += '"esendpoint":"https://search-grax-sales-demo-2vurmmexs6c444alo45eyyzwea.us-east-2.es.amazonaws.com",' +
                 '"query": "' + filterSearchTerm + '"';
         } else {
@@ -159,9 +194,19 @@ public with sharing class GRAXRestoreCtrl {
                 if(f.isCreateable) {
                     Object val = GRAXUtils.castGenericObjectToType(mo.get(f.name), f.type);
                     
-                    if(f.isReference && !GRAXUtils.idExist((String)val)) continue;
+                    if(f.isReference && !GRAXUtils.idExist((String)val)) {
+                        continue;
+                    }
 
-                    so.put(f.name, val);
+                    if(isPersonAccountEnabled && isPersonAccount && f.name == 'RecordTypeId') {
+                        so.put('isPersonAccount', true);
+                        
+                        continue;
+                    }
+
+                    if(f.isEditable) {
+                        so.put(f.name, val);
+                    }
                 }
             } catch(Exception e) {
                 System.debug(LoggingLevel.WARN, e.getMessage() + ' on field ' + f.label);
@@ -171,9 +216,25 @@ public with sharing class GRAXRestoreCtrl {
         return so;
     }
 
+    public Map<String, String> createObjectMap(Map<String, Object> mo) {
+        Map<String, String> m = new Map<String, String>();
+
+        for(Field f : fieldMap.values()) {
+
+            if(!f.isCreateable || !f.isEditable) {
+                Object val = GRAXUtils.castGenericObjectToType(mo.get(f.name), f.type);
+
+                m.put(f.name, String.valueOf(val));
+            }
+            
+        }
+
+        return m;
+    }
 
     public void updateSObjectMap() {
         sObjectMap.clear();
+        objectMap.clear();
 
         if(String.isNotBlank(objToQuery)) {
             for(Object o : tableRecords) {
@@ -181,6 +242,7 @@ public with sharing class GRAXRestoreCtrl {
                 SObject so = createSObject(objToQuery, mo);
 
                 sObjectMap.put((String)mo.get('Id'), so);
+                objectMap.put((String)mo.get('Id'), createObjectMap(mo));
             }
         }
     }
@@ -188,11 +250,24 @@ public with sharing class GRAXRestoreCtrl {
     public void updateSObjectFields(){
         fieldMap.clear();
 
+        Boolean addField = false;
+        
         if(String.isNotBlank(objToQuery)) {
             for(Schema.DescribeFieldResult fd : GRAXUtils.getDescribeFieldsResultForObject(objToQuery).values()) {
                 Field f = new Field(fd);
 
-                if(!fieldSetToExclude.contains(f.name) && (!fieldsToExcludeByObject.containsKey(objToQuery) || !fieldsToExcludeByObject.get(objToQuery).contains(f.name))) {
+                addField = !fieldSetToExclude.contains(f.name) && (!fieldsToExcludeByObject.containsKey(objToQuery) || !fieldsToExcludeByObject.get(objToQuery).contains(f.name));
+
+                if(objToQuery == 'Account' && isPersonAccountEnabled && !isPersonAccount) {
+                    addField &= accountContactCommonFields.contains(f.name) || !contactFields.contains(f.name);
+                    addField &= !f.name.endsWith('__pc');
+                }
+
+                if(isPersonAccountEnabled && isPersonAccount && (f.name == 'Name' || f.name == 'RecordTypeId')) {
+                    f.isEditable = false;
+                }
+
+                if(addField) {
                     fieldMap.put(f.name, f);
                 }
             }
@@ -213,6 +288,11 @@ public with sharing class GRAXRestoreCtrl {
 
     public Pagereference changeObjToQuery() {
         String objToQueryValue = Apexpages.currentPage().getParameters().get('objToQueryValue');
+
+        if(objToQueryValue == 'Account2') {
+            objToQueryValue = 'Account';
+            isPersonAccount = true;
+        }
         
         if(String.isNotBlank(objToQueryValue)) {
             if(isMasterRestore) {
@@ -337,6 +417,11 @@ public with sharing class GRAXRestoreCtrl {
                 options.add(new SelectOption(objectname ,objectname ));
             }
         }
+
+        if(isPersonAccountEnabled) {
+            options.add(new SelectOption('Account2', 'Account (Person)'));
+        }
+
         options.sort();
         
         return options;
