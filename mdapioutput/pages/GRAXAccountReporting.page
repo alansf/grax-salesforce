@@ -45,6 +45,10 @@
         div.report + div.report {
             margin-top: 1rem;
         }
+
+        div.report div.analyticsEmbeddedReportChart {
+            width: 90vw;
+        }
     </style>
 </apex:outputPanel>
 

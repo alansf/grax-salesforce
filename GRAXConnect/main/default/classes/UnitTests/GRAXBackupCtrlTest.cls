@@ -31,7 +31,7 @@ public class GRAXBackupCtrlTest {
         insert gspList;
 
         for(GRAX_Schedule_Process__c gsp : gspList) {
-            GRAXUtils.setSelectedObjectHierarchyJSON(gsp.Id, '{"uniqueKey":"' + gsp.Object_Name__c + '","parentUniqueKey":null,"relatedFieldName":null,"name":"' + gsp.Object_Name__c + '","childObjRelStructure":[]}');
+            GRAXUtils.setSelectionJSON(gsp.Id, '{"uniqueKey":"' + gsp.Object_Name__c + '","parentUniqueKey":null,"relatedFieldName":null,"name":"' + gsp.Object_Name__c + '","childObjRelStructure":[]}');
         }
     }
 
@@ -147,7 +147,7 @@ public class GRAXBackupCtrlTest {
         gbc.schedule = 'Monthly';
         gbc.scheduleStartDate = '12/31/2018';
         gbc.scheduleStartTime = '23:00';
-        gbc.objectJSON = '[]';
+        gbc.objectJSON = '[{"uniqueKey":"Account","parentUniqueKey":null,"relatedFieldName":null,"name":"Account","childObjRelStructure":[]},{"uniqueKey":"Case","parentUniqueKey":null,"relatedFieldName":null,"name":"Case","childObjRelStructure":[]},{"uniqueKey":"Contact","parentUniqueKey":null,"relatedFieldName":null,"name":"Contact","childObjRelStructure":[]},{"uniqueKey":"Event","parentUniqueKey":null,"relatedFieldName":null,"name":"Event","childObjRelStructure":[]}]';
 
         Integer prevMultiObjectBackupMapSize = gbc.multiObjectBackupMap.size();
 
@@ -228,7 +228,7 @@ public class GRAXBackupCtrlTest {
             System.assertEquals(gbc.schedule, gsp.Schedule_Type__c);
             System.assertEquals(gbc.scheduleStartDate, gsp.Schedule_Start_Date__c.format());
             System.assertEquals(gbc.scheduleStartTime, gsp.Schedule_Start_Time__c);
-            System.assertEquals(gbc.objectJSON, GRAXUtils.getSelectedObjectHierarchyJSON(gsp.Id));
+            System.assertEquals(gbc.objectJSON, GRAXUtils.getSelectionJSON(gsp.Id));
             System.assertEquals(gbc.archive, gsp.Archive__c);
         }
 
@@ -311,7 +311,7 @@ public class GRAXBackupCtrlTest {
         System.assertEquals(null, gbc.scheduleStartTime);
         System.assertEquals(null, gbc.objectJSON);
         System.assertEquals(false, gbc.archive);
-        System.assertEquals(null, gbc.selectedObjectHierarchyAttachment);
+        System.assertEquals(null, gbc.selectionAttachment);
 
         Test.stopTest();        
     }

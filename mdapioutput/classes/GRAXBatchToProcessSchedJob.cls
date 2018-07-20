@@ -6,6 +6,7 @@ Created/Modified by   Created/Modified Date     Requested by          Related Ta
 ----------------------------------------------------------------------------------------
 1. Ariel Yankelevich       04/26/2018           David Mackey        GRAX Audit Trail Process (https://app.asana.com/0/326600806074978/633149554508926/f)
 2. Ariel Yankelevich       06/05/2018           David Mackey        Backup and Restore Notes & Attachments (https://app.asana.com/0/326600806074978/692982800286805/f)
+3. Ariel Yankelevich       07/18/2018           David Mackey        Multi-Object Backup (https://app.asana.com/0/326600806074978/743044564916005/f)
 ******************************************************************************************/
 global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, Database.Stateful, Database.AllowsCallouts {
     public String query = '';
@@ -21,9 +22,10 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
     public Boolean isArchive = false;
     public Boolean isExecuteNow = false;
     public Boolean hasContentDocument;
+    public Boolean isMultiObjectRunning = false;
     private Set<String> asyncObjects2ProcessByGRAX = new Set<String>{'Attachment', 'ContentVersion'};
     
-    public GRAXBatchToProcessSchedJob(String jobId, List<GRAXBackupCtrl.ObjRelStructure> objects2Process, Integer elementIndex, String selectCriteria, Boolean isExecuteNow){
+    public GRAXBatchToProcessSchedJob(String jobId, List<GRAXBackupCtrl.ObjRelStructure> objects2Process, Integer elementIndex, String selectCriteria, Boolean isExecuteNow, Boolean isMultiObjectRunning){
         this.objects2Process = objects2Process;
         this.currentElementIndex = elementIndex;
         this.currentJobId = jobId;
@@ -33,68 +35,93 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         this.isArchive = isArchive;
         this.isExecuteNow = isExecuteNow <> null ? isExecuteNow : false;
         this.hasContentDocument = false;
+        this.isMultiObjectRunning = isMultiObjectRunning;
         
-        if(objects2Process == null){
-            // If this is the first time the batch is firing for the current Schedule Process
-            // calculate the selected object hierarchy and initial query
-            GRAX_Schedule_Process__c schedProcess = [SELECT Id, Select_Criteria__c, Target_Date__c, Date_Field__c, Archive__c FROM GRAX_Schedule_Process__c WHERE Id =: jobId];
-            String selectedObjectHierarchyJSON = GRAXUtils.getSelectedObjectHierarchyJSON(schedProcess.Id);
-
-            // If this schedule job was set as an archive process, create the associted record and then also associate it to the GRAX Data Records
-            if(schedProcess.Archive__c){
-                GRAX_Archive_Process__c archiveProc = new GRAX_Archive_Process__c();
-                archiveProc.GRAX_Schedule_Process__c = schedProcess.Id;
-                archiveProc.Async_Records_Successfully_Sent__c = 0;
-                archiveProc.Async_Records_to_Process__c = 0;
-                archiveProc.Records_Successfully_Sent__c = 0;
-                archiveProc.Records_To_Process__c = 0;
-                insert archiveProc;
+        if(objects2Process == null || isMultiObjectRunning){
+            String criteriaDateField;
+            Date criteriaDateValue;
+            String schedProcessSelectCriteria;
+            
+            if(!isMultiObjectRunning){
+                // If this is the first time the batch is firing for the current Schedule Process
+                // calculate the selected object hierarchy and initial query
+                GRAX_Schedule_Process__c schedProcess = [SELECT Id, Select_Criteria__c, Target_Date__c, Date_Field__c, Archive__c FROM GRAX_Schedule_Process__c WHERE Id =: jobId];
+                String selectedObjectHierarchyJSON = GRAXUtils.getSelectionJSON(schedProcess.Id);
+    
+                // If this schedule job was set as an archive process, create the associted record and then also associate it to the GRAX Data Records
+                if(schedProcess.Archive__c){
+                    GRAX_Archive_Process__c archiveProc = new GRAX_Archive_Process__c();
+                    archiveProc.GRAX_Schedule_Process__c = schedProcess.Id;
+                    archiveProc.Async_Records_Successfully_Sent__c = 0;
+                    archiveProc.Async_Records_to_Process__c = 0;
+                    archiveProc.Records_Successfully_Sent__c = 0;
+                    archiveProc.Records_To_Process__c = 0;
+                    insert archiveProc;
+                    
+                    currentArchiveProcessId = archiveProc.Id;
+                }
                 
-                currentArchiveProcessId = archiveProc.Id;
+                // Get the JSON string and convert it to the object structure
+                GRAXBackupCtrl.ObjRelStructure rootSObj = (GRAXBackupCtrl.ObjRelStructure)JSON.deserialize(selectedObjectHierarchyJSON, GRAXBackupCtrl.ObjRelStructure.class);
+                
+                // Now we have to make this structure flat, in order to process the objects one by one
+                this.objects2Process = new List<GRAXBackupCtrl.ObjRelStructure>();
+                this.objects2Process.add(rootSObj);
+                
+                Integer i = 0;
+                while(this.objects2Process.size() > 0 && i < this.objects2Process.size()){
+                    GRAXBackupCtrl.ObjRelStructure sObjRelStruc = this.objects2Process[i];
+                    
+                    // Add all the child relationships for this SObject 
+                    this.objects2Process.addAll(sObjRelStruc.childObjRelStructure);
+                    
+                    i++;
+                }
+                
+                // Define the rest of the main variables
+                this.currentObjRelStrucUniqueKey = rootSObj.uniqueKey;
+                this.currentElementIndex = 0;
+                this.isArchive = schedProcess.Archive__c;
+                
+                criteriaDateField = schedProcess.Date_Field__c;
+                criteriaDateValue = schedProcess.Target_Date__c;
+                schedProcessSelectCriteria = schedProcess.Select_Criteria__c;
+            }else{
+                // If the Multi-Object process is executing and the Object structure has not been loaded
+                if(objects2Process == null){
+                    String selectedMultiObjectJSON = GRAXUtils.getSelectionJSON(jobId);
+            
+                    // Parse this JSON and generate a new list of objects to iterate
+                    this.objects2Process = (List<GRAXBackupCtrl.ObjRelStructure>)JSON.deserialize(selectedMultiObjectJSON, List<GRAXBackupCtrl.ObjRelStructure>.class);
+                }
+                
+                criteriaDateField = 'CreatedDate';
+                criteriaDateValue = Date.today().addDays(1);
+                schedProcessSelectCriteria = 'Main Object not modified';
             }
             
-            // Get the JSON string and convert it to the object structure
-            GRAXBackupCtrl.ObjRelStructure rootSObj = (GRAXBackupCtrl.ObjRelStructure)JSON.deserialize(selectedObjectHierarchyJSON, GRAXBackupCtrl.ObjRelStructure.class);
-            
-            // Now we have to make this structure flat, in order to process the objects one by one
-            this.objects2Process = new List<GRAXBackupCtrl.ObjRelStructure>();
-            this.objects2Process.add(rootSObj);
-            
-            Integer i = 0;
-            while(this.objects2Process.size() > 0 && i < this.objects2Process.size()){
-                GRAXBackupCtrl.ObjRelStructure sObjRelStruc = this.objects2Process[i];
+            this.currentObjRelStrucUniqueKey = this.objects2Process[this.currentElementIndex].uniqueKey;
                 
-                // Add all the child relationships for this SObject 
-                this.objects2Process.addAll(sObjRelStruc.childObjRelStructure);
-                
-                i++;
-            }
-            
-            // Define the rest of the main variables
-            this.currentObjRelStrucUniqueKey = rootSObj.uniqueKey;
-            this.currentElementIndex = 0;
-            this.isArchive = schedProcess.Archive__c;
-            
             String rootObjSelectCriteria = '';
             this.currentSelectCriteria = '';
             
-            String objName = this.objects2Process[this.currentElementIndex].name;
-            
+			String objName = this.objects2Process[this.currentElementIndex].name;
+                
             // Set up the date / datetime in the filter criteria
-            String dateFieldType = getFieldType(objName, schedProcess.Date_Field__c);
-            String dateFieldValue = String.valueOf(schedProcess.Target_Date__c);
+            String dateFieldType = getFieldType(objName, criteriaDateField);
+            String dateFieldValue = String.valueOf(criteriaDateValue);
             
             if(dateFieldType.equalsIgnoreCase('Datetime')){
                 dateFieldValue += 'T00:00:00.000Z';
             }
             
-            if(schedProcess.Select_Criteria__c == 'Main Object not modified'){
-                rootObjSelectCriteria = schedProcess.Date_Field__c + ' <= ' + dateFieldValue;
+            if(schedProcessSelectCriteria == 'Main Object not modified'){
+                rootObjSelectCriteria = criteriaDateField + ' <= ' + dateFieldValue;
             }
             //else if(schedProcess.Select_Criteria__c == 'Main Object and Children not modified'){
             //    this.currentSelectCriteria = 'LastModifiedDate <= ' + schedProcess.Selected_Time_Frame__c;
             //}
-                        
+            
             query = 'SELECT ' + String.join(getSObjectFields(objName), ', ');
             query += ' FROM ' + objName;
             if(rootObjSelectCriteria <> ''){
@@ -258,7 +285,7 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         Boolean continue2NextChildObject = true;
         
         // Check if this is a Child object being evaluated
-        if(this.currentElementIndex > 0){
+        if(this.currentElementIndex > 0 && !this.isMultiObjectRunning){
             List<GRAX_Data_Record_Id__c> graxDataRecs2Up = new List<GRAX_Data_Record_Id__c>();
             
             // Flag all the parent Ids that have been processed during this execution
@@ -293,18 +320,28 @@ global class GRAXBatchToProcessSchedJob implements Database.Batchable<sObject>, 
         
         if(!isBatchCompleted){
             // Now we have to call the batch again based on the current parameters
-            b = new GRAXBatchToProcessSchedJob(this.currentJobId, this.objects2Process, this.currentElementIndex, this.currentSelectCriteria, this.isExecuteNow);
+            b = new GRAXBatchToProcessSchedJob(this.currentJobId, this.objects2Process, this.currentElementIndex, this.currentSelectCriteria, this.isExecuteNow, this.isMultiObjectRunning);
             
+            Boolean skip2NextObjectCondition = true;    
+                
             // Check if there are parentIds identified to process for the following Child object
             // Only iterate up to 100 times
-            for(Integer i = 0; (i < 100 || this.objects2Process[this.currentElementIndex].name == 'ContentDocumentLink') && b.parentIds2ProcessForChild.size() == 0 && this.currentElementIndex < this.objects2Process.size(); i++){
-                this.currentElementIndex = this.currentElementIndex + 1;
+            for(Integer i = 0; skip2NextObjectCondition; i++){
+                skip2NextObjectCondition = (i < 100 || this.objects2Process[this.currentElementIndex].name == 'ContentDocumentLink') && this.currentElementIndex < this.objects2Process.size();
+                skip2NextObjectCondition &= b.parentIds2ProcessForChild.size() == 0;
+                if(this.isMultiObjectRunning){
+                    skip2NextObjectCondition &= Database.query(b.query + ' LIMIT 1').size() == 0;
+                }
                 
-                isBatchCompleted = this.currentElementIndex >= this.objects2Process.size();
-                
-                if(!isBatchCompleted){
-                    // Create a new instance of the batch for this Child object
-                    b = new GRAXBatchToProcessSchedJob(this.currentJobId, this.objects2Process, this.currentElementIndex, this.currentSelectCriteria, this.isExecuteNow);
+                if(skip2NextObjectCondition){
+                    this.currentElementIndex = this.currentElementIndex + 1;
+                    
+                    isBatchCompleted = this.currentElementIndex >= this.objects2Process.size();
+                    
+                    if(!isBatchCompleted){
+                        // Create a new instance of the batch for this Child object
+                        b = new GRAXBatchToProcessSchedJob(this.currentJobId, this.objects2Process, this.currentElementIndex, this.currentSelectCriteria, this.isExecuteNow, this.isMultiObjectRunning);
+                    }
                 }
             }
         }

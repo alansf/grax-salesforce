@@ -4,7 +4,8 @@ Description       : Implementation of the tab "Back Up" in GRAXSetupUI.
 Revision History  :
 Created/Modified by   Created/Modified Date     Requested by        Related Task/Issue     
 ----------------------------------------------------------------------------------------
-1. Leandro Brunner       04/27/2018             David Mackey        GRAX Audit Trail Process (https://app.asana.com/0/326600806074978/633149554508926/f)
+1. Leandro Brunner         04/27/2018             David Mackey        GRAX Audit Trail Process (https://app.asana.com/0/326600806074978/633149554508926/f)
+2. Ariel Yankelevich       07/18/2018             David Mackey        Multi-Object Backup (https://app.asana.com/0/326600806074978/743044564916005/f)
 ******************************************************************************************/
 public with sharing class GRAXBackupCtrl {
     public String userTimeZone {get;set;}
@@ -26,7 +27,7 @@ public with sharing class GRAXBackupCtrl {
     public String objectJSON {get;set;}
     public Boolean archive {get;set;}
 
-    public Attachment selectedObjectHierarchyAttachment {get;set;}
+    public Attachment selectionAttachment {get;set;}
 
     public class ScheduledProcess {
         public Id cronId {get;set;}
@@ -226,6 +227,16 @@ public with sharing class GRAXBackupCtrl {
             condition = condition && schedule <> null;
             condition = condition && scheduleStartDate <> null;
             condition = condition && scheduleStartTime <> null;
+            condition = condition && objectJSON <> '[]';
+
+            if(condition) {
+                gsp.Select_Criteria__c = criteria;
+
+                List<ObjRelStructure> selection = (List<ObjRelStructure>)JSON.deserialize(objectJSON, List<ObjRelStructure>.class);
+                if(selection.size() > 0) {
+                    gsp.Object_Name__c = selection.get(0).uniqueKey;
+                }
+            }
         }
         
         if(scheduledProcessType == 'Hierarchy') {
@@ -265,10 +276,10 @@ public with sharing class GRAXBackupCtrl {
             // Insert or update the record.
             upsert gsp;
 
-            if(selectedObjectHierarchyAttachment <> null) {
-                GRAXUtils.setSelectedObjectHierarchyJSON(selectedObjectHierarchyAttachment, objectJSON);
+            if(selectionAttachment <> null) {
+                GRAXUtils.setSelectionJSON(selectionAttachment, objectJSON);
             } else {
-                GRAXUtils.setSelectedObjectHierarchyJSON(gsp.Id, objectJSON);
+                GRAXUtils.setSelectionJSON(gsp.Id, objectJSON);
             }
 
 
@@ -321,7 +332,7 @@ public with sharing class GRAXBackupCtrl {
         scheduleStartTime = null;
         objectJSON = null;
         archive = false;
-        selectedObjectHierarchyAttachment = null;
+        selectionAttachment = null;
     }
 
     public Pagereference cleanFormDataHandler() {
@@ -369,8 +380,8 @@ public with sharing class GRAXBackupCtrl {
             scheduleStartTime = gsp.Schedule_Start_Time__c;
 
             //objectJSON = gsp.Selected_Object_Hierarchy_JSON__c;
-            selectedObjectHierarchyAttachment = GRAXUtils.getSelectedObjectHierarchyAttachment(gsp.Id);
-            objectJSON = GRAXUtils.getSelectedObjectHierarchyJSON(selectedObjectHierarchyAttachment);
+            selectionAttachment = GRAXUtils.getSelectionAttachment(gsp.Id);
+            objectJSON = GRAXUtils.getSelectionJSON(selectionAttachment);
 
             archive = gsp.Archive__c;
         }
@@ -383,16 +394,26 @@ public with sharing class GRAXBackupCtrl {
         // Get Id of the Scheduled Process to delete.
         Id spId = Apexpages.currentPage().getParameters().get('spId');
 
+        Boolean scheduleProcessExist = scheduledProcessMap.containsKey(spId);
+        Boolean multiObjectExist = multiObjectBackupMap.containsKey(spId);
+
         // Check if the Scheduled Process exist.
-        if(scheduledProcessMap.containsKey(spId)) {
-            // Get ScheduledProcess
-            ScheduledProcess sp = scheduledProcessMap.get(spId);
-            
-            // Delete GRAX_Schedule_Process__c;
+        if(scheduleProcessExist || multiObjectExist) {
+            ScheduledProcess sp;
+
+            if(scheduleProcessExist) {
+                sp = scheduledProcessMap.get(spId);
+
+                scheduledProcessMap.remove(spId);
+            }
+
+            if(multiObjectExist) {
+                sp = multiObjectBackupMap.get(spId);
+
+                multiObjectBackupMap.remove(spId);
+            }
+
             delete sp.GRAXScheduleProcess;
- 
-            // Remove the ScheduledProcess of the Map.
-            scheduledProcessMap.remove(spId);
         }
 
         return null;
@@ -438,14 +459,26 @@ public with sharing class GRAXBackupCtrl {
     public Pagereference execScheduledProcess() {
         // Get Id of the Scheduled Process to execute.
         Id spId = Apexpages.currentPage().getParameters().get('spId');
+        
+
+        Boolean scheduleProcessExist = scheduledProcessMap.containsKey(spId);
+        Boolean multiObjectExist = multiObjectBackupMap.containsKey(spId);
 
         // Check if the Scheduled Process exist.
-        if(scheduledProcessMap.containsKey(spId)) {
-            GRAX_Schedule_Process__c gsp = scheduledProcessMap.get(spId).GRAXScheduleProcess;
+        if(scheduleProcessExist || multiObjectExist) {
+            GRAX_Schedule_Process__c gsp;
+
+            if(scheduleProcessExist) {
+                gsp = scheduledProcessMap.get(spId).GRAXScheduleProcess;
+            }
+
+            if(multiObjectExist) {
+                gsp = multiObjectBackupMap.get(spId).GRAXScheduleProcess;
+            }
 
             try{
-                if(gsp.Target_Date__c <> null) {
-                    Database.executebatch(new GRAXBatchToProcessSchedJobMainObject(gsp.Id, true), GRAXUtils.getBatchMaxExecutionNumber(gsp.Object_Name__c));
+                if(gsp.Target_Date__c <> null || multiObjectExist) {
+                    Database.executebatch(new GRAXBatchToProcessSchedJobMainObject(gsp.Id, true, multiObjectExist), GRAXUtils.getBatchMaxExecutionNumber(gsp.Object_Name__c));
                 }
 
                 if(gsp.Target_Report__c <> null) {

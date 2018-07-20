@@ -35,9 +35,9 @@ public class GRAXBatchToDeleteBackedUpDataTest {
         gsp.Archive__c = true;
         insert gsp;
 
-        GRAXUtils.setSelectedObjectHierarchyJSON(gsp.Id, '{"uniqueKey":"GRAX_Data_Record__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAX_Data_Record__c","childObjRelStructure":[]}');
+        GRAXUtils.setSelectionJSON(gsp.Id, '{"uniqueKey":"GRAX_Data_Record__c","parentUniqueKey":null,"relatedFieldName":null,"name":"GRAX_Data_Record__c","childObjRelStructure":[]}');
 
-        System.assertNotEquals(null, GRAXUtils.getSelectedObjectHierarchyJSON(gsp.Id));
+        System.assertNotEquals(null, GRAXUtils.getSelectionJSON(gsp.Id));
         
         GRAX_Archive_Process__c archiveProc = new GRAX_Archive_Process__c();
         archiveProc.GRAX_Schedule_Process__c = gsp.Id;
