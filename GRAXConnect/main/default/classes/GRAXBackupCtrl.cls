@@ -232,8 +232,10 @@ public with sharing class GRAXBackupCtrl {
                 gsp.Select_Criteria__c = criteria;
 
                 List<Object> selection = (List<Object>)JSON.deserializeUntyped(objectJSON);
-                ObjRelStructure firstSelection = (ObjRelStructure)(selection.get(0));
-                gsp.Object_Name__c = firstSelection.uniqueKey;
+                if(selection.size() > 0) {
+                    ObjRelStructure firstSelection = (ObjRelStructure)(selection.get(0));
+                    gsp.Object_Name__c = firstSelection.uniqueKey;
+                }
             }
         }
         

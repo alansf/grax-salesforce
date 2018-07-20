@@ -147,7 +147,7 @@ public class GRAXBackupCtrlTest {
         gbc.schedule = 'Monthly';
         gbc.scheduleStartDate = '12/31/2018';
         gbc.scheduleStartTime = '23:00';
-        gbc.objectJSON = '[]';
+        gbc.objectJSON = '[{"uniqueKey":"Account","parentUniqueKey":null,"relatedFieldName":null,"name":"Account","childObjRelStructure":[]},{"uniqueKey":"Case","parentUniqueKey":null,"relatedFieldName":null,"name":"Case","childObjRelStructure":[]},{"uniqueKey":"Contact","parentUniqueKey":null,"relatedFieldName":null,"name":"Contact","childObjRelStructure":[]},{"uniqueKey":"Event","parentUniqueKey":null,"relatedFieldName":null,"name":"Event","childObjRelStructure":[]}]';
 
         Integer prevMultiObjectBackupMapSize = gbc.multiObjectBackupMap.size();
 
