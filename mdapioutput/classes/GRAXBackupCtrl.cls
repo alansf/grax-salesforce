@@ -227,14 +227,14 @@ public with sharing class GRAXBackupCtrl {
             condition = condition && schedule <> null;
             condition = condition && scheduleStartDate <> null;
             condition = condition && scheduleStartTime <> null;
+            condition = condition && objectJSON <> '[]';
 
             if(condition) {
                 gsp.Select_Criteria__c = criteria;
 
-                List<Object> selection = (List<Object>)JSON.deserializeUntyped(objectJSON);
+                List<ObjRelStructure> selection = (List<ObjRelStructure>)JSON.deserialize(objectJSON, List<ObjRelStructure>.class);
                 if(selection.size() > 0) {
-                    ObjRelStructure firstSelection = (ObjRelStructure)(selection.get(0));
-                    gsp.Object_Name__c = firstSelection.uniqueKey;
+                    gsp.Object_Name__c = selection.get(0).uniqueKey;
                 }
             }
         }
