@@ -27,7 +27,7 @@ global class GRAXSchedulerToProcessSchedJobs implements Schedulable {
             }
 
             if(schedProcess.Target_Report__c <> null) {
-                GRAXBatchToProcessSchedJobFromReport b = new GRAXBatchToProcessSchedJobFromReport(schedProcess.Id, null, null);
+                GRAXBatchToProcessSchedJobFromReport b = new GRAXBatchToProcessSchedJobFromReport(schedProcess.Id, null, null, false);
                 
                 try{
                     // Check if the call to "executebatch" failed to acquire an Apex flex queue lock

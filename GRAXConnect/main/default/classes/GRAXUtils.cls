@@ -264,7 +264,7 @@ public with sharing class GRAXUtils {
     }
 
     public static Integer getBatchMaxExecutionNumber() {
-        return 1000;
+        return 2000;
     }
 
     public static Decimal getObjectMaxTotalBytes(String sobjectName) {
@@ -278,10 +278,11 @@ public with sharing class GRAXUtils {
             }
         }
 
-        return Math.ceil(totalBytes * 0.15);
+        return Math.ceil(totalBytes * 0.1);
     }
 
     public static Integer getBatchMaxExecutionNumber(String sobjectName) {
+        List<Integer> batchExecutionSizeList = new List<Integer>{1, 2, 5, 10, 20, 25, 50, 100, 200, 400, 500, 1000, 2000};
         Integer maxBytes = 8388608;
         Integer maxExecutionNumber = 2000; 
         Integer executionNumber = maxExecutionNumber;
@@ -290,7 +291,15 @@ public with sharing class GRAXUtils {
 
         executionNumber = (Integer)Math.ceil(maxBytes / totalBytes);
         executionNumber = Math.min(executionNumber, maxExecutionNumber);
-
+		
+        // Iterate through the list of possible batch execution sizes and return the closest value less than the estimated
+        for(Integer i = 1; i < batchExecutionSizeList.size(); i++){
+            if(executionNumber < batchExecutionSizeList[i]){
+                executionNumber = batchExecutionSizeList[i-1];
+                break;
+            }
+        }
+        
         return executionNumber;
     }
 
@@ -352,5 +361,15 @@ public with sharing class GRAXUtils {
 
     public static Boolean isPersonAccountEnabled() {
         return getDescribeFieldsResultForObject('Account').containsKey('IsPersonAccount');
+    }
+
+    public static String getPageParameter(String paramName) {
+        String paramValue;
+
+        try {
+            paramValue = Apexpages.currentPage().getParameters().get(paramName);
+        } catch(Exception e) {}
+
+        return paramValue;
     }
 }

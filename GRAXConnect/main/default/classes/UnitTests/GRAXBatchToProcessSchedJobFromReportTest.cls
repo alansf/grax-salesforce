@@ -44,8 +44,7 @@ public with sharing class GRAXBatchToProcessSchedJobFromReportTest {
 
         Test.startTest();
 
-        GRAXBatchToProcessSchedJobFromReport b = new GRAXBatchToProcessSchedJobFromReport(gsp.Id, null, 100);
-        b.isExecuteNow = true;
+        GRAXBatchToProcessSchedJobFromReport b = new GRAXBatchToProcessSchedJobFromReport(gsp.Id, null, 100, true);
 
         Id jobId = Database.executebatch(b);
 

@@ -17,7 +17,9 @@ global with sharing class GRAXBatchToProcessSchedJobFromReport implements Databa
     
     public GRAXBatchToProcessSchedJob mainBatchProcess;
 
-    public GRAXBatchToProcessSchedJobFromReport(String jobId, GRAXCSVIterator csvIt, Integer splitSize) {
+    public GRAXBatchToProcessSchedJobFromReport(String jobId, GRAXCSVIterator csvIt, Integer splitSize, Boolean isExecuteNow) {
+        this.isExecuteNow = isExecuteNow;
+
         if(csvIt <> null) {
             this.csvIt = csvIt;
         } else {
@@ -82,7 +84,7 @@ global with sharing class GRAXBatchToProcessSchedJobFromReport implements Databa
 
     global void finish(Database.BatchableContext batchableContext) {
         if(this.csvIt <> null && this.csvIt.hasNext()) {
-            GRAXBatchToProcessSchedJobFromReport b = new GRAXBatchToProcessSchedJobFromReport(null, this.csvIt, this.splitSize);
+            GRAXBatchToProcessSchedJobFromReport b = new GRAXBatchToProcessSchedJobFromReport(null, this.csvIt, this.splitSize, this.isExecuteNow);
             b.mainBatchProcess = this.mainBatchProcess;
             Database.executeBatch(b, GRAXUtils.getBatchMaxExecutionNumber(schedProcess.Object_Name__c));
         } else {
