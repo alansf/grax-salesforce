@@ -433,7 +433,7 @@ public with sharing class GRAXBackupCtrl {
                 ScheduledProcess sp = new ScheduledProcess();
 
                 sp.createdBy = gsp.CreatedBy.Name;
-                sp.createdDate = gsp.CreatedDate.format('EEEE, MMMM d, yyyy', userTimeZone);
+                sp.createdDate = gsp.CreatedDate.format('MM/dd/yyyy', userTimeZone);
                 if(gsp.Last_Run_Date__c <> null) {
                     sp.lastRunDate = gsp.Last_Run_Date__c.format('MM/dd/yyyy HH:mm', userTimeZone);
                 }
@@ -482,8 +482,7 @@ public with sharing class GRAXBackupCtrl {
                 }
 
                 if(gsp.Target_Report__c <> null) {
-                    GRAXBatchToProcessSchedJobFromReport b = new GRAXBatchToProcessSchedJobFromReport(gsp.Id, null, 100);
-                    b.isExecuteNow = true;
+                    GRAXBatchToProcessSchedJobFromReport b = new GRAXBatchToProcessSchedJobFromReport(gsp.Id, null, 100, true);
                     
                     Database.executeBatch(b, GRAXUtils.getBatchMaxExecutionNumber(gsp.Object_Name__c));
                 }
