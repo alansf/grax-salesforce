@@ -201,10 +201,10 @@
                                             </apex:facet>
                                             <apex:outputPanel >
                                                 <div class="slds-dropdown-trigger slds-dropdown-trigger_click">
-                                                    <apex:commandLink styleClass="slds-button slds-button_icon" onclick="preview('{!sid}');return false;" title="Preview">
+                                                    <!--<apex:commandLink styleClass="slds-button slds-button_icon" onclick="preview('{!sid}');return false;" title="Preview">
                                                         <i data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#preview')}" class="slds-button__icon"></i>
                                                         <span class="slds-assistive-text">Preview</span>
-                                                    </apex:commandLink>
+                                                    </apex:commandLink>-->
 
                                                     <apex:commandLink styleClass="slds-button slds-button_icon" onclick="restore('{!sid}');return false;" title="Restore">
                                                         <i data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#undo')}" class="slds-button__icon"></i>
@@ -658,7 +658,7 @@
                                     var id = item[settings.items.id];
 
                                     if(cookieSelected) {
-                                        fields[id] = item.isSelected || cookieSelected.split(',').indexOf(id) != -1;
+                                        fields[id] = cookieSelected.split(',').indexOf(id) != -1;
                                     } else {
                                         fields[id] = item.isSelected;
                                     }
