@@ -26,12 +26,13 @@
 		}
 
 		table#diffTable > tbody > tr > td.col-field-name {
-			max-width: 10vw;
+			max-width: 15vw;
 		}
 
 		table#diffTable > tbody > tr > td.col-old,
-		table#diffTable > tbody > tr > td.col-new {
-			max-width: 40vw;
+		table#diffTable > tbody > tr > td.col-new,
+		table#diffTable > tbody > tr > td.col-current {
+			max-width: 25vw;
 		}
 
 		table#diffTable > tbody > tr.isDifferent {
@@ -179,6 +180,9 @@
 										<th scope="col">
 											<div class="slds-truncate" title="Old Value">Old Value</div>
 										</th>
+										<th scope="col">
+											<div class="slds-truncate" title="Current Value">Current Value</div>
+										</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -192,13 +196,19 @@
 
 											<td data-label="New Value" class="col-new">
 												<span class="slds-truncate">
-													<apex:outputText value="{!diff[fieldName].newValue}" />
+													<apex:outputText value="{!diff[fieldName].newValue}" title="{!diff[fieldName].newValue}" />
 												</span>
 											</td>
 
 											<td data-label="Old Value" class="col-old">
 												<span class="slds-truncate">
-													<apex:outputText value="{!diff[fieldName].oldValue}" />
+													<apex:outputText value="{!diff[fieldName].oldValue}" title="{!diff[fieldName].oldValue}" />
+												</span>
+											</td>
+
+											<td data-label="Current Value" class="col-current">
+												<span class="slds-truncate">
+													<apex:outputText value="{!diff[fieldName].currentValue}" title="{!diff[fieldName].currentValue}" />
 												</span>
 											</td>
 										</tr>

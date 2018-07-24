@@ -10,7 +10,7 @@ public with sharing class GRAXRestoreCtrl {
     public GRAXSettings gxcSettings;
     public Id parentId;
     public String parentType;
-    public List<String> selectedFieldsList {get;set;}
+    public transient List<String> selectedFieldsList {get;set;}
     public Map<String, SObject> sObjectMap {get;set;}
     public Map<String, Map<String, String>> objectMap {get;set;}
     public SObject sobjectToRestore {get;set;}
