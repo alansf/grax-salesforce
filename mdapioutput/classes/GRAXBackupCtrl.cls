@@ -14,7 +14,7 @@ public with sharing class GRAXBackupCtrl {
     public String sObjectDateField {get;set;}
     public String sObjectDateFieldDefault {get;set;}
 
-    private Set<String> excludedStandardObjects = new Set<String>{'AccountCleanInfo','ContentDistribution','DuplicateRecordItem','EntitySubscription','ProcessInstance','TopicAssignment','AccountPartner','ContactCleanInfo','EmailMessageRelation','EventRelation','OpportunityPartner','Partner','CollaborationGroupRecord','CaseTeamMember','CaseTeamTemplateRecord','FlowRecordRelation','NetworkUserHistoryRecent'};
+    private Set<String> excludedStandardObjects = new Set<String>{'AccountCleanInfo','ContentDistribution','DuplicateRecordItem','EntitySubscription','ProcessInstance','TopicAssignment','AccountPartner','ContactCleanInfo','EmailMessageRelation','EventRelation','OpportunityPartner','Partner','CollaborationGroupRecord','CaseTeamMember','CaseTeamTemplateRecord','FlowRecordRelation','NetworkUserHistoryRecent','UserFieldAccess','UserEntityAccess'};
     private Set<String> excludedStandardObjectSufixes = new Set<String>{'Share','History','Feed'};
 
     public String filterCriteriaType {get;set;}
@@ -257,10 +257,12 @@ public with sharing class GRAXBackupCtrl {
                 if(filterCriteriaType == 'Date') {
                     gsp.Target_Date__c = createDate(targetDate);
                     gsp.Select_Criteria__c = criteria;
+                    gsp.Target_Report__c = null;
                 }
                 if(filterCriteriaType == 'Report') {
                     gsp.Target_Report__c = targetReport;
                     gsp.Select_Criteria__c = null;
+                    gsp.Target_Date__c = null;
                 }
                 gsp.Archive__c = archive;
             }
