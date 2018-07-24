@@ -59,6 +59,7 @@ public with sharing class GRAXRestoreCtrl {
         public Boolean isSearchPrefilterable {get;set;}
 
         public Boolean isEditable {get;set;}
+        public Boolean isNameField {get;set;}
 
         public String containerClass;
         public String styleClass;
@@ -72,6 +73,8 @@ public with sharing class GRAXRestoreCtrl {
             this.isNamePointing = fd.isNamePointing();
             this.isReference = fd.getReferenceTo().size() > 0;
             this.isSearchPrefilterable = fd.isSearchPrefilterable();
+
+            this.isNameField = fd.isNameField();
 
             this.isEditable = true;
         }
@@ -457,7 +460,7 @@ public with sharing class GRAXRestoreCtrl {
                 fMap = new Map<String, Object>();
                 fMap.put('id', f.name);
                 fMap.put('label', f.label);
-                fMap.put('isSelected', false);
+                fMap.put('isSelected', f.isNameField || f.name == 'CreatedDate');
 
                 fList.add(fMap);
             }

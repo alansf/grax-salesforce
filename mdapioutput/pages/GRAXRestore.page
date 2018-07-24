@@ -658,7 +658,7 @@
                                     var id = item[settings.items.id];
 
                                     if(cookieSelected) {
-                                        fields[id] = item.isSelected || cookieSelected.split(',').indexOf(id) != -1;
+                                        fields[id] = cookieSelected.split(',').indexOf(id) != -1;
                                     } else {
                                         fields[id] = item.isSelected;
                                     }
