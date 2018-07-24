@@ -372,4 +372,23 @@ public with sharing class GRAXUtils {
 
         return paramValue;
     }
+
+    public static SObject getSObjectById(Id sId) {
+        String sObjectName = getSObjectNameById(sId);
+        
+        return getSObjectById(sId, sObjectName);
+    }
+
+    public static SObject getSObjectById(Id sId, String sObjectName) {
+        loadObjectAndFieldsDescribe(sObjectName);
+
+        String sObjectFields = String.join(new List<String>(getDescribeFieldsResultForObject(sObjectName).keySet()), ', ');
+
+        return Database.query('SELECT ' + sObjectFields + ' FROM ' + sObjectName + ' WHERE Id = :sId LIMIT 1');
+    }
+
+    public static String getSObjectNameById(Id sId) {
+        return sId.getSObjectType().getDescribe().getName();
+    }
+
 }

@@ -40,7 +40,7 @@
     </script>
 
     <apex:form id="form-archiving" styleClass="slds-tabs_scoped__content">
-        <apex:actionFunction action="{!changeSelectedObject}" name="changeSelectedObject" immediate="true" reRender="relStructureOutput, sObjectDateFieldsList" oncomplete="renderObjectHierarchy();">
+        <apex:actionFunction action="{!changeSelectedObject}" name="changeSelectedObject" immediate="true" reRender="relStructureOutput, sObjectDateFieldsList" oncomplete="renderObjectHierarchy();showGlobalSpinner(false);">
             <apex:param name="selectedObjectValue" assignTo="{!selectedObject}" value="" />
         </apex:actionFunction>
 
@@ -243,7 +243,7 @@
                                     <div class="slds-form-element">
                                         <div class="slds-form-element__control">
                                             <div class="slds-select_container">
-                                                <apex:selectList id="objectList" value="{!selectedObject}" onchange="changeSelectedObject(this.value)" multiselect="false" size="1" styleClass="slds-select">
+                                                <apex:selectList id="objectList" value="{!selectedObject}" onchange="changeSelectedObject(this.value);showGlobalSpinner(true);" multiselect="false" size="1" styleClass="slds-select">
                                                     <apex:selectOptions value="{!items}"/>
                                                 </apex:selectList>
                                             </div>
@@ -567,9 +567,9 @@
                             <span class="slds-form-element__label slds-m-bottom_none">Archive</span>
                             <apex:inputCheckbox id="archive" value="{!archive}"/>
                             <span class="slds-checkbox_faux_container" aria-live="assertive">
-                            <span class="slds-checkbox_faux"></span>
-                            <span class="slds-checkbox_on">Yes - (Delete records)</span>
-                            <span class="slds-checkbox_off">No - (Backup Only)</span>
+                                <span class="slds-checkbox_faux"></span>
+                                <span class="slds-checkbox_on">Yes - (Delete records)</span>
+                                <span class="slds-checkbox_off">No - (Backup Only)</span>
                             </span>
                         </label>
                     </div>

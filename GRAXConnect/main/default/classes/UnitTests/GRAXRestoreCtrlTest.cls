@@ -132,6 +132,7 @@ public class GRAXRestoreCtrlTest {
         grc.updateSObjectFields();
 
         pageRef.getParameters().put('soToRestore', String.valueOf(accId));
+        pageRef.getParameters().put('isReadOnlyMode', 'false');
 
         String responseData = '{"status":"success","data":[{"Id":"' + String.valueOf(accId) + '","Name":"' + accName + '","ParentId":"' + String.valueOf(paccID) + '","Description": "Simple description.","OwnerId":"' + String.valueOf(ownId) + '"}],"message":"queryBackup"}';
 

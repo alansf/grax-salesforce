@@ -4,6 +4,7 @@ Description       :
 Revision History  :
 Created/Modified by   Created/Modified Date     Requested by        Related Task/Issue     
 ----------------------------------------------------------------------------------------
+
 ******************************************************************************************/
 public with sharing class GRAXTimeMachineCtrl {
     public Id parentId {get;set;}
@@ -265,12 +266,14 @@ public with sharing class GRAXTimeMachineCtrl {
 	public class MapFieldDiff {
         public Object oldValue {get;set;}
         public Object newValue {get;set;}
+        public Object currentValue {get;set;}
 
         public Boolean isDifferent {get;set;}
 
-        public MapFieldDiff(Object oldValue, Object newValue) {
+        public MapFieldDiff(Object oldValue, Object newValue, Object currentValue) {
 			this.oldValue = oldValue;
 			this.newValue = newValue;
+            this.currentValue = currentValue;
 
             this.isDifferent = oldValue <> newValue;
 		}
@@ -288,6 +291,16 @@ public with sharing class GRAXTimeMachineCtrl {
 		return null;
 	}
 
+    public Object getSOValue(SObject so, String key) {
+        Object val;
+
+        try {
+            val = so.get(key);
+        } catch(Exception e) {}
+
+        return val;
+    }
+
 	public Map<String, MapFieldDiff> getDiff() {
 		Map<String, MapFieldDiff> diff = new Map<String, MapFieldDiff>();
 
@@ -295,10 +308,11 @@ public with sharing class GRAXTimeMachineCtrl {
 
 		Map<String, Object> oldMap = (Map<String, Object>)(oldState.get(0));
 		Map<String, Object> newMap = (Map<String, Object>)(newState.get(0));
+        SObject currentSObject = GRAXUtils.getSObjectById(parentId, parentType);
 
         for(Field f : fieldMap.values()) {
 			if(f.isUpdateable) {
-                MapFieldDiff mfd = new MapFieldDiff(getMapValue(oldMap, f.name), getMapValue(newMap, f.name));
+                MapFieldDiff mfd = new MapFieldDiff(getMapValue(oldMap, f.name), getMapValue(newMap, f.name), getSOValue(currentSObject, f.name));
 
 				diff.put(f.Name, mfd);
 			}

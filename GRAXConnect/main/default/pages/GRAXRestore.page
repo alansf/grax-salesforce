@@ -3,6 +3,30 @@
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" type="text/javascript"></script>
         <script src="{!URLFOR($Resource.grax, '/jquery.slds.js')}"></script>
         <script src="{!URLFOR($Resource.grax, '/jquery.sldsTree.js')}"></script>
+        <script>
+            window.setCookie = function(cname, cvalue, exdays) {
+                var d = new Date();
+                d.setTime(d.getTime() + (exdays*24*60*60*1000));
+                var expires = "expires="+ d.toUTCString();
+                document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+            };
+
+            window.getCookie = function(cname) {
+                var name = cname + "=";
+                var decodedCookie = decodeURIComponent(document.cookie);
+                var ca = decodedCookie.split(';');
+                for(var i = 0; i <ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                    }
+                    if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                    }
+                }
+                return "";
+            };
+        </script>
         <!-- Import the Design System style sheet -->
         <apex:slds />
     </apex:outputPanel>
@@ -50,6 +74,12 @@
         .slds-scope .slds-input-has-icon a.slds-input__icon {
             pointer-events: all;
         }
+
+        .relatedIframeContent {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
     </style>
 
     <script>
@@ -69,17 +99,16 @@
 
             <apex:actionFunction action="{!changeSObjectToRestore}" name="changeSObjectToRestore" immediate="true" reRender="restoreOutput" oncomplete="showRestoreModal(true);showGlobalSpinner(false);">
                 <apex:param name="soToRestore" value="" />
+                <apex:param name="isReadOnlyMode" value="false" />
             </apex:actionFunction>
 
             <apex:actionFunction action="{!saveSObjectToRestore}" name="saveSObjectToRestore" immediate="true" reRender="restoreOutput" oncomplete="showRestoreModal(false);showGlobalSpinner(false);renderSvgIcons();"></apex:actionFunction>
 
-            <div class="slds-tabs_default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                <!--<ul class="slds-tabs_default__nav" role="tablist">
-                    <li class="slds-tabs_default__item slds-is-active" title="Restore" role="presentation">
-                        <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" aria-selected="false" aria-controls="tab-restore_restore" id="tab-restore_restore__item">Restore</a>
-                    </li>
-                </ul>
-                <div id="tab-restore_restore" class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-restore_restore__item">-->
+            <apex:actionFunction action="{!changeIdToGetRelated}" name="changeIdToGetRelated" immediate="true" reRender="outputRelatedIframe" oncomplete="showRelatedModal(true);showGlobalSpinner(false);">
+                <apex:param name="idToGetRelated" value="" />
+            </apex:actionFunction>
+
+            <div class="{!IF(isRelatedRestore, 'slds-p-horizontal_medium', '')}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <div id="tab-restore_restore">       
                     <div class="slds-section slds-is-open">
                         <h3 class="slds-section__title slds-theme_shade">
@@ -172,10 +201,20 @@
                                             </apex:facet>
                                             <apex:outputPanel >
                                                 <div class="slds-dropdown-trigger slds-dropdown-trigger_click">
-                                                    <a href="javascript:void(0);" onclick="restore('{!sid}');return false;" class="slds-button">
-                                                        <i data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#undo')}" class="slds-button__icon slds-button__icon_left"></i>
-                                                        <span class="slds-truncate">Restore</span>
-                                                    </a>
+                                                    <apex:commandLink styleClass="slds-button slds-button_icon" onclick="preview('{!sid}');return false;" title="Preview">
+                                                        <i data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#preview')}" class="slds-button__icon"></i>
+                                                        <span class="slds-assistive-text">Preview</span>
+                                                    </apex:commandLink>
+
+                                                    <apex:commandLink styleClass="slds-button slds-button_icon" onclick="restore('{!sid}');return false;" title="Restore">
+                                                        <i data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#undo')}" class="slds-button__icon"></i>
+                                                        <span class="slds-assistive-text">Restore</span>
+                                                    </apex:commandLink>
+
+                                                    <apex:commandLink styleClass="slds-button slds-button_icon" onclick="related('{!sid}');return false;" title="Related" rendered="{!isMasterRestore}">
+                                                        <i data-icon="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#hierarchy')}" class="slds-button__icon"></i>
+                                                        <span class="slds-assistive-text">Related</span>
+                                                    </apex:commandLink>
                                                 </div>
                                             </apex:outputPanel>
                                         </apex:column>
@@ -210,21 +249,22 @@
                     </header>
                     
                     <div class="slds-modal__content slds-p-horizontal_medium" id="modal-content-restore">
-                        <apex:outputPanel id="restoreOutput" layout="block" styleClass="slds-m-bottom_large">
+                        <apex:outputPanel id="restoreOutput" layout="block" styleClass="slds-m-bottom_large restoreOutput">
                             <apex:outputPanel layout="block" styleClass="slds-m-vertical_small pageMessages">
                                 <apex:pageMessages></apex:pageMessages>
                             </apex:outputPanel>
 
                             <apex:repeat var="f" value="{!sObjectFields}" rendered="{!sobjectToRestore != null}">
-                                <apex:outputPanel styleClass="slds-form-element slds-m-bottom_xx-small" rendered="{!f.isCreateable && f.isEditable}">
+                                <apex:outputPanel layout="block" styleClass="slds-form-element slds-m-bottom_xx-small" rendered="{!f.isCreateable && f.isEditable}">
                                     <apex:outputLabel styleClass="slds-form-element__label" for="inputField" value="{!f.label}"/>
                                     <div class="slds-form-element__control">
-                                        <div class="{!f.containerClass}">
+                                        <apex:outputField id="outputField" value="{!sobjectToRestore[f.name]}" styleClass="{!f.styleClass}" rendered="{!isReadOnlyMode}" />
+                                        <apex:outputPanel layout="block" styleClass="{!f.containerClass}" rendered="{!!isReadOnlyMode}">
                                             <apex:inputField id="inputField" value="{!sobjectToRestore[f.name]}" styleClass="{!f.styleClass}" />
                                             <apex:outputLabel styleClass="slds-checkbox__label" for="inputField" rendered="{!f.type == 'BOOLEAN'}">
                                                 <span class="slds-checkbox_faux"></span>
                                             </apex:outputLabel>
-                                        </div>
+                                        </apex:outputPanel>
                                     </div>
                                 </apex:outputPanel>
                             </apex:repeat>
@@ -232,7 +272,7 @@
                     </div>
     
                     <footer class="slds-modal__footer">
-                        <div class="slds-form-element slds-float_left">
+                        <div class="slds-form-element slds-float_left restore_attachments" data-restore-only="true">
                             <label class="slds-checkbox_toggle slds-grid">
                                 <span class="slds-form-element__label slds-m-bottom_none">Restore Attachments?</span>
                                     <apex:inputCheckbox id="restore_attachment"/>
@@ -244,8 +284,60 @@
                             </label>
                         </div>
 
-                        <button id="saveRestore" class="slds-button slds-button_brand">Save</button>
-                        <button id="cancelRestore" class="slds-button slds-button_neutral" data-toggle="modal" data-target="#restoreModal">Cancel</button>
+                        <button id="saveRestore" class="slds-button slds-button_brand" data-restore-only="true">Save</button>
+                        <button id="cancelRestore" class="slds-button slds-button_neutral" data-toggle="modal" data-target="#restoreModal" data-restore-only="true">Cancel</button>
+                        <button id="closeRestore" class="slds-button slds-button_neutral" data-toggle="modal" data-target="#restoreModal" data-preview-only="true">Close</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-hide"></div>
+
+            <section id="relatedModal" role="dialog" tabindex="-1" aria-labelledby="modal-related" aria-modal="true" aria-describedby="modal-content-related" class="slds-modal slds-modal_medium slds-hide">
+                <div class="slds-modal__container" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" data-toggle="modal" data-target="#relatedModal">
+                            <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                            </svg>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-related" class="slds-text-heading_medium slds-hyphenate">Related</h2>
+                    </header>
+                    
+                    <div class="slds-modal__content" id="modal-content-related">
+                        <apex:outputPanel id="outputRelatedIframe" layout="block" styleClass="relatedIframeContent">
+                            <apex:iframe id="relatedIframe" src="{!relatedIframeUrl}" scrolling="true" />
+                        </apex:outputPanel>
+                    </div>
+    
+                    <footer class="slds-modal__footer">
+                        <button id="closeRelated" class="slds-button slds-button_neutral" data-toggle="modal" data-target="#relatedModal">Close</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-hide"></div>
+
+            <section id="relatedRestoreModal" role="dialog" tabindex="-1" aria-labelledby="modal-relatedRestore" aria-modal="true" aria-describedby="modal-content-relatedRestore" class="slds-modal slds-modal_medium slds-hide">
+                <div class="slds-modal__container" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" data-toggle="modal" data-target="#relatedRestoreModal">
+                            <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                <use xlink:href="{!URLFOR($Asset.SLDS, 'assets/icons/utility-sprite/svg/symbols.svg#close')}"></use>
+                            </svg>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-relatedRestore" class="slds-text-heading_medium slds-hyphenate">Restore</h2>
+                    </header>
+                    
+                    <div class="slds-modal__content slds-p-horizontal_medium" id="modal-content-relatedRestore">
+                        <div class="restoreOutput"></div>
+                    </div>
+    
+                    <footer class="slds-modal__footer">
+                        <div class="restore_attachments" data-restore-only="true"></div>
+
+                        <button id="saveRelatedRestore" class="slds-button slds-button_brand" data-restore-only="true">Save</button>
+                        <button id="closeRelatedRestore" class="slds-button slds-button_neutral" data-toggle="modal" data-target="#relatedRestoreModal">Close</button>
                     </footer>
                 </div>
             </section>
@@ -263,11 +355,16 @@
 
             <script>
                 $(function() {
+                    var isRelatedRestore = {!isRelatedRestore};
+
                     var $objectList = $('.objectList');
                     var $fieldlist = $('#fieldlist');
                     var $sObjectDataTableContainer = $('#sObjectDataTableContainer');
-                    var $restoreModal = $('#restoreModal');
+                    window.$restoreModal = $('#restoreModal');
+                    var $relatedModal = $('#relatedModal');
+                    window.$relatedRestoreModal = $('#relatedRestoreModal');
                     var $saveRestore = $('#saveRestore');
+                    var $saveRelatedRestore = $('#saveRelatedRestore');
                     var $fieldListSelector = $('#fieldListSelector');
                     var $filterSearchTerm = $('#filter-search-term');
                     var $retriveGRAXFields = $('#retriveGRAXFields');
@@ -275,6 +372,10 @@
 
                     window.showGlobalSpinner = window.showGlobalSpinner || function(state) {
                         $globalSpinner.toggleClass('slds-hide', !state);
+                        
+                        if(isRelatedRestore && !state) {
+                            parent.showGlobalSpinner(state);
+                        }
                     };
 
                     window.addObjectListOptions = function(options) {
@@ -323,16 +424,66 @@
                         renderSvgIcons();
                     };
 
+                    window.setReadOnlyMode = function(state) {
+                        var $restoreOnly = $('[data-restore-only="true"]');
+                        var $previewOnly = $('[data-preview-only="true"]');
+                        
+                        if(state) {
+                            $restoreOnly.addClass('slds-hide');
+                            $previewOnly.removeClass('slds-hide');
+                        } else {
+                            $restoreOnly.removeClass('slds-hide');
+                            $previewOnly.addClass('slds-hide');
+                        }
+
+                        if(isRelatedRestore) {
+                            parent.setReadOnlyMode(state);
+                        }
+                    };
+
                     window.restore = function(sid) {
                         showGlobalSpinner(true);
+                        setReadOnlyMode(false);
                         changeSObjectToRestore(sid);
-                        $globalSpinner.removeClass('slds-hide');
+                    };
+
+                    window.preview = function(sid) {
+                        showGlobalSpinner(true);
+                        setReadOnlyMode(true);
+                        changeSObjectToRestore(sid, true);
+                    };
+
+                    window.related = function(sid) {
+                        showGlobalSpinner(true);
+                        changeIdToGetRelated(sid);
                     };
         
                     $saveRestore.on('click', function(e) {
                         showGlobalSpinner(true);
                         saveSObjectToRestore();
         
+                        e.preventDefault();
+                    });
+
+                    $saveRelatedRestore.on('click', function(e) {
+                        showGlobalSpinner(true);
+
+                        var relatedIframe = $relatedModal.find('iframe').get(0);
+
+                        var $restoreForm = relatedIframe.contentWindow.$restoreModal.find('.restoreOutput, .restore_attachments').find('input, select');
+                        var $relatedForm = $relatedRestoreModal.find('.restoreOutput, .restore_attachments').find('input, select');
+
+                        $relatedForm.each(function(i) {
+                            var $old = $restoreForm.eq(i);
+                            var $new = $(this);
+
+                            if($old.val() != $new.val()) {
+                               $old.val($new.val()).trigger('focus focusin keydown keyup input focusout change');
+                            }
+                        });
+
+                        relatedIframe.contentWindow.saveSObjectToRestore();
+
                         e.preventDefault();
                     });
         
@@ -411,18 +562,40 @@
                                 renderSvgIcons();
                             }
                             
-
                             $globalSpinner.addClass('slds-hide');
                         }
         
-                        $restoreModal.trigger('modaltoggle', [state]);
+                        if(!isRelatedRestore) {
+                            $restoreModal.trigger('modaltoggle', [state]);
+                        } else {
+                            parent.showRelatedModal([state]);
+                            parent.$relatedRestoreModal.trigger('modaltoggle', [state]);
+
+                            if(state) {
+                                parent.$relatedRestoreModal.find('.restoreOutput').replaceWith(
+                                    $restoreModal.find('.restoreOutput').clone());
+
+                                parent.$relatedRestoreModal.find('.restore_attachments').replaceWith(
+                                    $restoreModal.find('.restore_attachments').clone());
+                            }
+                            
+                            $('#datePicker').appendTo($('body', parent.document));
+                        }
+
                     };
 
                     $restoreModal.on('modaltoggle', function(e, state) {
-                        if(!state) $('#datePicker').appendTo($('body'));
+                        if(!state) $('#datePicker').appendTo('body');
                     });
 
- 
+                    $relatedRestoreModal.on('modaltoggle', function(e, state) {
+                        showRelatedModal(!state);
+                    });
+
+                    window.showRelatedModal = function(state) {
+                        $relatedModal.trigger('modaltoggle', [state]);
+                    };
+
                     window.renderFieldListSelector = function(data) {
                         data.sort(function (a, b) {
                             if (a.label > b.label) {

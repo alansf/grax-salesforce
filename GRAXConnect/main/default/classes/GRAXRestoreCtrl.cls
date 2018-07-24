@@ -10,7 +10,7 @@ public with sharing class GRAXRestoreCtrl {
     public GRAXSettings gxcSettings;
     public Id parentId;
     public String parentType;
-    public List<String> selectedFieldsList {get;set;}
+    public transient List<String> selectedFieldsList {get;set;}
     public Map<String, SObject> sObjectMap {get;set;}
     public Map<String, Map<String, String>> objectMap {get;set;}
     public SObject sobjectToRestore {get;set;}
@@ -29,6 +29,7 @@ public with sharing class GRAXRestoreCtrl {
     public String relToQuery {get;set;}
 
     public Boolean isMasterRestore {get;set;}
+    public Boolean isRelatedRestore {get;set;}
     public String filterSearchTerm {get;set;}
 
     public Boolean isPersonAccountEnabled = false;
@@ -42,6 +43,10 @@ public with sharing class GRAXRestoreCtrl {
         'SystemModstamp', 'LastActivityDate', 'LastViewedDate',
         'LastReferencedDate', 'Jigsaw', 'CleanStatus'
     };
+
+    public String idToGetRelated {get;set;}
+    
+    public Boolean isReadOnlyMode {get;set;}
 
     public class Field {
         public String name {get;set;}
@@ -118,8 +123,9 @@ public with sharing class GRAXRestoreCtrl {
 
         String strParentId;
         try {
-            strParentId = Apexpages.currentPage().getParameters().get('Id');
+            strParentId = GRAXUtils.getPageParameter('Id');
         } catch(Exception e) {}
+        
 
         if(String.isNotBlank(strParentId)) {
             parentId = Id.valueOf(strParentId);
@@ -131,9 +137,11 @@ public with sharing class GRAXRestoreCtrl {
 
         isPersonAccountEnabled = GRAXUtils.isPersonAccountEnabled();
         if(isPersonAccountEnabled) {
-            isPersonAccount = false;
+            isPersonAccount = GRAXUtils.getPageParameter('isPA') == '1';
             contactFields = GRAXUtils.getDescribeFieldsResultForObject('Contact').keySet();
         }
+
+        isRelatedRestore = GRAXUtils.getPageParameter('isRR') == '1';
     }
 
     public void retriveTableRecords() {
@@ -198,7 +206,7 @@ public with sharing class GRAXRestoreCtrl {
                         continue;
                     }
 
-                    if(isPersonAccountEnabled && isPersonAccount && f.name == 'RecordTypeId') {
+                    if(typeName == 'Account' && isPersonAccountEnabled && isPersonAccount && f.name == 'RecordTypeId') {
                         so.put('isPersonAccount', true);
                         
                         continue;
@@ -209,6 +217,11 @@ public with sharing class GRAXRestoreCtrl {
                     }
                 }
             } catch(Exception e) {
+                if(typeName == 'Account' && isPersonAccountEnabled && isPersonAccount && f.name == 'RecordTypeId') {
+                   continue; 
+                }
+                
+                ApexPages.addMessages(e);
                 System.debug(LoggingLevel.WARN, e.getMessage() + ' on field ' + f.label);
             }
         }
@@ -263,7 +276,7 @@ public with sharing class GRAXRestoreCtrl {
                     addField &= !f.name.endsWith('__pc');
                 }
 
-                if(isPersonAccountEnabled && isPersonAccount && (f.name == 'Name' || f.name == 'RecordTypeId')) {
+                if(objToQuery == 'Account' && isPersonAccountEnabled && isPersonAccount && (f.name == 'Name' || f.name == 'RecordTypeId')) {
                     f.isEditable = false;
                 }
 
@@ -287,7 +300,7 @@ public with sharing class GRAXRestoreCtrl {
     }
 
     public Pagereference changeObjToQuery() {
-        String objToQueryValue = Apexpages.currentPage().getParameters().get('objToQueryValue');
+        String objToQueryValue = GRAXUtils.getPageParameter('objToQueryValue');
 
         if(objToQueryValue == 'Account2') {
             objToQueryValue = 'Account';
@@ -309,10 +322,10 @@ public with sharing class GRAXRestoreCtrl {
     }
 
     public Pagereference updateDataTable() {
-        selectedFields = Apexpages.currentPage().getParameters().get('selectedFields');
+        selectedFields = GRAXUtils.getPageParameter('selectedFields');
         selectedFieldsList = selectedFields.split(',');
 
-        filterSearchTerm = Apexpages.currentPage().getParameters().get('filterSearchTerm');
+        filterSearchTerm = GRAXUtils.getPageParameter('filterSearchTerm');
 
         retriveTableRecords();
         updateSObjectMap();
@@ -321,7 +334,8 @@ public with sharing class GRAXRestoreCtrl {
     }
 
     public Pagereference changeSObjectToRestore() {
-        String soToRestore = Apexpages.currentPage().getParameters().get('soToRestore');
+        String soToRestore = GRAXUtils.getPageParameter('soToRestore');
+        isReadOnlyMode = Boolean.valueOf(GRAXUtils.getPageParameter('isReadOnlyMode'));
 
         GRAXSettings gxcSettings = new GRAXSettings(objToQuery);
 
@@ -362,13 +376,19 @@ public with sharing class GRAXRestoreCtrl {
     public Pagereference saveSObjectToRestore() {
         System.debug(JSON.serializePretty(sobjectToRestore));
 
-        try {
-            insert sobjectToRestore;
-        } catch(DMLException e) {
-            ApexPages.addMessages(e);
+        if(ApexPages.getMessages().size() == 0) {
+            try {
+                insert sobjectToRestore;
+            } catch (System.FinalException f){
+                ApexPages.addMessages(f);
+            } catch(Exception e) {
+                ApexPages.addMessages(e);
+            }
+        } else {
+            ApexPages.AddMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'System.FinalException: SObject row does not allow errors.'));
         }
 
-        return null;
+        return ApexPages.currentPage();
     }
 
     public class ChildRelatedItem {
@@ -444,5 +464,26 @@ public with sharing class GRAXRestoreCtrl {
         }
         
         return JSON.serialize(fList);
+    }
+
+    
+    public Pagereference changeIdToGetRelated() {
+        idToGetRelated = GRAXUtils.getPageParameter('idToGetRelated');
+
+        return null;
+    }
+
+    public String getRelatedIframeUrl() {
+        String restoreURL = 'javascript:void(0);';
+
+        if(String.isNotBlank(idToGetRelated)) {
+            restoreURL = '/apex/GRAXRestore?Id=' + idToGetRelated + '&isRR=1';
+
+            if(isPersonAccountEnabled && objToQuery == 'Account') {
+                restoreURL += '&isPA=' + (isPersonAccount ? '1' : '0');
+            }
+        }
+
+        return restoreURL;
     }
 }
